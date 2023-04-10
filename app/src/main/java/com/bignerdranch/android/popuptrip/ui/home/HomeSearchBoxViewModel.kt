@@ -7,6 +7,6 @@ const val DEST_ENTERED = "DESTINATION_ENTERED"
 
 class HomeSearchBoxViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
     var dest: String
-        get() = savedStateHandle.get(DEST_ENTERED) ?: ""
+        get() = savedStateHandle[DEST_ENTERED] ?: ""
         set(value) = savedStateHandle.set(DEST_ENTERED, value)
 }
