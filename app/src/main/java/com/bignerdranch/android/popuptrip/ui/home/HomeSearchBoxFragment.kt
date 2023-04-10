@@ -19,10 +19,6 @@ class HomeSearchBoxFragment: Fragment() {
 
     private val homeSearchBoxViewModel: HomeSearchBoxViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?){
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

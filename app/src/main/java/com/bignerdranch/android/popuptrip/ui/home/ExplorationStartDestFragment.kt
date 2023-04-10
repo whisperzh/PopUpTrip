@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationStartDestBinding
-import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
 
 private const val TAG = "ExplorationStartDest"
 
@@ -20,10 +19,6 @@ class ExplorationStartDestFragment: Fragment() {
         }
 
     private val explorationStartDestViewModel: ExplorationStartDestViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?){
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

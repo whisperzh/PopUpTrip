@@ -7,11 +7,13 @@ plugins {
 android {
     namespace 'com.bignerdranch.android.popuptrip'
     compileSdk 33
+    compileSdkPreview "UpsideDownCake"
 
     defaultConfig {
         applicationId "com.bignerdranch.android.popuptrip"
         minSdk 26
         targetSdk 33
+        targetSdkPreview "UpsideDownCake"
         versionCode 1
         versionName "1.0"
 
