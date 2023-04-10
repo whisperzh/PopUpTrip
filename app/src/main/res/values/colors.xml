@@ -10,4 +10,8 @@
     <color name="grey">#ECECEC</color>
     <color name="platinum">#E5E4E2</color>
     <color name="light_grey">#FAFAFA</color>
+    <color name="brown_theme">#E5DABE</color>
+    <color name="green_theme">#8D9E7C</color>
+    <color name="brown_theme_dark">#A58854</color>
+    <color name="forest_green">#228B22</color>
 </resources>
