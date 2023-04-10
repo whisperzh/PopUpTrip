@@ -33,6 +33,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text_home" />
 
+    <fragment
+        android:id="@+id/placeListFragmentContainerView"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.NearbyPlaceListFragment"
+        tools:layout="@layout/fragment_nearby_place_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_nearby"
+        app:layout_constraintBottom_toBottomOf=""/>
+
 
 
 
