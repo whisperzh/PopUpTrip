@@ -13,7 +13,6 @@ android {
         applicationId "com.bignerdranch.android.popuptrip"
         minSdk 26
         targetSdk 33
-        targetSdkPreview "UpsideDownCake"
         versionCode 1
         versionName "1.0"
 
