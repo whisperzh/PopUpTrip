@@ -1,12 +1,11 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
 import androidx.fragment.app.viewModels
+import com.bignerdranch.android.popuptrip.R
 
 private const val TAG = "HomeSearchBoxFragment"
 class HomeSearchBoxFragment: Fragment() {
@@ -18,6 +17,11 @@ class HomeSearchBoxFragment: Fragment() {
         }
 
     private val homeSearchBoxViewModel: HomeSearchBoxViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,8 +35,18 @@ class HomeSearchBoxFragment: Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.home_search_box_menu, menu)
     }
 }

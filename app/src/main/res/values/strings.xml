@@ -9,4 +9,6 @@
     <string name="enter_starting_point">Enter Starting Point</string>
     <string name="enter_destination">Enter Destination</string>
     <string name="use_current_location">Use current location</string>
+    <string name="search">Search</string>
+    <string name="clear_search">Clear Search</string>
 </resources>
