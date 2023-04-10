@@ -1,5 +1,6 @@
 package com.bignerdranch.android.popuptrip
 
+import DestinationAdapter
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +9,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,5 +33,20 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        //add destination items
+        setContentView(R.layout.activity_main)
+
+        val destinations = generateSampleDestinations()
+        val destinationAdapter = DestinationAdapter(destinations)
+        recycler_view.adapter = destinationAdapter
+        }
+    private fun generateSampleDestinations(): List<Destination> {
+        return listOf(
+            Destination("d1", "The city of love", R.drawable.d1),
+            Destination("d2", "The city that never sleeps", R.drawable.d2),
+            // Add more destinations here
+        )
     }
-}
+
+    }
