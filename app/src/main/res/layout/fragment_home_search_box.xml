@@ -6,17 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-<!--    &lt;!&ndash; NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). &ndash;&gt;-->
-<!--    <androidx.core.widget.NestedScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="?attr/actionBarSize"-->
-<!--        app:layout_behavior="@string/searchbar_scrolling_view_behavior">-->
-<!--        &lt;!&ndash; Screen content goes here. &ndash;&gt;-->
-<!--    </androidx.core.widget.NestedScrollView>-->
-
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        
         <com.google.android.material.search.SearchBar
             android:id="@+id/search_bar"
             android:layout_width="match_parent"
@@ -30,8 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="82dp"
         android:hint="@string/searchbar_hint"
-        app:layout_anchor="@id/search_bar">
-        <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
-    </com.google.android.material.search.SearchView>
+        app:layout_anchor="@id/search_bar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
