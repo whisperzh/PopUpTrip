@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_exploration" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
