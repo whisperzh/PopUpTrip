@@ -17,12 +17,12 @@
 
     <fragment
         android:id="@+id/explorationPage"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationMapFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
         android:label="@string/title_exploration_page"
         tools:layout="@layout/fragment_exploration">
-        <argument
-            android:name="destination"
-            app:argType="string" />
+<!--        <argument-->
+<!--            android:name="destination"-->
+<!--            app:argType="string" />-->
     </fragment>
     <fragment
         android:id="@+id/navigation_dashboard"
