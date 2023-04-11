@@ -11,7 +11,7 @@
         android:layout_height="wrap_content">
         
         <com.google.android.material.search.SearchBar
-            android:id="@+id/search_bar"
+            android:id="@+id/home_search_bar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:hint="@string/searchbar_hint"
@@ -20,9 +20,10 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.search.SearchView
+        android:id="@+id/home_search_view"
         android:layout_width="match_parent"
-        android:layout_height="82dp"
+        android:layout_height="wrap_content"
         android:hint="@string/searchbar_hint"
-        app:layout_anchor="@id/search_bar" />
+        app:layout_anchor="@id/home_search_bar" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

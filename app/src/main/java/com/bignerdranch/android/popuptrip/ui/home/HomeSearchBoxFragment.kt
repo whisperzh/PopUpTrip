@@ -30,14 +30,13 @@ class HomeSearchBoxFragment: Fragment() {
     ): View? {
         _binding = FragmentHomeSearchBoxBinding.inflate(inflater, container, false)
         val destEntered = homeSearchBoxViewModel.dest
-        binding.searchBar.setText(destEntered)
+        binding.homeSearchBar.setText(destEntered)
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onDestroyView() {
