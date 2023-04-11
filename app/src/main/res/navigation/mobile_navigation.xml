@@ -3,14 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@id/navigation_home">
 
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+<!--        <action-->
+<!--            android:id="@+id/show_exploration_page"-->
+<!--            app:destination="@id/explorationPage" />-->
+    </fragment>
 
+    <fragment
+        android:id="@+id/explorationPage"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationMapFragment"
+        android:label="@string/title_exploration_page"
+        tools:layout="@layout/fragment_exploration">
+        <argument
+            android:name="destination"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.bignerdranch.android.popuptrip.ui.dashboard.DashboardFragment"
@@ -22,4 +35,18 @@
         android:name="com.bignerdranch.android.popuptrip.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.SettingFragment"
+        android:label="@string/title_setting"
+        tools:layout="@layout/fragment_setting">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile">
+    </fragment>
 </navigation>

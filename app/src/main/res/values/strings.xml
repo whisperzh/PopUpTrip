@@ -3,12 +3,28 @@
     <string name="title_home">Home</string>
     <string name="title_nearby_places">Nearby Places</string>
     <string name="title_dashboard">Dashboard</string>
+    <string name="title_setting">Setting</string>
+    <string name="title_switch">Dark Mode</string>
+    <string name="title_language">Language</string>
+    <string name="title_mode">Theme</string>
+    <string name="title_profile">Personal Profile</string>
+    <string name="title_logout">Log Out</string>
+    <string name="description_profile">Go to Profile Page</string>
+    <string name="change_name">Username: </string>
+    <string name="title_password">Password: </string>
+    <string name="change_password">Change Password</string>
+    <string name="title_photo">Photo: (Click to change)</string>
+    <string name="description_photo">Click here to Change photo</string>
+    <string name="title_save">Save</string>
+    <string name="title_quit">Quit</string>
     <string name="title_notifications">Notifications</string>
     <string name="searchbar_hint">Enter destination</string>
     <string name="home_search_box_content">Search Bar Enter Destination</string>
     <string name="enter_starting_point">Enter Starting Point</string>
     <string name="enter_destination">Enter Destination</string>
     <string name="use_current_location">Use current location</string>
+    <string name="search">Search</string>
+    <string name="clear_search">Clear Search</string>
     <string name="email_username">Name or Email Address</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -58,4 +74,5 @@
     <string name="resetPasswordTxt">Reset Password</string>
     <string name="signInTxt">Sign In</string>
     <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
+    <string name="title_exploration_page">Exploration Page</string>
 </resources>

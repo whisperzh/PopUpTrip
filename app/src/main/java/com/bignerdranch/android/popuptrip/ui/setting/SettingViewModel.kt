@@ -1,13 +1,13 @@
-package com.bignerdranch.android.popuptrip.ui.home
+package com.bignerdranch.android.popuptrip.ui.setting
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class SettingViewModel : ViewModel() {
 
 //    private val _text = MutableLiveData<String>().apply {
-//        value = "This is home Fragment"
+//        value = "This is setting Fragment"
 //    }
 //    val text: LiveData<String> = _text
 }

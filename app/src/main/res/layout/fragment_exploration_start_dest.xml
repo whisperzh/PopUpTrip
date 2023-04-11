@@ -35,12 +35,11 @@
         android:id="@+id/destTextField"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_destination"
+        android:hint="Destination"
         app:layout_constraintTop_toBottomOf="@id/use_current_location_button"
         app:startIconDrawable="@drawable/ic_add_location"
         app:endIconMode="clear_text"
-        app:boxBackgroundColor="@color/grey"
-        android:layout_marginTop="@dimen/activity_horizontal_margin">
+        app:boxBackgroundColor="@color/light_grey">
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
