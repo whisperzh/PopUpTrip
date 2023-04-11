@@ -7,15 +7,15 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_exploration" />
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.bignerdranch.android.popuptrip.ui.dashboard.DashboardFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_exploration" />
 
     <fragment
         android:id="@+id/navigation_notifications"
