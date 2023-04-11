@@ -22,7 +22,7 @@
     <com.google.android.material.search.SearchView
         android:id="@+id/home_search_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="79dp"
         android:hint="@string/searchbar_hint"
         app:layout_anchor="@id/home_search_bar" />
 
