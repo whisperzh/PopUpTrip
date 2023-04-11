@@ -2,32 +2,28 @@ package com.bignerdranch.android.popuptrip
 
 import android.Manifest
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bignerdranch.android.popuptrip.databinding.ActivityLoginBinding
-import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+
 
 class LoginActivity : AppCompatActivity() {
-    private lateinit var oneTapClient: SignInClient
-    private lateinit var signInRequest: BeginSignInRequest
     private lateinit var binding: ActivityLoginBinding
-
-    private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
-    private var showOneTapUI = true
-
+    private lateinit var mGoogleSignInClient: GoogleSignInClient
+    private var RC_SIGN_IN:Int=1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,51 +32,26 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.LoginButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            // start your next activity
             startActivity(intent)
         }
-        oneTapClient = Identity.getSignInClient(this)
-        signInRequest = BeginSignInRequest.builder()
-            .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
-                .setSupported(true)
-                .build())
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                    .setSupported(true)
-                    // Your server's client ID, not your Android client ID.
-                    .setServerClientId(getString(R.string.web_client_id))
-                    // Only show accounts previously used to sign in.
-                    .setFilterByAuthorizedAccounts(false)
-                    .build())
-            // Automatically sign in when exactly one credential is retrieved.
-            .setAutoSelectEnabled(true)
+        binding.resetPasswordButton.setOnClickListener {
+            signOut()
+        }
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
             .build()
+
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
+//        updateUI(account)
+
+
         binding.signInWithGoogleButton.setOnClickListener {
             //TODO:
-            oneTapClient.beginSignIn(signInRequest)
-                .addOnSuccessListener(this) { result ->
-                    try {
-                        startIntentSenderForResult(
-                            result.pendingIntent.intentSender, REQ_ONE_TAP,
-                            null, 0, 0, 0, null)
-                    } catch (e: IntentSender.SendIntentException) {
-                        Log.e(TAG, "Couldn't start One Tap UI: ${e.localizedMessage}")
-                    }
-                }
-                .addOnFailureListener(this) { e ->
-                    // No saved credentials found. Launch the One Tap sign-up flow, or
-                    // do nothing and continue presenting the signed-out UI.
-                    //TODO:login failed
-                    val alertDialog = AlertDialog.Builder(this)
-                        .setTitle("Login Failed")
-                        .setMessage("The login failed. Please check your credentials and try again.")
-                        .setPositiveButton("OK") { _, _ ->
-                        }
-                        .create()
-
-                    alertDialog.show()
-                    Log.d(TAG, e.localizedMessage)
-                }
+            signIn()
         }
 
         // Register the permissions callback, which handles the user's response to the
@@ -164,34 +135,60 @@ class LoginActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when (requestCode) {
-            REQ_ONE_TAP -> {
-                try {
-                    val credential = oneTapClient.getSignInCredentialFromIntent(data)
-                    val idToken = credential.googleIdToken
-                    val username = credential.id
-                    val password = credential.password
-                    when {
-                        idToken != null -> {
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
-                            Log.d(TAG, "Got ID token.")
-                        }
-                        password != null -> {
-                            // Got a saved username and password. Use them to authenticate
-                            // with your backend.
-                            Log.d(TAG, "Got password.")
-                        }
-                        else -> {
-                            // Shouldn't happen.
-                            Log.d(TAG, "No ID token or password!")
-                        }
-                    }
-                } catch (e: ApiException) {
-                    // ...
-                    Log.e(TAG,e.toString())
-                }
-            }
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
         }
+    }
+
+    private fun signIn() {
+        val signInIntent: Intent = mGoogleSignInClient.getSignInIntent()
+        startActivityForResult(signInIntent, RC_SIGN_IN)
+    }
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            val acct = GoogleSignIn.getLastSignedInAccount(this)
+            if (acct != null) {
+                val personName = acct.displayName
+                val personGivenName = acct.givenName
+                val personFamilyName = acct.familyName
+                val personEmail = acct.email
+                val personId = acct.id
+//                val personPhoto: Uri? = acct.photoUrl
+                Log.d("personName", personName!!)
+                Log.d("personGivenName", personGivenName!!)
+                Log.d("personFamilyName", personFamilyName!!)
+                Log.d("personEmail", personEmail!!)
+                Log.d("personId", personId!!)
+            }
+            // Signed in successfully, show authenticated UI.
+//            updateUI(account)
+        } catch (e: ApiException) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode())
+//            updateUI(null)
+        }
+    }
+
+    private fun signOut() {
+        mGoogleSignInClient.signOut()
+            .addOnCompleteListener(this) {
+                Toast.makeText(this,"you've been logged out",Toast.LENGTH_SHORT)
+            }
+    }
+
+    /**
+     * If the user deletes their account, you must delete the information that your app obtained from the Google APIs.
+     */
+    private fun revokeAccess() {
+        mGoogleSignInClient.revokeAccess()
+            .addOnCompleteListener(this) {
+                // ...
+            }
     }
 }
