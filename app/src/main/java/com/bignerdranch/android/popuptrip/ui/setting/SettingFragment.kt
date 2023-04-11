@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -35,14 +34,24 @@ class SettingFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val switchState = prefs.getBoolean("switchState", false)
         binding.themeSwitch.isChecked = switchState
-        val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item,dataList)//set adapter
+        val adapter =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter//bind the adapter
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val selectedItem = parent.getItemAtPosition(position) as String
-                if (lastSelectedItem!=null){
-                    val toast=Toast.makeText(requireContext(), "You choose $selectedItem",Toast.LENGTH_SHORT)
+                if (lastSelectedItem != null) {
+                    val toast = Toast.makeText(
+                        requireContext(),
+                        "You choose $selectedItem",
+                        Toast.LENGTH_SHORT
+                    )
                     toast.show()
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
@@ -54,28 +63,31 @@ class SettingFragment : Fragment() {
                 // Do nothing
             }
         }
-        val switch=binding.themeSwitch
+        val switch = binding.themeSwitch
 
-        switch.setOnCheckedChangeListener{_,isChecked->
-            if(isChecked){
+        switch.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }else{
+            } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
-        val profileButton=binding.profileButton
-        profileButton.setOnClickListener(Navigation.createNavigateOnClickListener(popR.id.navigation_profile,null))
+        val profileButton = binding.profileButton
+        profileButton.setOnClickListener(
+            Navigation.createNavigateOnClickListener(
+                popR.id.navigation_profile,
+                null
+            )
+        )
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
-        val root: View = binding.root
 
-
-        val textView: TextView = binding.textSetting
-        settingViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
-        return root
+//        val textView: TextView = binding.textSetting
+//        settingViewModel.text.observe(viewLifecycleOwner) {
+//            textView.text = it
+//        }
+        return binding.root
     }
 
     override fun onDestroyView() {
