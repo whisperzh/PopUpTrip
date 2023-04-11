@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.bignerdranch.android.popuptrip.ui.dashboard.DashboardFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_exploration" />
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -24,16 +24,15 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/navigation_setting"
+        android:id="@+id/navigation_settings"
         android:name="com.bignerdranch.android.popuptrip.ui.setting.SettingFragment"
         android:label="@string/title_setting"
-        tools:layout="@layout/fragment_setting">
-    </fragment>
+        tools:layout="@layout/fragment_setting"/>
 
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.bignerdranch.android.popuptrip.ui.setting.ProfileFragment"
         android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile">
-    </fragment>
+        tools:layout="@layout/fragment_profile"/>
+
 </navigation>

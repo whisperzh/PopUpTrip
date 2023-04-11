@@ -45,7 +45,7 @@ class ProfileFragment : Fragment() {
             //save the data
         }
         val quitButton=binding.quit
-        quitButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_setting,null))
+        quitButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_settings,null))
         val profileViewmodel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
         val root: View = binding.root
