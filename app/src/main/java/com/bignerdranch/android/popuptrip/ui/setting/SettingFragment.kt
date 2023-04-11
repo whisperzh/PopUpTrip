@@ -20,7 +20,7 @@ import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
 class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
     private var _binding: FragmentSettingBinding? = null
-    private val dataList =  listOf("English","French","Germany","Spanish","Simplified Chinese")
+    private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
 
     // This property is only valid between onCreateView and
     // onDestroyView.
