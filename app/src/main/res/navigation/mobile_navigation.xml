@@ -22,4 +22,18 @@
         android:name="com.bignerdranch.android.popuptrip.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_setting"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.SettingFragment"
+        android:label="@string/title_setting"
+        tools:layout="@layout/fragment_setting">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile">
+    </fragment>
 </navigation>
