@@ -37,7 +37,7 @@
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
-        android:id="@+id/navigation_setting"
+        android:id="@+id/navigation_settings"
         android:name="com.bignerdranch.android.popuptrip.ui.setting.SettingFragment"
         android:label="@string/title_setting"
         tools:layout="@layout/fragment_setting">
