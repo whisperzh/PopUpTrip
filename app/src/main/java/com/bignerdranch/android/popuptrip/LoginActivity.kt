@@ -30,6 +30,11 @@ class LoginActivity : AppCompatActivity() {
 
         binding= ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.LoginButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            // start your next activity
+            startActivity(intent)
+        }
         oneTapClient = Identity.getSignInClient(this)
         signInRequest = BeginSignInRequest.builder()
             .setPasswordRequestOptions(BeginSignInRequest.PasswordRequestOptions.builder()
