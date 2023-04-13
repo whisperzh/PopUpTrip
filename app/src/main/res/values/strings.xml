@@ -12,8 +12,8 @@
     <string name="description_profile">Go to Profile Page</string>
     <string name="change_name">Username: </string>
     <string name="title_password">Password: </string>
-    <string name="change_password">Change Password</string>
-    <string name="title_photo">Photo: (Click to change)</string>
+    <string name="change_password">Security</string>
+    <string name="title_photo">Photo: </string>
     <string name="description_photo">Click here to Change photo</string>
     <string name="title_save">Save</string>
     <string name="title_quit">Quit</string>
