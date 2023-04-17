@@ -6,6 +6,10 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
 import com.google.android.gms.common.api.Status
@@ -13,6 +17,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import kotlinx.coroutines.launch
 import java.util.*
 
 private const val TAG = "HomeSearchBoxFragment"
@@ -60,7 +65,16 @@ class HomeSearchBoxFragment: Fragment() {
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 // TODO: Get info about the selected place.
+                val placeName = place.name
                 Log.i(TAG, "Place: ${place.name}, ${place.id}")
+
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        findNavController().navigate(
+                            HomeFragmentDirections.homeToExplorationAction(placeName)
+                        )
+                    }
+                }
             }
 
             override fun onError(status: Status) {
