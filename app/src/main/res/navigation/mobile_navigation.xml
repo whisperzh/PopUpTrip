@@ -9,17 +9,19 @@
         android:id="@+id/navigation_home"
         android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" >
-<!--        <action-->
-<!--            android:id="@+id/home_to_exploration_action"-->
-<!--            app:destination="@id/navigation_exploration" />-->
-    </fragment>
+        tools:layout="@layout/fragment_home" />
+        <action
+            android:id="@+id/home_to_exploration_action"
+            app:destination="@id/navigation_exploration" />
 
     <fragment
         android:id="@+id/navigation_exploration"
         android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
         android:label="@string/title_exploration"
         tools:layout="@layout/fragment_exploration" />
+        <argument
+            android:name="destination"
+            app:argType="String" />
 
     <fragment
         android:id="@+id/navigation_dashboard"

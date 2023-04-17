@@ -6,15 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationBinding
-import com.bignerdranch.android.popuptrip.databinding.FragmentHomeBinding
 
 class ExplorationFragment: Fragment() {
 
     private var _binding: FragmentExplorationBinding? = null
 
     private val binding get() = _binding!!
-
+    private val args: NavigationExplorationArgs by navArgs<>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
