@@ -14,7 +14,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
-private const val TAG = "HomeMapFragment"
+private const val TAG = "ExplorationMapFragment"
 
 class ExplorationMapFragment: Fragment(), OnMapReadyCallback {
     private var _binding: FragmentExplorationMapBinding? = null

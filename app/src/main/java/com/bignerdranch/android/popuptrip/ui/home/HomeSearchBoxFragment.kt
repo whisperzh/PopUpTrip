@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
@@ -20,6 +21,7 @@ class HomeSearchBoxFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCraete has been called")
 //        setHasOptionsMenu(true)
     }
 
@@ -30,14 +32,13 @@ class HomeSearchBoxFragment: Fragment() {
     ): View? {
         _binding = FragmentHomeSearchBoxBinding.inflate(inflater, container, false)
         val destEntered = homeSearchBoxViewModel.dest
-        binding.searchBar.setText(destEntered)
+        binding.homeSearchBar.setText(destEntered)
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onDestroyView() {

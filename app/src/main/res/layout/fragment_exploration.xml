@@ -12,16 +12,16 @@
         android:layout_height="wrap_content"
         android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationStartDestFragment"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/google_map"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout="@layout/fragment_exploration_start_dest" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/google_map"
+        android:id="@+id/explorationMapFragmentContainerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.HomeSearchBoxFragment"
-        app:layout_constraintTop_toTopOf="@id/explorationSearchboxFragmentContainerView"
+        android:layout_marginTop="16dp"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationMapFragment"
         app:layout_constraintTop_toBottomOf="@id/explorationSearchboxFragmentContainerView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
