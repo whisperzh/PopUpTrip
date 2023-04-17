@@ -59,19 +59,18 @@ class HomeSearchBoxFragment: Fragment() {
         val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
                 as AutocompleteSupportFragment
 
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME))
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
 
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 // TODO: Get info about the selected place.
-                val placeName = place.name
-                Log.i(TAG, "Place: ${place.name}, ${place.id}")
+                Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.latLng}")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         findNavController().navigate(
-                            HomeFragmentDirections.homeToExplorationAction(placeName)
+                            HomeFragmentDirections.homeToExplorationAction(place.toString())
                         )
                     }
                 }
