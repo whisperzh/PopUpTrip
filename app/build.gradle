@@ -6,7 +6,6 @@ plugins {
 }
 
 android {
-    namespace 'com.bignerdranch.android.popuptrip'
     compileSdk 33
     compileSdkPreview "UpsideDownCake"
 
