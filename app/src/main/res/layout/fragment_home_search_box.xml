@@ -1,29 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+
+<!--<androidx.coordinatorlayout.widget.CoordinatorLayout-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content">-->
+
+<!--        <com.google.android.material.search.SearchBar-->
+<!--            android:id="@+id/home_search_bar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="?attr/actionBarSize"-->
+<!--            android:hint="@string/searchbar_hint"-->
+<!--            android:contentDescription="@string/enter_destination"-->
+<!--            tools:ignore="ContentDescription"/>-->
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
+<!--    <com.google.android.material.search.SearchView-->
+<!--        android:id="@+id/home_search_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:hint="@string/searchbar_hint"-->
+<!--        />-->
+
+    <fragment
+        android:id="@+id/autocomplete_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/home_search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:hint="@string/searchbar_hint"
-            android:contentDescription="@string/enter_destination"
-            tools:ignore="ContentDescription"/>
-    </com.google.android.material.appbar.AppBarLayout>
+        android:layout_height="wrap_content"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.search.SearchView
-        android:id="@+id/home_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="95dp"
-        android:hint="@string/searchbar_hint"
-        app:layout_anchor="@id/home_search_bar" />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->

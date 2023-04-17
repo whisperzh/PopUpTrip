@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PopUpTrip</string>
     <string name="title_home">Home</string>
+    <string name="title_exploration">Exploration</string>
     <string name="title_nearby_places">Nearby Places</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_setting">Settings</string>
