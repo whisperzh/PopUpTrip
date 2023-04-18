@@ -130,6 +130,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
 
+            // Remove cursor
+            binding.startingTextInputTextfield.isCursorVisible = false
+
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
