@@ -26,8 +26,8 @@ class ExplorationStartDestFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentExplorationStartDestBinding.inflate(inflater, container, false)
-        val startingPoint = explorationStartDestViewModel.starting_point
-        binding.startingTextField.editText?.setText(startingPoint)
+        val startPoint = explorationStartDestViewModel.startingPoint
+        binding.startingTextField.editText?.setText(startPoint)
 
         val destination = explorationStartDestViewModel.destination
         binding.destTextField.editText?.setText(destination)
@@ -37,7 +37,6 @@ class ExplorationStartDestFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onDestroyView() {

@@ -7,11 +7,11 @@ const val DESTINATION_ENTERED = "DESTINATION_ENTERED"
 const val STARTING_POINT_ENTERED = "STARTING_POINT_ENTERED"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-    var destination_entered: String
+    var destinationEntered: String
         get() = savedStateHandle[DESTINATION_ENTERED] ?: ""
         set(value) = savedStateHandle.set(DESTINATION_ENTERED, value)
 
-    var starting_point_entered: String
+    var startingPointEntered: String
         get() = savedStateHandle[STARTING_POINT_ENTERED] ?: ""
         set(value) = savedStateHandle.set(STARTING_POINT_ENTERED, value)
 }
