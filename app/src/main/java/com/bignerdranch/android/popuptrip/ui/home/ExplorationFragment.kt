@@ -1,22 +1,27 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
-import android.content.Context
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context.*
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.view.inputmethod.InputMethodManager
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ListView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationBinding
@@ -35,7 +40,8 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.coroutines.launch
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 private const val TAG = "ExplorationFragment"
 class ExplorationFragment: Fragment(), OnMapReadyCallback {
@@ -59,8 +65,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var startingPointAddressInputEditText: TextInputEditText
     private lateinit var statingPointListView: ListView
+    private lateinit var currentLocation: Button
 
     private var StartingPointName = ""
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var lastLocation: Location? = null
+    private val permissionId = 2
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -78,6 +88,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        fusedLocationClient = activity?.let {
+            LocationServices
+                .getFusedLocationProviderClient(
+                    it
+                )
+        }
 
         return binding.root
     }
@@ -131,7 +147,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             statingPointListView.visibility = View.GONE
 
             // Hide the keyboard
-            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
 
             // Remove cursor
@@ -170,6 +186,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         }
+
+        currentLocation = view.findViewById(R.id.use_current_location_button)
+        currentLocation.setOnClickListener{
+            getLocation()
+        }
     }
 
     override fun onDestroyView() {
@@ -199,6 +220,77 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             if (exception is ApiException) {
                 Log.e(TAG, "Place not found: " + exception.statusCode)
             }
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager: LocationManager =
+            activity?.getSystemService(LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    private fun checkPermissions(): Boolean {
+        if (activity?.let {
+                ActivityCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            } == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+    private fun requestPermissions() {
+        activity?.let {
+            ActivityCompat.requestPermissions(
+                it,
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ),
+                permissionId
+            )
+        }
+    }
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == permissionId) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                getLocation()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission", "SetTextI18n")
+    private fun getLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                activity?.let {
+                    fusedLocationClient?.lastLocation!!.addOnSuccessListener(it) { lastLocation: Location ->
+                        if (lastLocation != null) {
+                            Log.d(TAG, "Current Latitude: " + (lastLocation).latitude)
+                            Log.d(TAG, "Current Longitude: " + (lastLocation).longitude)
+                        }
+                    }
+                }
+            } else {
+                Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }
+        } else {
+            requestPermissions()
         }
     }
 }
