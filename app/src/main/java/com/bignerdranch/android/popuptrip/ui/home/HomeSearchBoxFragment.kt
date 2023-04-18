@@ -1,28 +1,39 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ListView
 import androidx.fragment.app.Fragment
-import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
-import com.google.android.gms.common.api.Status
+import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
+import com.google.android.gms.common.api.ApiException
 import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
-import java.util.*
+
 
 private const val TAG = "HomeSearchBoxFragment"
+
 class HomeSearchBoxFragment: Fragment() {
     private var _binding: FragmentHomeSearchBoxBinding? = null
+    private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
+    private lateinit var addressInputEditText: TextInputEditText
+    private lateinit var listView: ListView
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -34,9 +45,10 @@ class HomeSearchBoxFragment: Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!Places.isInitialized()) {
-            Places.initialize(requireContext(), MAPS_API_KEY, Locale.US);
-        }
+//        if (!Places.isInitialized()) {
+//            Places.initialize(requireContext(), MAPS_API_KEY);
+//        }
+
         Log.d(TAG, "onCraete has been called")
 //        setHasOptionsMenu(true)
     }
@@ -56,31 +68,76 @@ class HomeSearchBoxFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val autocompleteFragment = childFragmentManager.findFragmentById(R.id.autocomplete_fragment)
-                as AutocompleteSupportFragment
+        addressInputEditText = view.findViewById(R.id.home_search_box)
+        listView = view.findViewById(R.id.autoCompleteListView)
 
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        val token = AutocompleteSessionToken.newInstance()
 
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.latLng}")
 
-                viewLifecycleOwner.lifecycleScope.launch {
-                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        findNavController().navigate(
-                            HomeFragmentDirections.homeToExplorationAction(place.toString())
-                        )
+        addressInputEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let { newText ->
+                    // Create a request for place predictions
+                    val request = FindAutocompletePredictionsRequest.builder()
+                        .setTypeFilter(TypeFilter.ADDRESS)
+                        .setSessionToken(token)
+                        .setQuery(newText.toString())
+                        .build()
+
+                    context?.let { context ->
+                        Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
+                            val predictions = response.autocompletePredictions
+                            autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
+                            listView.adapter = autoCompleteAdapter
+                            listView.visibility = View.VISIBLE
+                        }.addOnFailureListener { exception ->
+                            Log.i(TAG, "onTextChangedListener error")
+                        }
                     }
                 }
             }
 
-            override fun onError(status: Status) {
-                // TODO: Handle the error.
-                Log.i(TAG, "An error occurred: $status")
+            override fun afterTextChanged(s: Editable?) {
             }
         })
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedPrediction = autoCompleteAdapter.getItem(position)
+            addressInputEditText.setText(selectedPrediction?.getFullText(null))
+            listView.visibility = View.GONE
+
+            selectedPrediction?.placeId?.let { placeId ->
+
+                val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+                val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
+
+                context?.let { context ->
+                    Places.createClient(context).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
+                        val place = response.place
+                        Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.latLng}")
+                    }.addOnFailureListener { exception ->
+                        if (exception is ApiException) {
+                            Log.e(TAG, "Place not found: " + exception.statusCode)
+                        }
+                    }
+                }
+                // Launch navigation to exploration page
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        findNavController().navigate(
+                            HomeFragmentDirections.homeToExplorationAction(placeFields.toString())
+                        )
+                    }
+                }
+
+
+            }
+        }
+
     }
 
     override fun onDestroyView() {
@@ -88,8 +145,4 @@ class HomeSearchBoxFragment: Fragment() {
         _binding = null
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.home_search_box_menu, menu)
-//    }
 }
