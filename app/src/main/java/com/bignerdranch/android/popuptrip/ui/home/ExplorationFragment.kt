@@ -42,6 +42,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
 
 private const val TAG = "ExplorationFragment"
 class ExplorationFragment: Fragment(), OnMapReadyCallback {
@@ -69,7 +70,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private var StartingPointName = ""
     private var fusedLocationClient: FusedLocationProviderClient? = null
-    private var lastLocation: Location? = null
+    private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
 
     override fun onCreateView(
@@ -277,10 +278,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 activity?.let {
-                    fusedLocationClient?.lastLocation!!.addOnSuccessListener(it) { lastLocation: Location ->
-                        if (lastLocation != null) {
-                            Log.d(TAG, "Current Latitude: " + (lastLocation).latitude)
-                            Log.d(TAG, "Current Longitude: " + (lastLocation).longitude)
+                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)!!.addOnSuccessListener(it) { currentLocation: Location ->
+                        if (currentLocation != null) {
+                            Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
+                            Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
+                            currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
                         }
                     }
                 }
