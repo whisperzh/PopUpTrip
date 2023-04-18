@@ -107,7 +107,7 @@ class HomeSearchBoxFragment: Fragment() {
 
         listView.setOnItemClickListener { _, _, position, _ ->
             val selectedPrediction = autoCompleteAdapter.getItem(position)
-            addressInputEditText.setText(selectedPrediction?.getFullText(null))
+//            addressInputEditText.setText(selectedPrediction?.getFullText(null))
             listView.visibility = View.GONE
 
             selectedPrediction?.placeId?.let { placeId ->
