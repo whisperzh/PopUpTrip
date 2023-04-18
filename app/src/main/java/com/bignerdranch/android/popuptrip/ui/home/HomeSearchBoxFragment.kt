@@ -49,7 +49,7 @@ class HomeSearchBoxFragment: Fragment() {
 //            Places.initialize(requireContext(), MAPS_API_KEY);
 //        }
 
-        Log.d(TAG, "onCraete has been called")
+        Log.d(TAG, "Create has been called")
 //        setHasOptionsMenu(true)
     }
 
@@ -112,29 +112,30 @@ class HomeSearchBoxFragment: Fragment() {
 
             selectedPrediction?.placeId?.let { placeId ->
 
-                val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-                val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
-
-                context?.let { context ->
-                    Places.createClient(context).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
-                        val place = response.place
-                        Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.latLng}")
-                    }.addOnFailureListener { exception ->
-                        if (exception is ApiException) {
-                            Log.e(TAG, "Place not found: " + exception.statusCode)
-                        }
-                    }
-                }
+                Log.d(TAG, "Destination ID sent from home: $placeId")
                 // Launch navigation to exploration page
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                         findNavController().navigate(
-                            HomeFragmentDirections.homeToExplorationAction(placeFields.toString())
+                            HomeFragmentDirections.homeToExplorationAction(placeId)
                         )
                     }
                 }
 
-
+//                val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+//                val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
+//
+//                context?.let { context ->
+//                    Places.createClient(context).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
+//                        val place = response.place
+////                        Log.i(TAG, "Place: ${place.name}, ${place.id}, ${place.latLng}")
+//
+//                    }.addOnFailureListener { exception ->
+//                        if (exception is ApiException) {
+//                            Log.e(TAG, "Place not found: " + exception.statusCode)
+//                        }
+//                    }
+//                }
             }
         }
 

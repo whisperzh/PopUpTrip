@@ -7,32 +7,31 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationMapBinding
+import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 
 private const val TAG = "ExplorationMapFragment"
 
 class ExplorationMapFragment: Fragment(), OnMapReadyCallback {
     private var _binding: FragmentExplorationMapBinding? = null
+    private val explorationViewModel: ExplorationViewModel by viewModels()
     private lateinit var mMap: GoogleMap
-//    private val explorationMapViewModel: ExplorationMapViewModel by viewModels()
-//    private var latitudeDouble = explorationMapViewModel.latitude
-//    private var longitudeDouble = explorationMapViewModel.longitude
-//    private var placeName = explorationMapViewModel.destinationMap
 
-//    private var latitudeDouble = ExplorationFragment().getLat()
-//    private var longitudeDouble = ExplorationFragment().getLon()
-//    private var placeName = ExplorationFragment().getDest()
-
-    private var latitudeDouble = -34.0
-    private var longitudeDouble = 151.0
-    private var placeName = "Boston Logan International Airport"
+    private lateinit var DestinationId: String
+    private lateinit var DestPlace: Place
+    private lateinit var StartingPointId: String
+    private lateinit var StartPlace: Place
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -44,10 +43,17 @@ class ExplorationMapFragment: Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         _binding = FragmentExplorationMapBinding.inflate(inflater, container, false)
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -57,20 +63,20 @@ class ExplorationMapFragment: Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        Log.d(TAG, "LAT MAP: $latitudeDouble")
-        Log.d(TAG, "LON MAP: $longitudeDouble")
-        Log.d(TAG, "DESTINATION MAP: $placeName")
-        val destinationEntered = LatLng(latitudeDouble, longitudeDouble)
-        mMap.addMarker(MarkerOptions().position(destinationEntered).title(placeName))
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(destinationEntered))
-    }
 
-//    fun getLatLong(latitude: String, longitude: String, destPlaceName: String) {
-//        latitudeDouble = latitude.toDouble()
-//        longitudeDouble = longitude.toDouble()
-//        placeName = destPlaceName
-//        Log.d(TAG, "LAT DOUBLE: $latitudeDouble")
-//        Log.d(TAG, "LON DOUBLE: $longitudeDouble")
-//        Log.d(TAG, "DESTINATION NAME: $placeName")
-//    }
+        val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
+        val fetchPlaceRequest = FetchPlaceRequest.newInstance(DestinationId, placeFields)
+        Log.d(TAG, "DestinationId: $DestinationId")
+        Places.createClient(requireContext()).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
+            DestPlace = response.place
+            Log.i(TAG, "Place: ${DestPlace.name}, ${DestPlace.id}, ${DestPlace.latLng}")
+            mMap.addMarker(MarkerOptions().position(DestPlace.latLng).title(DestPlace.name))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DestPlace.latLng, 15f))
+
+        }.addOnFailureListener { exception ->
+            if (exception is ApiException) {
+                Log.e(TAG, "Place not found: " + exception.statusCode)
+            }
+        }
+    }
 }

@@ -21,7 +21,7 @@
         android:label="@string/title_exploration"
         tools:layout="@layout/fragment_exploration" >
         <argument
-            android:name="destination"
+            android:name="destinationPlaceId"
             app:argType="string" />
     </fragment>
 
