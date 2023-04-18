@@ -15,20 +15,31 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconDrawable="@drawable/ic_search"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/startingTextInputTextfield"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <ListView
+        android:id="@+id/explorationStartAutoCompleteListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/startingTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@id/startingTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/startingTextInputLayout"
+        android:visibility="gone" />
 
     <Button
         style="@style/Widget.Material3.Button.TextButton.Icon"
         android:id="@+id/use_current_location_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/startingTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/explorationStartAutoCompleteListView"
         app:layout_constraintLeft_toLeftOf="@id/startingTextInputLayout"
         app:icon="@drawable/ic_current_location"
         android:text="@string/use_current_location"/>
@@ -42,9 +53,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/use_current_location_button"
         app:startIconDrawable="@drawable/ic_add_location"
-        app:endIconMode="clear_text">
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/destTextInputTextfield"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

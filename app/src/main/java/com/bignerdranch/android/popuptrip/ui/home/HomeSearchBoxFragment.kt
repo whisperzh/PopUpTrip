@@ -33,7 +33,7 @@ class HomeSearchBoxFragment: Fragment() {
     private var _binding: FragmentHomeSearchBoxBinding? = null
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var addressInputEditText: TextInputEditText
-    private lateinit var listView: ListView
+    private lateinit var destListView: ListView
 
     private val binding
         get() = checkNotNull(_binding) {
@@ -69,7 +69,7 @@ class HomeSearchBoxFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         addressInputEditText = view.findViewById(R.id.home_search_box)
-        listView = view.findViewById(R.id.autoCompleteListView)
+        destListView = view.findViewById(R.id.autoCompleteListView)
 
         val token = AutocompleteSessionToken.newInstance()
 
@@ -92,9 +92,9 @@ class HomeSearchBoxFragment: Fragment() {
                         Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
                             val predictions = response.autocompletePredictions
                             autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                            listView.adapter = autoCompleteAdapter
-                            listView.visibility = View.VISIBLE
-                        }.addOnFailureListener { exception ->
+                            destListView.adapter = autoCompleteAdapter
+                            destListView.visibility = View.VISIBLE
+                        }.addOnFailureListener { _ ->
                             Log.i(TAG, "onTextChangedListener error")
                         }
                     }
@@ -105,10 +105,10 @@ class HomeSearchBoxFragment: Fragment() {
             }
         })
 
-        listView.setOnItemClickListener { _, _, position, _ ->
+        destListView.setOnItemClickListener { _, _, position, _ ->
             val selectedPrediction = autoCompleteAdapter.getItem(position)
 //            addressInputEditText.setText(selectedPrediction?.getFullText(null))
-            listView.visibility = View.GONE
+            destListView.visibility = View.GONE
 
             selectedPrediction?.placeId?.let { placeId ->
 
