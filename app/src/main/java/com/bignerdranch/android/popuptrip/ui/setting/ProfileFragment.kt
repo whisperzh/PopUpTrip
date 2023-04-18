@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
@@ -53,9 +54,9 @@ class ProfileFragment : Fragment() {
             }
         }
         val passwordButton = binding.changingPassword
-        passwordButton.setOnClickListener {
-            showChangePasswordDialog()
-        }
+        passwordButton.setOnClickListener (
+            Navigation.createNavigateOnClickListener(R.id.navigation_security,null)
+        )
         val imageButton=binding.imageButton
         imageButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -73,10 +74,10 @@ class ProfileFragment : Fragment() {
             ViewModelProvider(this).get(ProfileViewModel::class.java)
         val root: View = binding.root
 
-        val textView: TextView = binding.titleProfile
-        profileViewmodel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+    //    val textView: TextView = binding.titleProfile
+      //  profileViewmodel.text.observe(viewLifecycleOwner) {
+        //    textView.text = it
+        //}
         return root
     }
 
@@ -98,47 +99,6 @@ class ProfileFragment : Fragment() {
             outputStream.flush()
             outputStream.close()
         }
-    }
-    private fun showChangePasswordDialog(){
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
-        val oldPasswordEditText = dialogView.findViewById<EditText>(R.id.old_password_edit_text)
-        val newPasswordEditText = dialogView.findViewById<EditText>(R.id.new_password_edit_text)
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setTitle("Change Password")
-            .setPositiveButton("OK") { _, _ ->
-                // Handle password change
-                oldPassword = prefs.getString("password","Qaz123").toString() //need to same to previous, but not have data base yet
-                val newPassword = newPasswordEditText.text.toString()
-                val pattern =
-                    "^(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{6,}$".toRegex() //set the logic(one number&Uppercase)
-                if (oldPasswordEditText.text.toString().equals(oldPassword)) {//fit old password
-                    if (newPassword.matches(pattern)) {
-                        // password is valid, save to database
-                        prefs.edit().putString("password", newPassword).apply()//save to sharePref(need to implement encryption)
-                        oldPassword=newPassword
-                        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Password does not meet requirements",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }else{
-                    Toast.makeText(
-                        requireContext(),
-                        "Wrong Old Password",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .create()
-
-        dialog.show()
     }
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())

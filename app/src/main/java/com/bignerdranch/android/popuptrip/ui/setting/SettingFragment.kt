@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
     private var _binding: FragmentSettingBinding? = null
     private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
+    private lateinit var overlayout: FrameLayout
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -31,6 +33,7 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val position = prefs.getInt("SpinnerPosition", 0)
         val switchState = prefs.getBoolean("switchState", false)

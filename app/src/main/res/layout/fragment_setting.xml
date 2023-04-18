@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ui.setting.SettingFragment">
-
     <TextView
         android:id="@+id/text_setting"
         android:layout_width="match_parent"
@@ -37,6 +36,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/title_mode"
             android:textAlignment="gravity"
             android:textSize="25sp"
@@ -50,6 +50,7 @@
             android:layout_height="match_parent"
             android:textAlignment="viewEnd"
             android:text="@string/title_switch"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -68,6 +69,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/title_language"
             android:textAlignment="gravity"
             android:textSize="25sp"
@@ -80,6 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="48dp"
+
             android:spinnerMode="dialog"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -100,6 +103,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+
             android:textAlignment="gravity"
             android:textSize="25sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -111,6 +116,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             android:minHeight="48dp"
             android:src="@drawable/ic_profile_black_24dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -118,11 +124,12 @@
             android:contentDescription="@string/description_profile" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.appcompat.widget.AppCompatButton
+    <com.google.android.material.button.MaterialButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="124dp"
         android:text="@string/title_logout"
+        android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
