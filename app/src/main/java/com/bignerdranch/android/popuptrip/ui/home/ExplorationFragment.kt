@@ -26,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
@@ -48,9 +49,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var DestinationId: String
-//    private lateinit var DestPlace: Place
-//    private lateinit var StartingPointId: String
-//    private lateinit var StartPlace: Place
+    private lateinit var DestinationPlace: Place
+    private lateinit var StartingPointId: String
+    private lateinit var StartingPlace: Place
+
+    // information fields we want to fetch from Google Map API
+    private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
 
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var startingPointAddressInputEditText: TextInputEditText
@@ -131,20 +135,32 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             imm.hideSoftInputFromWindow(view.windowToken, 0)
 
             // Remove cursor
-            binding.startingTextInputTextfield.isCursorVisible = false
+//            binding.startingTextInputTextfield.isCursorVisible = false
 
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
-                val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-                val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
+                StartingPointId = placeId
+                val startFetchPlaceRequest = FetchPlaceRequest.newInstance(StartingPointId, placeFields)
 
                 context?.let { context ->
-                    Places.createClient(requireContext()).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
-                        val place = response.place
-                        StartingPointName = place.name
+                    Places.createClient(context).fetchPlace(startFetchPlaceRequest).addOnSuccessListener { response ->
+                        StartingPlace = response.place
+                        StartingPointName = StartingPlace.name
                         startingPointAddressInputEditText.setText(StartingPointName)
-                        Log.i(TAG, "Starting Point Selected: ${place.name}, ${place.id}, ${place.latLng}")
+                        Log.i(TAG, "Starting Point Selected: ${StartingPlace.name}, ${StartingPlace.id}, ${StartingPlace.latLng}")
+
+                        // Add markers of the starting point on the map
+                        val mapBounds = LatLngBounds(
+                            StartingPlace.latLng,
+                            DestinationPlace.latLng
+                        )
+
+                        mMap.addMarker(MarkerOptions()
+                            .position(StartingPlace.latLng)
+                            .title(StartingPlace.name))
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(StartingPlace.latLng, 15f))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
 
                     }.addOnFailureListener { exception ->
                         if (exception is ApiException) {
@@ -164,19 +180,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // information fields we want to fetch from Google Map API
-        val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
-        // create the fetch request
-        val fetchPlaceRequest = FetchPlaceRequest.newInstance(DestinationId, placeFields)
+        // create the fetch requests
+        val destFetchPlaceRequest = FetchPlaceRequest.newInstance(DestinationId, placeFields)
 
-        Places.createClient(requireContext()).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
-            val destPlace = response.place
-            Log.i(TAG, "Destination Place Selected: ${destPlace.name}, ${destPlace.id}, ${destPlace.latLng}")
+        // fetch destination place
+        Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
+            DestinationPlace = response.place
+            Log.i(TAG, "Destination Place Selected: ${DestinationPlace.name}, ${DestinationPlace.id}, ${DestinationPlace.latLng}")
 
-            binding.destTextInputTextfield.setText(destPlace.name)
+            binding.destTextInputTextfield.setText(DestinationPlace.name)
 
-            mMap.addMarker(MarkerOptions().position(destPlace.latLng).title(destPlace.name))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destPlace.latLng, 15f))
+            mMap.addMarker(MarkerOptions()
+                .position(DestinationPlace.latLng)
+                .title(DestinationPlace.name))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DestinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
             if (exception is ApiException) {
