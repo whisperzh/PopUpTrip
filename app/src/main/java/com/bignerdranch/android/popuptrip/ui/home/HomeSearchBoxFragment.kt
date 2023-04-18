@@ -35,6 +35,8 @@ class HomeSearchBoxFragment: Fragment() {
     private lateinit var addressInputEditText: TextInputEditText
     private lateinit var destListView: ListView
 
+    private var DestinationSelection = ""
+
     private val binding
         get() = checkNotNull(_binding) {
             "Cannot access binding because it is null. Is the view visible?"
@@ -81,35 +83,42 @@ class HomeSearchBoxFragment: Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    // Create a request for place predictions
-                    val request = FindAutocompletePredictionsRequest.builder()
-                        .setTypeFilter(TypeFilter.ADDRESS)
-                        .setSessionToken(token)
-                        .setQuery(newText.toString())
-                        .build()
+                    if (newText.toString()!=DestinationSelection){
+                        Log.d(TAG, "newText: $newText")
+                        // Create a request for place predictions
+                        val request = FindAutocompletePredictionsRequest.builder()
+                            .setTypeFilter(TypeFilter.ADDRESS)
+                            .setSessionToken(token)
+                            .setQuery(newText.toString())
+                            .build()
 
-                    context?.let { context ->
-                        Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
-                            val predictions = response.autocompletePredictions
-                            autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                            destListView.adapter = autoCompleteAdapter
-                            destListView.visibility = View.VISIBLE
-                        }.addOnFailureListener { exception ->
-                            Log.i(TAG, "onTextChangedListener error")
-                            Log.i(TAG, exception.toString())
+                        context?.let { context ->
+                            Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
+                                val predictions = response.autocompletePredictions
+                                autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
+                                destListView.adapter = autoCompleteAdapter
+                                destListView.visibility = View.VISIBLE
+                            }.addOnFailureListener { exception ->
+                                Log.i(TAG, "onTextChangedListener error")
+                                Log.i(TAG, exception.toString())
+                            }
                         }
                     }
                 }
             }
-
             override fun afterTextChanged(s: Editable?) {
             }
         })
 
         destListView.setOnItemClickListener { _, _, position, _ ->
             val selectedPrediction = autoCompleteAdapter.getItem(position)
+            DestinationSelection = selectedPrediction?.getFullText(null).toString()
+            addressInputEditText.setText(DestinationSelection)
 //            addressInputEditText.setText(selectedPrediction?.getFullText(null))
+
             destListView.visibility = View.GONE
+//            autoCompleteAdapter.clear()
+//            autoCompleteAdapter.notifyDataSetChanged()
 
             selectedPrediction?.placeId?.let { placeId ->
 

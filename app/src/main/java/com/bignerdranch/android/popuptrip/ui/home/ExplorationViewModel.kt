@@ -7,7 +7,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.android.libraries.places.api.model.Place
 
+const val DEST_NAME = "DEST_NAME"
 private const val TAG = "ExplorationViewModel"
-class ExplorationViewModel() : ViewModel() {
+class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+
+    private var destName: String
+        get() = savedStateHandle.get(DEST_NAME) ?: ""
+        set(value) = savedStateHandle.set(DEST_NAME, value)
+
 
 }

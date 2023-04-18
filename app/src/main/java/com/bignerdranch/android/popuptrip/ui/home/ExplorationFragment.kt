@@ -1,5 +1,7 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -54,6 +56,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var startingPointAddressInputEditText: TextInputEditText
     private lateinit var statingPointListView: ListView
 
+    private var StartingPointName = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -90,22 +94,24 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    // Create a request for place predictions
-                    val request = FindAutocompletePredictionsRequest.builder()
-                        .setTypeFilter(TypeFilter.ADDRESS)
-                        .setSessionToken(token)
-                        .setQuery(newText.toString())
-                        .build()
+                    if (newText.toString()!=StartingPointName){
+                        // Create a request for place predictions
+                        val request = FindAutocompletePredictionsRequest.builder()
+                            .setTypeFilter(TypeFilter.ADDRESS)
+                            .setSessionToken(token)
+                            .setQuery(newText.toString())
+                            .build()
 
-                    context?.let { context ->
-                        Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
-                            val predictions = response.autocompletePredictions
-                            autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                            statingPointListView.adapter = autoCompleteAdapter
-                            Log.i(TAG, "Visibility of listView is set to VISIBLE")
-                            statingPointListView.visibility = View.VISIBLE
-                        }.addOnFailureListener { _ ->
-                            Log.i(TAG, "onTextChangedListener error")
+                        context?.let { context ->
+                            Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
+                                val predictions = response.autocompletePredictions
+                                autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
+                                statingPointListView.adapter = autoCompleteAdapter
+                                Log.i(TAG, "Visibility of listView is set to VISIBLE")
+                                statingPointListView.visibility = View.VISIBLE
+                            }.addOnFailureListener { _ ->
+                                Log.i(TAG, "onTextChangedListener error")
+                            }
                         }
                     }
                 }
@@ -120,6 +126,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             Log.i(TAG, "Visibility of listView is set to GONE")
             statingPointListView.visibility = View.GONE
 
+            // Hide the keyboard
+            val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
@@ -127,9 +137,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
 
                 context?.let { context ->
-                    Places.createClient(context).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
+                    Places.createClient(requireContext()).fetchPlace(fetchPlaceRequest).addOnSuccessListener { response ->
                         val place = response.place
-                        startingPointAddressInputEditText.setText(place.name)
+                        StartingPointName = place.name
+                        startingPointAddressInputEditText.setText(StartingPointName)
                         Log.i(TAG, "Starting Point Selected: ${place.name}, ${place.id}, ${place.latLng}")
 
                     }.addOnFailureListener { exception ->
