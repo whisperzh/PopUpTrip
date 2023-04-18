@@ -94,8 +94,9 @@ class HomeSearchBoxFragment: Fragment() {
                             autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
                             destListView.adapter = autoCompleteAdapter
                             destListView.visibility = View.VISIBLE
-                        }.addOnFailureListener { _ ->
+                        }.addOnFailureListener { exception ->
                             Log.i(TAG, "onTextChangedListener error")
+                            Log.i(TAG, exception.toString())
                         }
                     }
                 }
