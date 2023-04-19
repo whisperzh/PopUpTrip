@@ -9,13 +9,27 @@
         android:id="@+id/navigation_home"
         android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/home_to_exploration_action"
+            app:destination="@id/navigation_exploration" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_exploration"
+        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
+        android:label="@string/title_exploration"
+        tools:layout="@layout/fragment_exploration" >
+        <argument
+            android:name="destinationPlaceId"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.ExplorationFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_exploration" />
+        tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_notifications"
@@ -34,5 +48,10 @@
         android:name="com.bignerdranch.android.popuptrip.ui.setting.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile"/>
+    <fragment
+        android:id="@+id/navigation_security"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.SecurityFragment"
+        android:label="@string/title_security"
+        tools:layout="@layout/fragment_security"/>
 
 </navigation>

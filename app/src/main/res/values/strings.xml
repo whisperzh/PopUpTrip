@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PopUpTrip</string>
     <string name="title_home">Home</string>
+    <string name="title_exploration">Exploration</string>
     <string name="title_nearby_places">Nearby Places</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_setting">Settings</string>
@@ -11,12 +12,13 @@
     <string name="title_logout">Log Out</string>
     <string name="description_profile">Go to Profile Page</string>
     <string name="change_name">Username: </string>
-    <string name="title_password">Password: </string>
-    <string name="change_password">Change Password</string>
-    <string name="title_photo">Photo: (Click to change)</string>
+    <string name="title_password">Security Option: </string>
+    <string name="change_password">Security</string>
+    <string name="title_photo">Photo: </string>
     <string name="description_photo">Click here to Change photo</string>
     <string name="title_save">Save</string>
     <string name="title_quit">Quit</string>
+    <string name="title_security">Security Option</string>
     <string name="title_notifications">Notifications</string>
     <string name="searchbar_hint">Enter destination</string>
     <string name="home_search_box_content">Search Bar Enter Destination</string>
@@ -75,4 +77,5 @@
     <string name="signInTxt">Sign In</string>
     <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
     <string name="title_exploration_page">Exploration Page</string>
+    <string name="current_location_title">Your Location</string>
 </resources>

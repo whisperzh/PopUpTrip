@@ -15,4 +15,5 @@
     <color name="brown_theme_dark">#A58854</color>
     <color name="forest_green">#228B22</color>
     <color name="light_green_active_indicator">#C8DBB4</color>
+    <color name="half_transparent_black">#80000000</color>
 </resources>
