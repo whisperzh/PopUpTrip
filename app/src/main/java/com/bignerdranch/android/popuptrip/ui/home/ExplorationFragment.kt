@@ -19,10 +19,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationBinding
 import com.google.android.gms.common.api.ApiException
@@ -43,6 +49,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
+import com.google.android.gms.maps.model.PolylineOptions
+import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
 
@@ -184,6 +192,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             .title(StartingPlace.name))
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
 
+                        getDirections()
                     }.addOnFailureListener { exception ->
                         if (exception is ApiException) {
                             Log.e(TAG, "Place not found: " + exception.statusCode)
@@ -323,5 +332,37 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val N_bound = max(StartLatLng.latitude, DestLatLng.latitude)
         val E_bound = max(StartLatLng.longitude, DestLatLng.longitude)
         return LatLng(N_bound, E_bound)
+    }
+
+    private fun getDirections() {
+        val travelMode = "DRIVING"
+        val path: MutableList<List<LatLng>> = ArrayList()
+        val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                StartingPlace.latLng.latitude.toString() + "," +
+                StartingPlace.latLng.longitude.toString() +
+                "&destination=" + DestinationPlace.latLng.latitude.toString() + "," +
+                DestinationPlace.latLng.longitude.toString() +
+                "&travelMode=" + travelMode +
+                "&key=" + MAPS_API_KEY
+
+        val directionsRequest = object : StringRequest(Request.Method.GET, urlDirections, Response.Listener<String> {
+                response ->
+            val jsonResponse = JSONObject(response)
+            // Get routes
+            val routes = jsonResponse.getJSONArray("routes")
+            val legs = routes.getJSONObject(0).getJSONArray("legs")
+            val steps = legs.getJSONObject(0).getJSONArray("steps")
+            for (i in 0 until steps.length()) {
+                val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                path.add(PolyUtil.decode(points))
+            }
+            for (i in 0 until path.size) {
+                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(android.graphics.Color.BLUE))
+            }
+        }, Response.ErrorListener {
+                _ ->
+        }){}
+        val requestQueue = Volley.newRequestQueue(activity)
+        requestQueue.add(directionsRequest)
     }
 }
