@@ -43,6 +43,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
+import java.lang.Double.max
+import java.lang.Double.min
 
 private const val TAG = "ExplorationFragment"
 class ExplorationFragment: Fragment(), OnMapReadyCallback {
@@ -173,8 +175,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                         // Add markers of the starting point on the map
                         val mapBounds = LatLngBounds(
-                            StartingPlace.latLng,
-                            DestinationPlace.latLng
+                            getSWBound(StartingPlace.latLng, DestinationPlace.latLng),
+                            getNEBound(StartingPlace.latLng, DestinationPlace.latLng)
                         )
 
                         mMap.addMarker(MarkerOptions()
@@ -289,8 +291,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             // Add markers of the current location on the map
                             val mapBounds = LatLngBounds(
-                                currentLocationLatLng,
-                                DestinationPlace.latLng
+                                getSWBound(currentLocationLatLng, DestinationPlace.latLng),
+                                getNEBound(currentLocationLatLng, DestinationPlace.latLng)
                             )
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
@@ -309,5 +311,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         } else {
             requestPermissions()
         }
+    }
+
+    private fun getSWBound(StartLatLng: LatLng, DestLatLng: LatLng): LatLng{
+        val S_bound = min(StartLatLng.latitude, DestLatLng.latitude)
+        val W_bound = min(StartLatLng.longitude, DestLatLng.longitude)
+        return LatLng(S_bound, W_bound)
+    }
+
+    private fun getNEBound(StartLatLng: LatLng, DestLatLng: LatLng): LatLng{
+        val N_bound = max(StartLatLng.latitude, DestLatLng.latitude)
+        val E_bound = max(StartLatLng.longitude, DestLatLng.longitude)
+        return LatLng(N_bound, E_bound)
     }
 }
