@@ -17,7 +17,9 @@
     <string name="description_photo">Click here to Change photo</string>
     <string name="title_save">Save</string>
     <string name="title_quit">Quit</string>
-    <string name="title_security">Security Option</string>
+    <string name="title_star">Star Places: </string>
+    <string name="star_button">Star</string>
+    <string name="title_method">Travel Method: </string>
     <string name="title_notifications">Notifications</string>
     <string name="searchbar_hint">Enter destination</string>
     <string name="home_search_box_content">Search Bar Enter Destination</string>
