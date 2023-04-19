@@ -63,11 +63,13 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
 
+    // autocomplete input textfields setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var startingPointAddressInputEditText: TextInputEditText
     private lateinit var statingPointListView: ListView
     private lateinit var currentLocation: Button
 
+    // current location button setup
     private var StartingPointName = ""
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
@@ -87,8 +89,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
+        // launch the support map fragment
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
         fusedLocationClient = activity?.let {
             LocationServices
                 .getFusedLocationProviderClient(
@@ -176,7 +180,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         mMap.addMarker(MarkerOptions()
                             .position(StartingPlace.latLng)
                             .title(StartingPlace.name))
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(StartingPlace.latLng, 15f))
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
 
                     }.addOnFailureListener { exception ->
@@ -283,6 +286,18 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
+
+                            // Add markers of the current location on the map
+                            val mapBounds = LatLngBounds(
+                                currentLocationLatLng,
+                                DestinationPlace.latLng
+                            )
+                            mMap.addMarker(MarkerOptions()
+                                .position(currentLocationLatLng)
+                                .title("Your Location"))
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
+
+                            binding.startingTextInputTextfield.setText("Your Location")
                         }
                     }
                 }
