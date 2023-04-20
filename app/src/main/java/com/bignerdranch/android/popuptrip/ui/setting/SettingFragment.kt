@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
     private var _binding: FragmentSettingBinding? = null
     private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
+    private lateinit var overlayout: FrameLayout
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -31,13 +33,16 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val position = prefs.getInt("SpinnerPosition", 0)
         val switchState = prefs.getBoolean("switchState", false)
         binding.themeSwitch.isChecked = switchState
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter//bind the adapter
+        binding.spinner.setSelection(position)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>,
@@ -68,8 +73,10 @@ class SettingFragment : Fragment() {
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).apply()
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
             }
         }
         val profileButton = binding.profileButton
@@ -92,7 +99,9 @@ class SettingFragment : Fragment() {
 
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()
+        prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
+        prefs.edit().putInt("mode", AppCompatDelegate.getDefaultNightMode()).apply()//save the mode
+        prefs.edit().putInt("SpinnerPosition", binding.spinner.selectedItemPosition).apply()//save spinner position
         super.onDestroyView()
         _binding = null
     }

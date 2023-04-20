@@ -5,11 +5,13 @@ import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.bignerdranch.android.popuptrip.databinding.ActivityLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -29,6 +31,9 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding= ActivityLoginBinding.inflate(layoutInflater)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
         setContentView(binding.root)
         binding.LoginButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
