@@ -31,7 +31,7 @@ class ProfileFragment : Fragment() {
     private val PICK_IMAGE_REQUEST_CODE=1
     private var save=false
     var text=""
-    private val dataList =  listOf("Walk","Public","Drive","Cycling")
+    private val dataList =  listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
