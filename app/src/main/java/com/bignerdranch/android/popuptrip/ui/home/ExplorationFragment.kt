@@ -334,15 +334,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun getSWBound(StartLatLng: LatLng, DestLatLng: LatLng): LatLng{
-        val S_bound = min(StartLatLng.latitude, DestLatLng.latitude)
-        val W_bound = min(StartLatLng.longitude, DestLatLng.longitude)
-        return LatLng(S_bound, W_bound)
+        val sBound = min(StartLatLng.latitude, DestLatLng.latitude)
+        val wBound = min(StartLatLng.longitude, DestLatLng.longitude)
+        return LatLng(sBound, wBound)
     }
 
     private fun getNEBound(StartLatLng: LatLng, DestLatLng: LatLng): LatLng{
-        val N_bound = max(StartLatLng.latitude, DestLatLng.latitude)
-        val E_bound = max(StartLatLng.longitude, DestLatLng.longitude)
-        return LatLng(N_bound, E_bound)
+        val nBound = max(StartLatLng.latitude, DestLatLng.latitude)
+        val eBound = max(StartLatLng.longitude, DestLatLng.longitude)
+        return LatLng(nBound, eBound)
     }
 
     // get route from startingPlace to destinationPlace
@@ -351,6 +351,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val travelModes = listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
         val travelModeInt = prefs.getInt("SpinnerPosition", 2)
         val travelMode = travelModes[travelModeInt]
+        var maxSWBounds: LatLng
+        var maxNEBounds: LatLng
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
@@ -372,11 +374,30 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val steps = legs.getJSONObject(0).getJSONArray("steps")
             for (i in 0 until steps.length()) {
                 val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+//                Log.d(TAG, PolyUtil.decode(points).toString())
                 path.add(PolyUtil.decode(points))
             }
+            if (currentLocationLatLng == null) {
+                maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
+                maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
+            } else {
+                maxSWBounds = getSWBound(startingPlace.latLng, destinationPlace.latLng)
+                maxNEBounds = getNEBound(startingPlace.latLng, destinationPlace.latLng)
+            }
+
             for (i in 0 until path.size) {
                 mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+
+                for (j in 0 until path[i].size) {
+//                    Log.d(TAG, "Path[i][j]: " + path[i][j])
+//                    Log.d(TAG, "Type: " + path[i][j]::class.java.typeName)
+                    maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                    maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                }
             }
+
+            val mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
         }, Response.ErrorListener {
                 _ ->
         }){}
