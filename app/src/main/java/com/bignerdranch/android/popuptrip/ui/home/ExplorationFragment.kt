@@ -13,6 +13,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.view.inputmethod.InputMethodManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -346,19 +347,25 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // get route from startingPlace to destinationPlace
     private fun getDirections() {
-        val travelMode = "DRIVING"
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val travelModes = listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
+        val travelModeInt = prefs.getInt("SpinnerPosition", 2)
+        val travelMode = travelModes[travelModeInt]
+        Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 currentLocationLatLng.latitude.toString() + "," +
                 currentLocationLatLng.longitude.toString() +
                 "&destination=" + destinationPlace.latLng.latitude.toString() + "," +
                 destinationPlace.latLng.longitude.toString() +
-                "&travelMode=" + travelMode +
+                "&mode=" + travelMode.lowercase() +
                 "&key=" + MAPS_API_KEY
+        Log.d(TAG, "url: $urlDirections")
 
-        val directionsRequest = object : StringRequest(Request.Method.GET, urlDirections, Response.Listener<String> {
+        val directionsRequest = object : StringRequest(Method.GET, urlDirections, Response.Listener {
                 response ->
             val jsonResponse = JSONObject(response)
+            Log.d(TAG, "Response: $jsonResponse")
             // Get routes
             val routes = jsonResponse.getJSONArray("routes")
             val legs = routes.getJSONObject(0).getJSONArray("legs")
