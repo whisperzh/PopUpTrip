@@ -2,9 +2,12 @@ package com.bignerdranch.android.popuptrip.ui.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Context.*
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.location.Location
 import android.location.LocationManager
 import android.view.inputmethod.InputMethodManager
@@ -19,8 +22,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
@@ -36,9 +41,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
@@ -49,7 +51,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
@@ -189,8 +191,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                         mMap.addMarker(MarkerOptions()
                             .position(StartingPlace.latLng)
-                            .title(StartingPlace.name))
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
+                            .title(StartingPlace.name)
+                            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                         getDirections()
                     }.addOnFailureListener { exception ->
@@ -228,7 +231,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             mMap.addMarker(MarkerOptions()
                 .position(DestinationPlace.latLng)
-                .title(DestinationPlace.name))
+                .title(DestinationPlace.name)
+                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DestinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
@@ -305,8 +309,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             )
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
-                                .title("Your Location"))
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 120))
+                                .title("Your Location")
+                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                             binding.startingTextInputTextfield.setText("Your Location")
                         }
@@ -364,5 +369,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }){}
         val requestQueue = Volley.newRequestQueue(activity)
         requestQueue.add(directionsRequest)
+    }
+
+    // helper function for converting the starting point marker on displayed on the map
+    fun vectorToBitmapDescriptor(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId)
+        val bitmap = Bitmap.createBitmap(vectorDrawable!!.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
