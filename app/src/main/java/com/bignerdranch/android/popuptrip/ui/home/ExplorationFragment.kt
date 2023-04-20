@@ -67,10 +67,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //    private val explorationViewModel: ExplorationViewModel by viewModels()
 
     private lateinit var mMap: GoogleMap
-    private lateinit var DestinationId: String
-    private lateinit var DestinationPlace: Place
-    private lateinit var StartingPointId: String
-    private lateinit var StartingPlace: Place
+    private lateinit var destinationId: String
+    private lateinit var destinationPlace: Place
+    private lateinit var startingPointId: String
+    private lateinit var startingPlace: Place
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -80,9 +80,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var startingPointAddressInputEditText: TextInputEditText
     private lateinit var statingPointListView: ListView
     private lateinit var currentLocation: Button
+    private var startingPointName = ""  // for making the autocomplete list disappear after click
 
     // current location button setup
-    private var StartingPointName = ""
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
@@ -96,8 +96,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
         // input arguments from navigation
-        DestinationId = args.destinationPlaceId
-        Log.d(TAG, "Destination ID received in exploration: $DestinationId")
+        destinationId = args.destinationPlaceId
+        Log.d(TAG, "Destination ID received in exploration: $destinationId")
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
@@ -131,7 +131,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    if (newText.toString()!=StartingPointName){
+                    if (newText.toString()!=startingPointName){
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
                             .setTypeFilter(TypeFilter.ADDRESS)
@@ -173,25 +173,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
-                StartingPointId = placeId
-                val startFetchPlaceRequest = FetchPlaceRequest.newInstance(StartingPointId, placeFields)
+                startingPointId = placeId
+                val startFetchPlaceRequest = FetchPlaceRequest.newInstance(startingPointId, placeFields)
 
                 context?.let { context ->
                     Places.createClient(context).fetchPlace(startFetchPlaceRequest).addOnSuccessListener { response ->
-                        StartingPlace = response.place
-                        StartingPointName = StartingPlace.name
-                        startingPointAddressInputEditText.setText(StartingPointName)
-                        Log.i(TAG, "Starting Point Selected: ${StartingPlace.name}, ${StartingPlace.id}, ${StartingPlace.latLng}")
+                        startingPlace = response.place
+                        startingPointName = startingPlace.name
+                        currentLocationLatLng = startingPlace.latLng
+                        startingPointAddressInputEditText.setText(startingPointName)
+                        Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
 
                         // Add markers of the starting point on the map
                         val mapBounds = LatLngBounds(
-                            getSWBound(StartingPlace.latLng, DestinationPlace.latLng),
-                            getNEBound(StartingPlace.latLng, DestinationPlace.latLng)
+                            getSWBound(startingPlace.latLng, destinationPlace.latLng),
+                            getNEBound(startingPlace.latLng, destinationPlace.latLng)
                         )
 
                         mMap.addMarker(MarkerOptions()
-                            .position(StartingPlace.latLng)
-                            .title(StartingPlace.name)
+                            .position(startingPlace.latLng)
+                            .title(startingPlace.name)
                             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
@@ -220,20 +221,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mMap = googleMap
 
         // create the fetch requests
-        val destFetchPlaceRequest = FetchPlaceRequest.newInstance(DestinationId, placeFields)
+        val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
 
         // fetch destination place
         Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
-            DestinationPlace = response.place
-            Log.i(TAG, "Destination Place Selected: ${DestinationPlace.name}, ${DestinationPlace.id}, ${DestinationPlace.latLng}")
+            destinationPlace = response.place
+            Log.i(TAG, "Destination Place Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
-            binding.destTextInputTextfield.setText(DestinationPlace.name)
+            binding.destTextInputTextfield.setText(destinationPlace.name)
 
             mMap.addMarker(MarkerOptions()
-                .position(DestinationPlace.latLng)
-                .title(DestinationPlace.name)
+                .position(destinationPlace.latLng)
+                .title(destinationPlace.name)
                 .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(DestinationPlace.latLng, 15f))
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
             if (exception is ApiException) {
@@ -304,8 +305,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             // Add markers of the current location on the map
                             val mapBounds = LatLngBounds(
-                                getSWBound(currentLocationLatLng, DestinationPlace.latLng),
-                                getNEBound(currentLocationLatLng, DestinationPlace.latLng)
+                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
+                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
                             )
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
@@ -339,14 +340,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         return LatLng(N_bound, E_bound)
     }
 
+    // get route from startingPlace to destinationPlace
     private fun getDirections() {
         val travelMode = "DRIVING"
         val path: MutableList<List<LatLng>> = ArrayList()
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                StartingPlace.latLng.latitude.toString() + "," +
-                StartingPlace.latLng.longitude.toString() +
-                "&destination=" + DestinationPlace.latLng.latitude.toString() + "," +
-                DestinationPlace.latLng.longitude.toString() +
+                currentLocationLatLng.latitude.toString() + "," +
+                currentLocationLatLng.longitude.toString() +
+                "&destination=" + destinationPlace.latLng.latitude.toString() + "," +
+                destinationPlace.latLng.longitude.toString() +
                 "&travelMode=" + travelMode +
                 "&key=" + MAPS_API_KEY
 
