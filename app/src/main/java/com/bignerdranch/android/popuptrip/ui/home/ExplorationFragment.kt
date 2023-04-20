@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color.*
 import android.location.Location
 import android.location.LocationManager
 import android.view.inputmethod.InputMethodManager
@@ -23,6 +24,7 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.ui.graphics.Color
 import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -152,6 +154,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         }
                     }
                 }
+
+                mMap.clear()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -364,7 +368,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 path.add(PolyUtil.decode(points))
             }
             for (i in 0 until path.size) {
-                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(android.graphics.Color.BLUE))
+                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
             }
         }, Response.ErrorListener {
                 _ ->
