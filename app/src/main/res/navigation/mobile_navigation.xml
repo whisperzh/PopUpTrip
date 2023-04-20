@@ -48,10 +48,5 @@
         android:name="com.bignerdranch.android.popuptrip.ui.setting.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile"/>
-    <fragment
-        android:id="@+id/navigation_security"
-        android:name="com.bignerdranch.android.popuptrip.ui.setting.SecurityFragment"
-        android:label="@string/title_security"
-        tools:layout="@layout/fragment_security"/>
 
 </navigation>
