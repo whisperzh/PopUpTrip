@@ -169,13 +169,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
-                    } else if (newText.toString() == "Your Location" && startingPointName != "") {
+                    } else if (newText.toString() == "Your Location" && startingPointName != "" && startingPointName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
                         polyline.remove()
+                        startingPointName = "Your Location"
                         getLocation()
-//                        getDirections()
+                        getDirections()
                     } else if (newText.toString() == "Your Location" && startingPointName == "") {
                         Log.d(TAG, "Start point set to current location")
+                        startingPointName = "Your Location"
                         getLocation()
                         getDirections()
                     } else {
@@ -344,8 +346,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             getLocation()
             if (this::currentLocationLatLng.isInitialized) {
                 getDirections()
-            } else {
-                Toast.makeText(activity, "Unable to get current location", Toast.LENGTH_LONG).show()
             }
         }
 
