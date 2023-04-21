@@ -70,6 +70,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //    private val explorationViewModel: ExplorationViewModel by viewModels()
 
     private lateinit var mMap: GoogleMap
+    private lateinit var mapBounds: LatLngBounds
     private lateinit var destinationId: String
     private lateinit var destinationPlace: Place
     private lateinit var startingPointId: String
@@ -199,18 +200,18 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPointAddressInputEditText.setText(startingPointName)
                         Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
 
-                        // Add markers of the starting point on the map
-                        val mapBounds = LatLngBounds(
-                            getSWBound(startingPlace.latLng, destinationPlace.latLng),
-                            getNEBound(startingPlace.latLng, destinationPlace.latLng)
-                        )
+//                        // Add markers of the starting point on the map
+//                        val mapBounds = LatLngBounds(
+//                            getSWBound(startingPlace.latLng, destinationPlace.latLng),
+//                            getNEBound(startingPlace.latLng, destinationPlace.latLng)
+//                        )
 
                         mMap.addMarker(MarkerOptions()
                             .position(startingPlace.latLng)
                             .title(startingPlace.name)
                             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
 
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+//                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                         getDirections()
 
@@ -502,7 +503,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     }
                 }
 
-                val mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
             }
         }, Response.ErrorListener {
@@ -527,5 +528,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             .position(destinationPlace.latLng)
             .title(destinationPlace.name)
             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+    }
+
+    private fun resizeMapView(){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
     }
 }
