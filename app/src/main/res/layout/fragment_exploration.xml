@@ -92,6 +92,7 @@
         app:layout_constraintTop_toTopOf="@id/map"
         android:layout_margin="16dp"
         android:contentDescription="@string/adjust_map_bound_title"
+        app:backgroundTint="@color/brown_theme"
         app:srcCompat="@drawable/ic_map_bound_focus" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -103,6 +104,7 @@
         android:layout_marginBottom="32dp"
         android:layout_marginLeft="16dp"
         android:text="@string/back_button"
+        app:backgroundTint="@color/brown_theme"
         app:srcCompat="@drawable/ic_map_back_arrow"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -113,6 +115,7 @@
         app:layout_constraintBottom_toBottomOf="@id/map"
         android:layout_marginBottom="32dp"
         android:layout_marginRight="16dp"
+        app:backgroundTint="@color/brown_theme"
         android:text="@string/next_button"
         app:srcCompat="@drawable/ic_map_next_arrow"/>
 

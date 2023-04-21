@@ -173,9 +173,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         Log.d(TAG, "Start point changed to current location")
                         polyline.remove()
                         getLocation()
-                        getDirections()
-
-                    } else if (newText.toString() == "Your Location") {
+//                        getDirections()
+                    } else if (newText.toString() == "Your Location" && startingPointName == "") {
                         Log.d(TAG, "Start point set to current location")
                         getLocation()
                         getDirections()
