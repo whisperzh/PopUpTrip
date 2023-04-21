@@ -463,36 +463,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             markDestination()
 
                             binding.startingTextInputTextfield.setText("Your Location")
-                        } else {
-                            Log.d(TAG, "currentLocation is null")
                         }
                     }
-//                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)?.addOnSuccessListener(it) { currentLocation: Location ->
-//                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)!!.addOnSuccessListener(it) { currentLocation: Location ->
-//                        Log.d(TAG, "Get Current Location: $currentLocation")
-//                        if (currentLocation != null) {
-//                            Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
-//                            Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
-//                            currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
-//
-////                            // Add markers of the current location on the map
-////                            val mapBounds = LatLngBounds(
-////                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
-////                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
-////                            )
-//
-//                            mMap.addMarker(MarkerOptions()
-//                                .position(currentLocationLatLng)
-//                                .title("Your Location")
-//                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
-//
-//                            markDestination()
-//
-////                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-//
-//                            binding.startingTextInputTextfield.setText("Your Location")
-//                        }
-//                    }
                 }
             } else {
                 Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
