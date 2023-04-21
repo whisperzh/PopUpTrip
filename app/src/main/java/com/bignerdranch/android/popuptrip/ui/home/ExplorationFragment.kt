@@ -70,11 +70,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //    private val explorationViewModel: ExplorationViewModel by viewModels()
 
     private lateinit var mMap: GoogleMap
+    // FOLLOWING VARIABLES NEED TO BE STORED IN VIEWMODEL
     private lateinit var mapBounds: LatLngBounds
     private lateinit var destinationId: String
     private lateinit var destinationPlace: Place
     private lateinit var startingPointId: String
     private lateinit var startingPlace: Place
+    private var startingPointName = ""  // for making the autocomplete list disappear after click
+    private var destinationName = ""
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -86,8 +89,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var destinationAddressInputEditText: TextInputEditText
     private lateinit var destinationListView: ListView
     private lateinit var currentLocation: Button
-    private var startingPointName = ""  // for making the autocomplete list disappear after click
-    private var destinationName = ""
 
     // current location button setup
     private var fusedLocationClient: FusedLocationProviderClient? = null
@@ -104,7 +105,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         // input arguments from navigation
         destinationId = args.destinationPlaceId
-        Log.d(TAG, "Destination ID received in exploration: $destinationId")
+        Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
@@ -236,8 +237,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
 
-                    Log.d(TAG, "destination onTextChanged is triggered")
                     if (newText.toString()!=destinationName){
+                        Log.d(TAG, "destinationName: $destinationName")
+                        Log.d(TAG, "new string entered: ${newText.toString()}")
+                        Log.d(TAG, "destination onTextChanged is triggered")
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
                             .setTypeFilter(TypeFilter.ADDRESS)
