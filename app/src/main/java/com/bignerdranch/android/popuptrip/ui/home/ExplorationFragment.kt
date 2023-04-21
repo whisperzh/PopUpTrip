@@ -338,8 +338,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         // current location button implementation
-        currentLocation = view.findViewById(R.id.use_current_location_button)
-        currentLocation.setOnClickListener {
+        binding.useCurrentLocationButton.setOnClickListener{
             Log.d(TAG, "Current Location selected")
             // to clear any previously selected locations
             mMap.clear()
@@ -349,6 +348,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             } else {
                 Toast.makeText(activity, "Unable to get current location", Toast.LENGTH_LONG).show()
             }
+        }
+
+        binding.adjustMapBoundButton.setOnClickListener{
+            resizeMapView()
         }
     }
 
@@ -460,8 +463,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             markDestination()
 
                             binding.startingTextInputTextfield.setText("Your Location")
+                        } else {
+                            Log.d(TAG, "currentLocation is null")
                         }
-
                     }
 //                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)?.addOnSuccessListener(it) { currentLocation: Location ->
 //                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)!!.addOnSuccessListener(it) { currentLocation: Location ->
