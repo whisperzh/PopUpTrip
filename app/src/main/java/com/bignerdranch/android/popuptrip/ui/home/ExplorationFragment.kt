@@ -82,8 +82,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var startingPointAddressInputEditText: TextInputEditText
     private lateinit var statingPointListView: ListView
+    private lateinit var destinationAddressInputEditText: TextInputEditText
+    private lateinit var destinationListView: ListView
     private lateinit var currentLocation: Button
     private var startingPointName = ""  // for making the autocomplete list disappear after click
+    private var destinationName = ""
 
     // current location button setup
     private var fusedLocationClient: FusedLocationProviderClient? = null
@@ -156,14 +159,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     }
                 }
 
-                mMap.clear()
+//                mMap.clear()
             }
 
             override fun afterTextChanged(s: Editable?) {
             }
         })
 
+        // starting point selected from the list
         statingPointListView.setOnItemClickListener { _, _, position, _ ->
+
+            // to clear any previously selected locations
+            mMap.clear()
+            markDestination()
             val selectedPrediction = autoCompleteAdapter.getItem(position)
             Log.i(TAG, "Visibility of listView is set to GONE")
             statingPointListView.visibility = View.GONE
@@ -199,9 +207,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             .position(startingPlace.latLng)
                             .title(startingPlace.name)
                             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+
                         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                         getDirections()
+
                     }.addOnFailureListener { exception ->
                         if (exception is ApiException) {
                             Log.e(TAG, "Place not found: " + exception.statusCode)
@@ -211,9 +221,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
+        // current location button implementation
         currentLocation = view.findViewById(R.id.use_current_location_button)
         currentLocation.setOnClickListener{
+            // to clear any previously selected locations
+            mMap.clear()
+            markDestination()
             getLocation()
+            getDirections()
         }
     }
 
@@ -235,10 +250,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             binding.destTextInputTextfield.setText(destinationPlace.name)
 
-            mMap.addMarker(MarkerOptions()
-                .position(destinationPlace.latLng)
-                .title(destinationPlace.name)
-                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+//            mMap.addMarker(MarkerOptions()
+//                .position(destinationPlace.latLng)
+//                .title(destinationPlace.name)
+//                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+            markDestination()
+
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
@@ -317,6 +334,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 .position(currentLocationLatLng)
                                 .title("Your Location")
                                 .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+
                             mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                             binding.startingTextInputTextfield.setText("Your Location")
@@ -381,14 +399,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     //                Log.d(TAG, PolyUtil.decode(points).toString())
                     path.add(PolyUtil.decode(points))
                 }
-                if (currentLocationLatLng == null) {
-                    maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
-                    maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
-                } else {
-                    maxSWBounds = getSWBound(startingPlace.latLng, destinationPlace.latLng)
-                    maxNEBounds = getNEBound(startingPlace.latLng, destinationPlace.latLng)
-                }
+                maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
+                maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
 
+                // modify map bounds to include the route
                 for (i in 0 until path.size) {
                     mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
 
@@ -411,12 +425,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     // helper function for converting the starting point marker on displayed on the map
-    fun vectorToBitmapDescriptor(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
+    private fun vectorToBitmapDescriptor(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId)
         val bitmap = Bitmap.createBitmap(vectorDrawable!!.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable.setBounds(0, 0, canvas.width, canvas.height)
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    private fun markDestination(){
+        mMap.addMarker(MarkerOptions()
+            .position(destinationPlace.latLng)
+            .title(destinationPlace.name)
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
     }
 }
