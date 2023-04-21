@@ -368,36 +368,41 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 response ->
             val jsonResponse = JSONObject(response)
             Log.d(TAG, "Response: $jsonResponse")
-            // Get routes
-            val routes = jsonResponse.getJSONArray("routes")
-            val legs = routes.getJSONObject(0).getJSONArray("legs")
-            val steps = legs.getJSONObject(0).getJSONArray("steps")
-            for (i in 0 until steps.length()) {
-                val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-//                Log.d(TAG, PolyUtil.decode(points).toString())
-                path.add(PolyUtil.decode(points))
-            }
-            if (currentLocationLatLng == null) {
-                maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
-                maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
+            val status = jsonResponse.getString("status")
+            if (status == "ZERO_RESULTS") {
+                Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
             } else {
-                maxSWBounds = getSWBound(startingPlace.latLng, destinationPlace.latLng)
-                maxNEBounds = getNEBound(startingPlace.latLng, destinationPlace.latLng)
-            }
-
-            for (i in 0 until path.size) {
-                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-
-                for (j in 0 until path[i].size) {
-//                    Log.d(TAG, "Path[i][j]: " + path[i][j])
-//                    Log.d(TAG, "Type: " + path[i][j]::class.java.typeName)
-                    maxSWBounds = getSWBound(maxSWBounds, path[i][j])
-                    maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                // Get routes
+                val routes = jsonResponse.getJSONArray("routes")
+                val legs = routes.getJSONObject(0).getJSONArray("legs")
+                val steps = legs.getJSONObject(0).getJSONArray("steps")
+                for (i in 0 until steps.length()) {
+                    val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+    //                Log.d(TAG, PolyUtil.decode(points).toString())
+                    path.add(PolyUtil.decode(points))
                 }
-            }
+                if (currentLocationLatLng == null) {
+                    maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
+                    maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
+                } else {
+                    maxSWBounds = getSWBound(startingPlace.latLng, destinationPlace.latLng)
+                    maxNEBounds = getNEBound(startingPlace.latLng, destinationPlace.latLng)
+                }
 
-            val mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                for (i in 0 until path.size) {
+                    mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+
+                    for (j in 0 until path[i].size) {
+    //                    Log.d(TAG, "Path[i][j]: " + path[i][j])
+    //                    Log.d(TAG, "Type: " + path[i][j]::class.java.typeName)
+                        maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                        maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                    }
+                }
+
+                val mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+            }
         }, Response.ErrorListener {
                 _ ->
         }){}
