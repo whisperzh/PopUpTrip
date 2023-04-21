@@ -326,13 +326,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         // current location button implementation
-        currentLocation = view.findViewById(R.id.use_current_location_button)
-        currentLocation.setOnClickListener{
+        binding.useCurrentLocationButton.setOnClickListener{
             Log.d(TAG, "Current Location selected")
             // to clear any previously selected locations
             mMap.clear()
             getLocation()
             getDirections()
+        }
+
+        binding.adjustMapBoundButton.setOnClickListener{
+            resizeMapView()
         }
     }
 
@@ -440,6 +443,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                             binding.startingTextInputTextfield.setText("Your Location")
+                        } else {
+                            Log.d(TAG, "currentLocation is null")
                         }
                     }
                 }
