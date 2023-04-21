@@ -93,6 +93,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
+    private lateinit var polyline: Polyline
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -141,8 +142,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 s?.let { newText ->
 
                     Log.d(TAG, "starting point onTextChanged is triggered")
-                    if (newText.toString()!=startingPointName){
+                    if (newText.toString() != startingPointName && newText.toString() != "Your Location") {
                         // Create a request for place predictions
+                        Log.d(TAG, "Create request for place predictions")
                         val request = FindAutocompletePredictionsRequest.builder()
                             .setTypeFilter(TypeFilter.ADDRESS)
                             .setSessionToken(token)
@@ -160,18 +162,25 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
+                    } else if (newText.toString() == "Your Location") {
+                        Log.d(TAG, "Start point changed to current location")
+                        polyline.remove()
+                        getDirections()
+                    } else {
+                        Log.d(TAG, "New start is same as current")
                     }
                 }
             }
 
             override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "After starting point text changed")
             }
         })
 
         // starting point selected from the list
         startingPointListView.setOnItemClickListener { _, _, position, _ ->
 
-            Log.d(TAG, "starting point setOnItenClickListener is triggered")
+            Log.d(TAG, "starting point setOnItemClickListener is triggered")
             // to clear any previously selected locations
             mMap.clear()
             markDestination()
@@ -316,6 +325,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         // current location button implementation
         currentLocation = view.findViewById(R.id.use_current_location_button)
         currentLocation.setOnClickListener{
+            Log.d(TAG, "Current Location selected")
             // to clear any previously selected locations
             mMap.clear()
             getLocation()
@@ -469,7 +479,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 destinationPlace.latLng.longitude.toString() +
                 "&mode=" + travelMode.lowercase() +
                 "&key=" + MAPS_API_KEY
-        Log.d(TAG, "url: $urlDirections")
+//        Log.d(TAG, "url: $urlDirections")
 
         val directionsRequest = object : StringRequest(Method.GET, urlDirections, Response.Listener {
                 response ->
@@ -480,6 +490,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
             } else {
                 // Get routes
+                Log.d(TAG, "Plotting new directions")
                 val routes = jsonResponse.getJSONArray("routes")
                 val legs = routes.getJSONObject(0).getJSONArray("legs")
                 val steps = legs.getJSONObject(0).getJSONArray("steps")
@@ -493,11 +504,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                 // modify map bounds to include the route
                 for (i in 0 until path.size) {
-                    mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                    polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
 
                     for (j in 0 until path[i].size) {
-    //                    Log.d(TAG, "Path[i][j]: " + path[i][j])
-    //                    Log.d(TAG, "Type: " + path[i][j]::class.java.typeName)
                         maxSWBounds = getSWBound(maxSWBounds, path[i][j])
                         maxNEBounds = getNEBound(maxNEBounds, path[i][j])
                     }
