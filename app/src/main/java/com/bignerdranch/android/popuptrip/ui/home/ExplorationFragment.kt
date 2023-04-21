@@ -54,7 +54,11 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
@@ -120,6 +124,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     it
                 )
         }
+        val fusedLocationClientIsNull = (fusedLocationClient == null)
+        Log.d(TAG, "Fused Location Client null?: $fusedLocationClientIsNull")
 
         return binding.root
     }
@@ -163,9 +169,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
-                    } else if (newText.toString() == "Your Location") {
+                    } else if (newText.toString() == "Your Location" && startingPointName != "") {
                         Log.d(TAG, "Start point changed to current location")
                         polyline.remove()
+                        getLocation()
+                        getDirections()
+
+                    } else if (newText.toString() == "Your Location") {
+                        Log.d(TAG, "Start point set to current location")
+                        getLocation()
                         getDirections()
                     } else {
                         Log.d(TAG, "New start is same as current")
@@ -327,12 +339,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         // current location button implementation
         currentLocation = view.findViewById(R.id.use_current_location_button)
-        currentLocation.setOnClickListener{
+        currentLocation.setOnClickListener {
             Log.d(TAG, "Current Location selected")
             // to clear any previously selected locations
             mMap.clear()
             getLocation()
-            getDirections()
+            if (this::currentLocationLatLng.isInitialized) {
+                getDirections()
+            } else {
+                Toast.makeText(activity, "Unable to get current location", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -415,20 +431,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
+        Log.d(TAG, "Getting current location")
         if (checkPermissions()) {
+            Log.d(TAG, "Check Permission success")
             if (isLocationEnabled()) {
+                Log.d(TAG, "Location is enabled")
                 activity?.let {
-                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)!!.addOnSuccessListener(it) { currentLocation: Location ->
-                        if (currentLocation != null) {
+                    Log.d(TAG, "Getting Current Location")
+                    val fusedLocationClientIsNull = (fusedLocationClient == null)
+                    Log.d(TAG, "Fused Location Client null?: $fusedLocationClientIsNull")
+                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, object : CancellationToken() {
+                        override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+
+                        override fun isCancellationRequested() = false
+                    })?.addOnSuccessListener { currentLocation: Location? ->
+                        if (currentLocation == null)
+                            Toast.makeText(activity, "Cannot get current location.", Toast.LENGTH_LONG).show()
+                        else {
                             Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
-
-//                            // Add markers of the current location on the map
-//                            val mapBounds = LatLngBounds(
-//                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
-//                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
-//                            )
 
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
@@ -437,11 +459,36 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             markDestination()
 
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-
                             binding.startingTextInputTextfield.setText("Your Location")
                         }
+
                     }
+//                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)?.addOnSuccessListener(it) { currentLocation: Location ->
+//                    fusedLocationClient?.getCurrentLocation(PRIORITY_BALANCED_POWER_ACCURACY, null)!!.addOnSuccessListener(it) { currentLocation: Location ->
+//                        Log.d(TAG, "Get Current Location: $currentLocation")
+//                        if (currentLocation != null) {
+//                            Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
+//                            Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
+//                            currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
+//
+////                            // Add markers of the current location on the map
+////                            val mapBounds = LatLngBounds(
+////                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
+////                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
+////                            )
+//
+//                            mMap.addMarker(MarkerOptions()
+//                                .position(currentLocationLatLng)
+//                                .title("Your Location")
+//                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+//
+//                            markDestination()
+//
+////                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+//
+//                            binding.startingTextInputTextfield.setText("Your Location")
+//                        }
+//                    }
                 }
             } else {
                 Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
@@ -467,8 +514,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // get route from startingPlace to destinationPlace
     private fun getDirections() {
+        if (!this::currentLocationLatLng.isInitialized) {
+            Log.d(TAG, "Current location is null")
+            getLocation()
+        }
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val travelModes = listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
+        val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
         val travelModeInt = prefs.getInt("SpinnerPosition", 2)
         val travelMode = travelModes[travelModeInt]
         var maxSWBounds: LatLng
@@ -484,43 +535,43 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 "&key=" + MAPS_API_KEY
 //        Log.d(TAG, "url: $urlDirections")
 
-        val directionsRequest = object : StringRequest(Method.GET, urlDirections, Response.Listener {
-                response ->
-            val jsonResponse = JSONObject(response)
-            Log.d(TAG, "Response: $jsonResponse")
-            val status = jsonResponse.getString("status")
-            if (status == "ZERO_RESULTS") {
-                Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
-            } else {
-                // Get routes
-                Log.d(TAG, "Plotting new directions")
-                val routes = jsonResponse.getJSONArray("routes")
-                val legs = routes.getJSONObject(0).getJSONArray("legs")
-                val steps = legs.getJSONObject(0).getJSONArray("steps")
-                for (i in 0 until steps.length()) {
-                    val points = steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-    //                Log.d(TAG, PolyUtil.decode(points).toString())
-                    path.add(PolyUtil.decode(points))
-                }
-                maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
-                maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
-
-                // modify map bounds to include the route
-                for (i in 0 until path.size) {
-                    polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-
-                    for (j in 0 until path[i].size) {
-                        maxSWBounds = getSWBound(maxSWBounds, path[i][j])
-                        maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+        val directionsRequest =
+            object : StringRequest(Method.GET, urlDirections, Response.Listener { response ->
+                val jsonResponse = JSONObject(response)
+                Log.d(TAG, "Response: $jsonResponse")
+                val status = jsonResponse.getString("status")
+                if (status == "ZERO_RESULTS") {
+                    Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
+                } else {
+                    // Get routes
+                    Log.d(TAG, "Plotting new directions")
+                    val routes = jsonResponse.getJSONArray("routes")
+                    val legs = routes.getJSONObject(0).getJSONArray("legs")
+                    val steps = legs.getJSONObject(0).getJSONArray("steps")
+                    for (i in 0 until steps.length()) {
+                        val points =
+                            steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                        //                Log.d(TAG, PolyUtil.decode(points).toString())
+                        path.add(PolyUtil.decode(points))
                     }
-                }
+                    maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
+                    maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
 
-                mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-            }
-        }, Response.ErrorListener {
-                _ ->
-        }){}
+                    // modify map bounds to include the route
+                    for (i in 0 until path.size) {
+                        polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+
+                        for (j in 0 until path[i].size) {
+                            maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                            maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                        }
+                    }
+
+                    mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                }
+            }, Response.ErrorListener { _ ->
+            }) {}
         val requestQueue = Volley.newRequestQueue(activity)
         requestQueue.add(directionsRequest)
     }
