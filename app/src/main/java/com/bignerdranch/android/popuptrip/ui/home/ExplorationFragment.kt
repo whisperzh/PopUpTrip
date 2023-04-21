@@ -292,12 +292,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             // to clear any previously selected locations
                             mMap.clear()
 
-                            // Add markers of starting point and new destination on the map
-                            val mapBounds = LatLngBounds(
-                                getSWBound(startingPlace.latLng, destinationPlace.latLng),
-                                getNEBound(startingPlace.latLng, destinationPlace.latLng)
-                            )
-
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
                                 .title(binding.startingTextInputTextfield.text.toString())
@@ -305,8 +299,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             markDestination()
 
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-
+                            // resize map bounds and draw the route
                             getDirections()
 
                         }.addOnFailureListener { exception ->
@@ -324,7 +317,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         currentLocation.setOnClickListener{
             // to clear any previously selected locations
             mMap.clear()
-            markDestination()
             getLocation()
             getDirections()
         }
@@ -418,17 +410,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
-                            // Add markers of the current location on the map
-                            val mapBounds = LatLngBounds(
-                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
-                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
-                            )
+//                            // Add markers of the current location on the map
+//                            val mapBounds = LatLngBounds(
+//                                getSWBound(currentLocationLatLng, destinationPlace.latLng),
+//                                getNEBound(currentLocationLatLng, destinationPlace.latLng)
+//                            )
+
                             mMap.addMarker(MarkerOptions()
                                 .position(currentLocationLatLng)
                                 .title("Your Location")
                                 .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
 
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                            markDestination()
+
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
 
                             binding.startingTextInputTextfield.setText("Your Location")
                         }
