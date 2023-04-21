@@ -81,7 +81,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // autocomplete input textfields setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
     private lateinit var startingPointAddressInputEditText: TextInputEditText
-    private lateinit var statingPointListView: ListView
+    private lateinit var startingPointListView: ListView
     private lateinit var destinationAddressInputEditText: TextInputEditText
     private lateinit var destinationListView: ListView
     private lateinit var currentLocation: Button
@@ -126,17 +126,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         // to implement autocomplete for starting point search box
         startingPointAddressInputEditText = view.findViewById(R.id.startingTextInputTextfield)
-        statingPointListView = view.findViewById(R.id.explorationStartAutoCompleteListView)
+        startingPointListView = view.findViewById(R.id.explorationStartAutoCompleteListView)
 
         val token = AutocompleteSessionToken.newInstance()
 
         startingPointAddressInputEditText.addTextChangedListener(object : TextWatcher {
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // No action needed
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
+
+                    Log.d(TAG, "starting point onTextChanged is triggered")
                     if (newText.toString()!=startingPointName){
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
@@ -149,17 +152,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
                                 val predictions = response.autocompletePredictions
                                 autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                                statingPointListView.adapter = autoCompleteAdapter
+                                startingPointListView.adapter = autoCompleteAdapter
                                 Log.i(TAG, "Visibility of listView is set to VISIBLE")
-                                statingPointListView.visibility = View.VISIBLE
+                                startingPointListView.visibility = View.VISIBLE
                             }.addOnFailureListener { _ ->
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
                     }
                 }
-
-//                mMap.clear()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -167,14 +168,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         })
 
         // starting point selected from the list
-        statingPointListView.setOnItemClickListener { _, _, position, _ ->
+        startingPointListView.setOnItemClickListener { _, _, position, _ ->
 
+            Log.d(TAG, "starting point setOnItenClickListener is triggered")
             // to clear any previously selected locations
             mMap.clear()
             markDestination()
             val selectedPrediction = autoCompleteAdapter.getItem(position)
             Log.i(TAG, "Visibility of listView is set to GONE")
-            statingPointListView.visibility = View.GONE
+            startingPointListView.visibility = View.GONE
 
             // Hide the keyboard
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -221,6 +223,102 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
+        // to implement autocomplete for destination search box
+        destinationAddressInputEditText = view.findViewById(R.id.destTextInputTextfield)
+        destinationListView = view.findViewById(R.id.explorationDestAutoCompleteListView)
+
+        destinationAddressInputEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let { newText ->
+
+                    Log.d(TAG, "destination onTextChanged is triggered")
+                    if (newText.toString()!=destinationName){
+                        // Create a request for place predictions
+                        val request = FindAutocompletePredictionsRequest.builder()
+                            .setTypeFilter(TypeFilter.ADDRESS)
+                            .setSessionToken(token)
+                            .setQuery(newText.toString())
+                            .build()
+
+                        context?.let { context ->
+                            Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
+                                val predictions = response.autocompletePredictions
+                                autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
+                                destinationListView.adapter = autoCompleteAdapter
+                                Log.i(TAG, "Visibility of destination listView is set to VISIBLE")
+                                destinationListView.visibility = View.VISIBLE
+                            }.addOnFailureListener { _ ->
+                                Log.i(TAG, "onTextChangedListener error")
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        // destination selected from the list
+        destinationListView.setOnItemClickListener { _, _, position, _ ->
+
+            val selectedPrediction = autoCompleteAdapter.getItem(position)
+            Log.i(TAG, "Visibility of listView is set to GONE")
+            destinationListView.visibility = View.GONE
+
+            // Hide the keyboard
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+
+            selectedPrediction?.placeId?.let { placeId ->
+
+                // once a new destination is selected in the list
+                if(placeId!=destinationId){
+                    Log.d(TAG, "if statement in setOnItemClickListener for destination is triggered")
+                    destinationId = placeId
+                    val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
+
+                    context?.let { context ->
+                        Places.createClient(context).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
+                            destinationPlace = response.place
+                            destinationName = destinationPlace.name
+                            destinationAddressInputEditText.setText(destinationName)
+                            Log.i(TAG, "Starting Point Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
+
+                            // to clear any previously selected locations
+                            mMap.clear()
+
+                            // Add markers of starting point and new destination on the map
+                            val mapBounds = LatLngBounds(
+                                getSWBound(startingPlace.latLng, destinationPlace.latLng),
+                                getNEBound(startingPlace.latLng, destinationPlace.latLng)
+                            )
+
+                            mMap.addMarker(MarkerOptions()
+                                .position(currentLocationLatLng)
+                                .title(binding.startingTextInputTextfield.text.toString())
+                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+
+                            markDestination()
+
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+
+                            getDirections()
+
+                        }.addOnFailureListener { exception ->
+                            if (exception is ApiException) {
+                                Log.e(TAG, "Place not found: " + exception.statusCode)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // current location button implementation
         currentLocation = view.findViewById(R.id.use_current_location_button)
         currentLocation.setOnClickListener{
@@ -246,16 +344,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         // fetch destination place
         Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
             destinationPlace = response.place
+            destinationName = destinationPlace.name
             Log.i(TAG, "Destination Place Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
-            binding.destTextInputTextfield.setText(destinationPlace.name)
-
-//            mMap.addMarker(MarkerOptions()
-//                .position(destinationPlace.latLng)
-//                .title(destinationPlace.name)
-//                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+            binding.destTextInputTextfield.setText(destinationName)
             markDestination()
-
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
