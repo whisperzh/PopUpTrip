@@ -105,8 +105,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+        val explorationViewModel =
+            ViewModelProvider(this).get(ExplorationViewModel::class.java)
 
         // input arguments from navigation
         destinationId = args.destinationPlaceId

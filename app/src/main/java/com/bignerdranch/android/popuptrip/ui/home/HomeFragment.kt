@@ -9,21 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentHomeBinding
-import com.bignerdranch.android.popuptrip.databinding.FragmentHomeSearchBoxBinding
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.TypeFilter
@@ -36,15 +31,14 @@ private const val TAG = "HomeFragment"
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
+    private val args: HomeFragmentArgs by navArgs()
 
     private val nearbyPlaceListViewModel: NearbyPlaceListViewModel by viewModels()
 
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
-    private lateinit var addressInputEditText: TextInputEditText
-    private lateinit var destListView: ListView
 
-    private var destinationSelection = ""
+    private var destinationName = ""
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -58,6 +52,14 @@ class HomeFragment : Fragment() {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
+//        // receive arguments from navigation
+//        val receivedName = args.destinationPlaceId
+//        Log.d(TAG, "OnCreateView called! Destination ID received in home: $receivedName")
+//
+//        if(receivedName!=null){
+//            destinationName = receivedName
+//            binding.homeSearchBox.setText(destinationName)
+//        }
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         // to inflate nearby places list
@@ -73,20 +75,15 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        addressInputEditText = view.findViewById(R.id.home_search_box)
-        destListView = view.findViewById(R.id.autoCompleteListView)
-
         val token = AutocompleteSessionToken.newInstance()
-
-
-        addressInputEditText.addTextChangedListener(object : TextWatcher {
+        binding.homeSearchBox.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // No action needed
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    if (newText.toString()!=destinationSelection){
+                    if (newText.toString()!=destinationName){
                         Log.d(TAG, "newText: $newText")
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
@@ -99,8 +96,8 @@ class HomeFragment : Fragment() {
                             Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
                                 val predictions = response.autocompletePredictions
                                 autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                                destListView.adapter = autoCompleteAdapter
-                                destListView.visibility = View.VISIBLE
+                                binding.homeAutoCompleteListView.adapter = autoCompleteAdapter
+                                binding.homeAutoCompleteListView.visibility = View.VISIBLE
                             }.addOnFailureListener { exception ->
                                 Log.i(TAG, "onTextChangedListener error")
                                 Log.i(TAG, exception.toString())
@@ -113,15 +110,14 @@ class HomeFragment : Fragment() {
             }
         })
 
-        destListView.setOnItemClickListener { _, _, position, _ ->
+        binding.homeAutoCompleteListView.setOnItemClickListener { _, _, position, _ ->
             val selectedPrediction = autoCompleteAdapter.getItem(position)
-            destinationSelection = selectedPrediction?.getFullText(null).toString()
-            addressInputEditText.setText(destinationSelection)
+            destinationName = selectedPrediction?.getFullText(null).toString()
+            binding.homeSearchBox.setText(destinationName)
 //            addressInputEditText.setText(selectedPrediction?.getFullText(null))
 
-            destListView.visibility = View.GONE
-//            autoCompleteAdapter.clear()
-//            autoCompleteAdapter.notifyDataSetChanged()
+            binding.homeAutoCompleteListView.visibility = View.GONE
+
 
             selectedPrediction?.placeId?.let { placeId ->
 
