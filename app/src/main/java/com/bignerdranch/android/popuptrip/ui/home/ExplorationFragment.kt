@@ -176,11 +176,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
+                        markDestination()
+                        markCurrentLocation("Your Location")
                     } else if (newText.toString() == "Your Location" && startingPointName == "") {
                         Log.d(TAG, "Start point set to current location")
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
+                        markDestination()
+                        markCurrentLocation("Your Location")
                     } else {
                         Log.d(TAG, "New start is same as current")
                     }
@@ -339,6 +343,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             getLocation()
         }
             if (this::currentLocationLatLng.isInitialized) {
+                markDestination()
+                markCurrentLocation("Your Location")
                 getDirections()
         }
 
@@ -448,9 +454,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
                             binding.startingTextInputTextfield.setText("Your Location")
 
-                            Log.d(TAG, "In getLocation(), mark destination and current location")
-                            markDestination()
-                            markCurrentLocation("Your Location")
+//                            Log.d(TAG, "In getLocation(), mark destination and current location")
+//                            markDestination()
+//                            markCurrentLocation("Your Location")
                         }
                     }
                 }
