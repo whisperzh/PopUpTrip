@@ -10,6 +10,9 @@
         android:name="com.bignerdranch.android.popuptrip.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="destinationPlaceId"
+            app:argType="string" />
         <action
             android:id="@+id/home_to_exploration_action"
             app:destination="@id/navigation_exploration" />
@@ -23,6 +26,9 @@
         <argument
             android:name="destinationPlaceId"
             app:argType="string" />
+        <action
+            android:id="@+id/exploration_to_home_action"
+            app:destination="@id/navigation_home" />
     </fragment>
 
     <fragment
