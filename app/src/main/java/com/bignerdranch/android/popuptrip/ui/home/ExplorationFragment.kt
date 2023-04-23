@@ -327,6 +327,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             mMap.clear()
                             Log.d(TAG, "On destination selected")
                             markDestination()
+                            markCurrentLocation(startingPointName)
 
                             // resize map bounds and draw the route
                             getDirections()
