@@ -52,14 +52,15 @@ class HomeFragment : Fragment() {
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
-//        // receive arguments from navigation
-//        val receivedName = args.destinationPlaceId
-//        Log.d(TAG, "OnCreateView called! Destination ID received in home: $receivedName")
-//
-//        if(receivedName!=null){
-//            destinationName = receivedName
-//            binding.homeSearchBox.setText(destinationName)
-//        }
+        // receive arguments from navigation
+        val receivedName = args.destinationPlaceName
+        Log.d(TAG, "OnCreateView called! Destination ID received in home: $receivedName")
+
+        if(receivedName != null && receivedName!="null"){
+            Log.d(TAG, "destination is set to receivedName in nav args")
+            destinationName = receivedName
+        }
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         // to inflate nearby places list
@@ -75,6 +76,9 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if(destinationName!=""){
+            binding.homeSearchBox.setText(destinationName)
+        }
         val token = AutocompleteSessionToken.newInstance()
         binding.homeSearchBox.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
