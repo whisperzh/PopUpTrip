@@ -82,6 +82,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var startingPlace: Place
     private var startingPointName = ""  // for making the autocomplete list disappear after click
     private var destinationName = ""
+    private var oldText: String? = null
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -147,9 +148,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-
+                    Log.d(TAG, "New Text: $newText")
+                    if (oldText == null) {
+                        oldText = newText.toString()
+                    }
                     Log.d(TAG, "starting point onTextChanged is triggered")
                     if (newText.toString() != startingPointName && newText.toString() != "Your Location") {
+                        if (newText.toString() != "") {
+                            mMap.clear()
+                        }
                         // Create a request for place predictions
                         Log.d(TAG, "Create request for place predictions")
                         val request = FindAutocompletePredictionsRequest.builder()
@@ -169,6 +176,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
+                        oldText = newText.toString()
                     } else if (newText.toString() == "Your Location" && startingPointName != "" && startingPointName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
 //                        polyline.remove()
@@ -178,13 +186,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         getDirections()
                         markDestination()
                         markCurrentLocation("Your Location")
+                        oldText = newText.toString()
+                    } else if (newText.toString() != oldText) {
+                        Log.d(TAG, "New Text not the same as Old Text")
+
                     } else if (newText.toString() == "Your Location" && startingPointName == "") {
                         Log.d(TAG, "Start point set to current location")
+                        mMap.clear()
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
                         markDestination()
                         markCurrentLocation("Your Location")
+                        oldText = newText.toString()
                     } else {
                         Log.d(TAG, "New start is same as current")
                     }
@@ -227,17 +241,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         currentLocationLatLng = startingPlace.latLng
                         startingPointAddressInputEditText.setText(startingPointName)
                         Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
-
-//                        // Add markers of the starting point on the map
-//                        val mapBounds = LatLngBounds(
-//                            getSWBound(startingPlace.latLng, destinationPlace.latLng),
-//                            getNEBound(startingPlace.latLng, destinationPlace.latLng)
-//                        )
-
                         Log.d(TAG, "On starting point selected")
                         markCurrentLocation(startingPointName)
 
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
                         getDirections()
 
                     }.addOnFailureListener { exception ->
@@ -261,7 +267,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
 
-                    if (newText.toString()!=destinationName){
+                    if (newText.toString() != destinationName){
                         Log.d(TAG, "destinationName: $destinationName")
                         Log.d(TAG, "new string entered: ${newText.toString()}")
                         Log.d(TAG, "destination onTextChanged is triggered")
@@ -305,7 +311,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a new destination is selected in the list
-                if(placeId!=destinationId){
+                if(placeId != destinationId){
                     Log.d(TAG, "if statement in setOnItemClickListener for destination is triggered")
                     destinationId = placeId
                     val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
@@ -331,6 +337,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             }
                         }
                     }
+                } else {
+                    destinationAddressInputEditText.setText(destinationName)
                 }
             }
         }
@@ -339,7 +347,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         binding.useCurrentLocationButton.setOnClickListener{
             Log.d(TAG, "Current Location selected")
             // to clear any previously selected locations
-            mMap.clear()
+//            mMap.clear()
             getLocation()
         }
             if (this::currentLocationLatLng.isInitialized) {
