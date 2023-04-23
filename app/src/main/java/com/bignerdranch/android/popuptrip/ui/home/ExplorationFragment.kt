@@ -30,7 +30,11 @@ import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android.volley.Request
 import com.android.volley.Response
@@ -59,6 +63,7 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.OnTokenCanceledListener
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
@@ -326,11 +331,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             // to clear any previously selected locations
                             mMap.clear()
                             Log.d(TAG, "On destination selected")
-                            markDestination()
-                            markCurrentLocation(startingPointName)
 
-                            // resize map bounds and draw the route
-                            getDirections()
+                            markDestination()
+
+                            if (this::currentLocationLatLng.isInitialized){
+                                markCurrentLocation(startingPointName)
+                                // resize map bounds and draw the route
+                                getDirections()
+                            } else {
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+                            }
 
                         }.addOnFailureListener { exception ->
                             if (exception is ApiException) {
@@ -365,6 +375,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         binding.adjustMapBoundButton.setOnClickListener{
             resizeMapView()
+        }
+
+        binding.explorationBackButton.setOnClickListener {
+//            // Launch navigation to home page
+//            viewLifecycleOwner.lifecycleScope.launch {
+//                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                    findNavController().navigate(
+//                        ExplorationFragmentDirections.explorationToHomeAction()
+//                    )
+//                }
+//            }
         }
     }
 
