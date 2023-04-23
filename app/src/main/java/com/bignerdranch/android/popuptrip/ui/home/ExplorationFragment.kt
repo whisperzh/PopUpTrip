@@ -382,7 +382,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //            viewLifecycleOwner.lifecycleScope.launch {
 //                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 //                    findNavController().navigate(
-//                        ExplorationFragmentDirections.explorationToHomeAction()
+//                        ExplorationFragmentDirections.explorationToHomeAction(destinationName)
 //                    )
 //                }
 //            }
@@ -613,6 +613,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun resizeMapView(){
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+        if (this::mapBounds.isInitialized){
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+        } else {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+        }
     }
 }
