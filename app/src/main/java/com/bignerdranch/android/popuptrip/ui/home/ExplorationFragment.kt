@@ -378,14 +378,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         binding.explorationBackButton.setOnClickListener {
+            val home = ExplorationFragmentDirections.explorationToHomeAction()
+                .setDestinationPlaceName(destinationName)
 //            // Launch navigation to home page
-//            viewLifecycleOwner.lifecycleScope.launch {
-//                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                    findNavController().navigate(
-//                        ExplorationFragmentDirections.explorationToHomeAction(destinationName)
-//                    )
-//                }
-//            }
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    findNavController().navigate(home)
+                }
+            }
         }
     }
 

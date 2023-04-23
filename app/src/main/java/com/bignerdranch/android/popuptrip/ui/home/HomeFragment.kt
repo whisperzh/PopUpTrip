@@ -54,9 +54,9 @@ class HomeFragment : Fragment() {
 
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
-        Log.d(TAG, "OnCreateView called! Destination ID received in home: $receivedName")
+        Log.d(TAG, "OnCreateView called! Destination Place Name received in home: $receivedName")
 
-        if(receivedName != null && receivedName!="null"){
+        if(receivedName != null && receivedName != "null"){
             Log.d(TAG, "destination is set to receivedName in nav args")
             destinationName = receivedName
         }
@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if(destinationName!=""){
+        if(destinationName != ""){
             binding.homeSearchBox.setText(destinationName)
         }
         val token = AutocompleteSessionToken.newInstance()
@@ -87,7 +87,7 @@ class HomeFragment : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    if (newText.toString()!=destinationName){
+                    if (newText.toString() != destinationName){
                         Log.d(TAG, "newText: $newText")
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
