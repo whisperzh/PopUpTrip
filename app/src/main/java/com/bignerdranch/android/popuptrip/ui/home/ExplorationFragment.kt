@@ -171,7 +171,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         }
                     } else if (newText.toString() == "Your Location" && startingPointName != "" && startingPointName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
-                        polyline.remove()
+//                        polyline.remove()
+                        mMap.clear()
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
@@ -229,13 +230,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //                            getNEBound(startingPlace.latLng, destinationPlace.latLng)
 //                        )
 
-                        mMap.addMarker(MarkerOptions()
-                            .position(startingPlace.latLng)
-                            .title(startingPlace.name)
-                            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+                        Log.d(TAG, "On starting point selected")
+                        markCurrentLocation(startingPointName)
 
 //                        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-
                         getDirections()
 
                     }.addOnFailureListener { exception ->
@@ -317,12 +315,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             // to clear any previously selected locations
                             mMap.clear()
-
-                            mMap.addMarker(MarkerOptions()
-                                .position(currentLocationLatLng)
-                                .title(binding.startingTextInputTextfield.text.toString())
-                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
-
+                            Log.d(TAG, "On destination selected")
                             markDestination()
 
                             // resize map bounds and draw the route
@@ -344,9 +337,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             // to clear any previously selected locations
             mMap.clear()
             getLocation()
+        }
             if (this::currentLocationLatLng.isInitialized) {
                 getDirections()
-            }
         }
 
         binding.adjustMapBoundButton.setOnClickListener{
@@ -433,7 +426,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
-        Log.d(TAG, "Getting current location")
+        Log.d(TAG, "getLocation() is called")
         if (checkPermissions()) {
             Log.d(TAG, "Check Permission success")
             if (isLocationEnabled()) {
@@ -453,15 +446,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
-
-                            mMap.addMarker(MarkerOptions()
-                                .position(currentLocationLatLng)
-                                .title("Your Location")
-                                .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
-
-                            markDestination()
-
                             binding.startingTextInputTextfield.setText("Your Location")
+
+                            Log.d(TAG, "In getLocation(), mark destination and current location")
+                            markDestination()
+                            markCurrentLocation("Your Location")
                         }
                     }
                 }
@@ -493,6 +482,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             Log.d(TAG, "Current location is null")
             getLocation()
         }
+        Log.d(TAG, "getDirections() is called")
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
         val travelModeInt = prefs.getInt("SpinnerPosition", 2)
@@ -501,6 +491,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         var maxNEBounds: LatLng
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
+        Log.d(TAG, "")
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 currentLocationLatLng.latitude.toString() + "," +
                 currentLocationLatLng.longitude.toString() +
@@ -532,15 +523,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
                     maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
 
-                    // modify map bounds to include the route
                     for (i in 0 until path.size) {
-                        polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                        polyline = mMap.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
 
+                        // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
                             maxSWBounds = getSWBound(maxSWBounds, path[i][j])
                             maxNEBounds = getNEBound(maxNEBounds, path[i][j])
                         }
                     }
+//                    markCurrentionLocation(startingPointName)
+//                    markDestination()
 
                     mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
@@ -562,10 +555,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun markDestination(){
+        Log.d(TAG, "markDestination called")
         mMap.addMarker(MarkerOptions()
             .position(destinationPlace.latLng)
             .title(destinationPlace.name)
             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+    }
+
+    private fun markCurrentLocation(name: String){
+        Log.d(TAG, "markCurrentLocation called")
+        mMap.addMarker(MarkerOptions()
+            .position(currentLocationLatLng)
+            .title(name)
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
     }
 
     private fun resizeMapView(){
