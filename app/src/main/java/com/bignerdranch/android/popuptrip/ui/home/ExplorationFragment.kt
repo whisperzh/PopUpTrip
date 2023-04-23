@@ -347,6 +347,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         // current location button implementation
         binding.useCurrentLocationButton.setOnClickListener{
             Log.d(TAG, "Current Location selected")
+            // Hide the keyboard
+            val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            if (this::mapBounds.isInitialized){
+                resizeMapView()
+            }
             // to clear any previously selected locations
 //            mMap.clear()
             getLocation()
