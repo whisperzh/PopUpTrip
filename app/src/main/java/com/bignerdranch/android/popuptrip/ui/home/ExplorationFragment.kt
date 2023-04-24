@@ -12,8 +12,6 @@ import android.graphics.Color.*
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.Editable
@@ -62,7 +60,6 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.PolyUtil
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -94,8 +91,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var startingPointName = ""  // for making the autocomplete list disappear after click
     private var destinationName = ""
     private var oldText: String? = null
-    private val distanceRadius = 2000 // 2000m or 2km
-    private val locationBias = 5000 // 5000m
+    private lateinit var maxSWBounds: LatLng
+    private lateinit var maxNEBounds: LatLng
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -118,6 +115,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val natureCategories = arrayListOf<String>("aquarium", "campground", "park", "zoo")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val amusementParkCategory = arrayListOf<String>("amusement_park")
+    private val distanceRadius = 2000 // 2000m or 2km
+    private val locationBias = 5000 // 5000m
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -538,12 +537,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
         val travelModeInt = prefs.getInt("SpinnerPosition", 2)
         val travelMode = travelModes[travelModeInt]
-        var maxSWBounds: LatLng
-        var maxNEBounds: LatLng
+
         var coordinates = arrayListOf<LatLng>()
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
         Log.d(TAG, "")
+
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 currentLocationLatLng.latitude.toString() + "," +
                 currentLocationLatLng.longitude.toString() +
@@ -605,7 +604,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
-        val userChoice = arrayListOf<String>("Food") // TODO get from profile
+        val userChoice = arrayListOf<String>("Culture", "Food") // TODO get from profile
         val placeTypes = arrayListOf<String>()
         if (userChoice.contains("Amusement Park")) {
             for (i in 0 until amusementParkCategory.size) {
@@ -613,15 +612,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
-        if (userChoice.contains("Food")) {
-            for (i in 0 until foodCategories.size) {
-                placeTypes.add(foodCategories[i])
-            }
-        }
-
         if (userChoice.contains("Culture")) {
             for (i in 0 until cultureCategories.size) {
                 placeTypes.add(cultureCategories[i])
+            }
+        }
+
+        if (userChoice.contains("Food")) {
+            for (i in 0 until foodCategories.size) {
+                placeTypes.add(foodCategories[i])
             }
         }
 
@@ -636,6 +635,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 placeTypes.add(nightLifeCategories[i])
             }
         }
+
+        Log.d(TAG, "Place Types: $placeTypes")
 
         for (i in 0 until coordinates.size) {
             for (j in 0 until placeTypes.size) {
@@ -682,6 +683,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeLon = placeGeom.split("},")[0].split(":")[3].toDouble()
                                 val placeLatLng = LatLng(placeLat, placeLon)
                                 if (placeLatLng !in placesReturned) {
+                                    maxSWBounds = getSWBound(maxSWBounds, placeLatLng)
+                                    maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
                                     if (placeTypes[j] in amusementParkCategory) {
                                         mMap.addMarker(MarkerOptions()
@@ -714,9 +717,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
                                         )
                                     }
-
                                 }
                             }
+                            mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
                         }
                     }, Response.ErrorListener { _ ->
                     }) {}
