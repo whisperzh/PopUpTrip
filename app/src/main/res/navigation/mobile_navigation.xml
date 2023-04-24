@@ -35,4 +35,10 @@
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile"/>
 
+    <fragment
+        android:id="@+id/navigation_preference"
+        android:name="com.bignerdranch.android.popuptrip.ui.setting.PreferenceFragment"
+        android:label="@string/title_pref"
+        tools:layout="@layout/fragment_preference"/>
+
 </navigation>
