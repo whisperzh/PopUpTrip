@@ -12,6 +12,7 @@ data class DetailedPlace(
     val placeName: String,
     val placeRating: Float,
     val placeVicinity: String,
+    val photoReference: String,
 //    val placeIsOpen: Boolean,
 //    val placePhotos: kotlin.collections.List<ImageView>
 )

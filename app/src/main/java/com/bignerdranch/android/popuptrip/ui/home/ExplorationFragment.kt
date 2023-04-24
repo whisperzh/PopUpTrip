@@ -706,7 +706,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeRating = resultObject.getString("rating").toFloat()
                                 val placeAddress = resultObject.getString("formatted_address")
 
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress)
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, "")
                                 val markerColor: Float
 
                                 if (placeLatLng !in placesReturned) {
