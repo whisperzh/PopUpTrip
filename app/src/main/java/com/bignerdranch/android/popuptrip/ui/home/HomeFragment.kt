@@ -278,6 +278,7 @@ class HomeFragment : Fragment() {
 
                                 for (i in 0 until resultsArray.length()) {
                                     val resultObject = resultsArray.getJSONObject(i)
+                                    Log.d(TAG, "result $i: $resultObject")
                                     val placeId = resultObject.getString("place_id")
                                     val placeName = resultObject.getString("name")
                                     val geometry = resultObject.getJSONObject("geometry")
@@ -288,7 +289,7 @@ class HomeFragment : Fragment() {
                                     val placeRating = resultObject.getString("rating").toFloat()
 
                                     val placeAddress = resultObject.getString("vicinity")
-                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
+//                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
 //                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
 
                                     val placeToAdd = DetailedPlace(placeId, LatLng(lat, lng), placeName, placeRating, placeAddress)
