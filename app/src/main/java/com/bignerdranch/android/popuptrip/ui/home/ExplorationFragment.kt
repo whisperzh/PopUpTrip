@@ -645,7 +645,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
 
                 val urlRecommendation = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json" +
-                        "?fields=formatted_address%2Cname%2Cicon%2Cphoto%2Cplace_id%2Cgeometry" +
+                        "?fields=formatted_address%2Cname%2Cphoto%2Cplace_id%2Cgeometry%2Crating%2Copening_hours" +
                         "&input=" + inputText + "&inputtype=textquery" +
                         "&type=" + placeTypes[j] +
                         "&locationbias=circle%3A" + locationBias + "%" +
@@ -678,19 +678,43 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val result: JSONObject = results[k] as JSONObject
                                 val placeGeom = result.getString("geometry")
                                 val placeName = result.getString("name")
-                                val placeIcon = result.getString("icon")
-                                Log.d(TAG, placeIcon)
                                 val placeLat = placeGeom.split("},")[0].split(":")[2].split(",")[0].toDouble()
                                 val placeLon = placeGeom.split("},")[0].split(":")[3].toDouble()
                                 val placeLatLng = LatLng(placeLat, placeLon)
-                                val bitmap: Bitmap = Picasso.get().load(placeIcon).get()
                                 if (placeLatLng !in placesReturned) {
                                     placesReturned.add(placeLatLng)
-                                    mMap.addMarker(MarkerOptions()
-                                        .position(placeLatLng)
-                                        .title(placeName)
-//                                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                                    )
+                                    if (placeTypes[j] in amusementParkCategory) {
+                                        mMap.addMarker(MarkerOptions()
+                                            .position(placeLatLng)
+                                            .title(placeName)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
+                                        )
+                                    } else if (placeTypes[j] in cultureCategories) {
+                                        mMap.addMarker(MarkerOptions()
+                                            .position(placeLatLng)
+                                            .title(placeName)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                                        )
+                                    } else if (placeTypes[j] in foodCategories) {
+                                        mMap.addMarker(MarkerOptions()
+                                            .position(placeLatLng)
+                                            .title(placeName)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                                        )
+                                    } else if (placeTypes[j] in natureCategories) {
+                                        mMap.addMarker(MarkerOptions()
+                                            .position(placeLatLng)
+                                            .title(placeName)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                                        )
+                                    } else { // Nightlife
+                                        mMap.addMarker(MarkerOptions()
+                                            .position(placeLatLng)
+                                            .title(placeName)
+                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+                                        )
+                                    }
+
                                 }
                             }
                         }
@@ -701,24 +725,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
     }
-
-//    fun getBitmapFromLink(link: String?): Bitmap? {
-//        return try {
-//            val url = URL(link)
-//            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
-//            try {
-//                connection.connect()
-//            } catch (e: Exception) {
-//                Log.d("Get Image from URL Exception", e.toString())
-//            }
-//            val input: InputStream = connection.inputStream
-//            BitmapFactory.decodeStream(input)
-//        } catch (e: IOException) {
-//            Log.d("Get Image from URL IOException", e.toString())
-//            e.printStackTrace()
-//            null
-//        }
-//    }
 
     // helper function for converting the starting point marker on displayed on the map
     private fun vectorToBitmapDescriptor(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
