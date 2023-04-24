@@ -289,9 +289,9 @@ class HomeFragment : Fragment() {
 
                                     val placeAddress = resultObject.getString("vicinity")
                                     val placeOpeningHours = resultObject.getJSONObject("opening_hours")
-                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
+//                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
 
-                                    val placeToAdd = DetailedPlace(placeId, LatLng(lat, lng), placeName, placeRating, placeAddress, placeOpenNow)
+                                    val placeToAdd = DetailedPlace(placeId, LatLng(lat, lng), placeName, placeRating, placeAddress)
 
 //                                    val placePhotos = resultObject.getString("photos")
 //                                    val placeIcon = resultObject.getString("icon")
