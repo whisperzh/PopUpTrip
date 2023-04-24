@@ -78,42 +78,14 @@ class ProfileFragment : Fragment() {
         }
         val quitButton=binding.quit
         quitButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_settings,null))
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, dataList)//set adapter
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.methodSpinner.adapter = adapter//bind the adapter
-        binding.methodSpinner.setSelection(position)
-        binding.methodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selectedItem = parent.getItemAtPosition(position) as String
-                if (lastSelectedItem != null) {
-                    val toast = Toast.makeText(
-                        requireContext(),
-                        "You choose $selectedItem",
-                        Toast.LENGTH_SHORT
-                    )
-                    toast.show()
-                    Log.d("MyFragment", "Selected item: $selectedItem")
-                }
-                lastSelectedItem = selectedItem
-                prefs.edit().putInt("SpinnerPosition", binding.methodSpinner.selectedItemPosition).apply()//save spinner position
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
-        }
+        val backButton = binding.GoPrefButton
+        backButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_preference,null))
         val profileViewmodel =
             ViewModelProvider(this).get(ProfileViewModel::class.java)
         val root: View = binding.root
 
-    //    val textView: TextView = binding.titleProfile
-      //  profileViewmodel.text.observe(viewLifecycleOwner) {
+        //    val textView: TextView = binding.titleProfile
+        //  profileViewmodel.text.observe(viewLifecycleOwner) {
         //    textView.text = it
         //}
         return root
