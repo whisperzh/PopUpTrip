@@ -706,7 +706,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeRating = resultObject.getString("rating").toFloat()
                                 val placeAddress = resultObject.getString("formatted_address")
 
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, "")
+//                                val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
+
+                                val photo = resultObject.optJSONArray("photos")
+                                val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                    val photoObject = photo.getJSONObject(0)
+                                    photoObject.optString("photo_reference", null)
+                                } else {
+                                    null
+                                }
+//                                Log.d(TAG, "resultObject photo_ref is: $photoReference")
+
+
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString())
                                 val markerColor: Float
 
                                 if (placeLatLng !in placesReturned) {
