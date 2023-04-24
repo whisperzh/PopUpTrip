@@ -11,8 +11,9 @@ import android.graphics.Canvas
 import android.graphics.Color.*
 import android.location.Location
 import android.location.LocationManager
-import android.view.inputmethod.InputMethodManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.Editable
@@ -21,12 +22,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-import androidx.compose.ui.graphics.Color
-import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,7 +36,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -44,10 +43,17 @@ import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationBinding
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.CancellationToken
+import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.android.gms.tasks.OnTokenCanceledListener
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.model.Place
@@ -55,18 +61,18 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority.PRIORITY_BALANCED_POWER_ACCURACY
-import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.maps.model.*
-import com.google.android.gms.tasks.CancellationToken
-import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.maps.android.PolyUtil
+import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
 
 private const val TAG = "ExplorationFragment"
 class ExplorationFragment: Fragment(), OnMapReadyCallback {
@@ -88,6 +94,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var startingPointName = ""  // for making the autocomplete list disappear after click
     private var destinationName = ""
     private var oldText: String? = null
+    private val distanceRadius = 2000 // 2000m or 2km
+    private val locationBias = 5000 // 5000m
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -105,6 +113,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
     private lateinit var polyline: Polyline
+    private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
+    private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
+    private val natureCategories = arrayListOf<String>("aquarium", "campground", "park", "zoo")
+    private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
+    private val amusementParkCategory = arrayListOf<String>("amusement_park")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -489,10 +502,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
                             binding.startingTextInputTextfield.setText("Your Location")
-
-//                            Log.d(TAG, "In getLocation(), mark destination and current location")
-//                            markDestination()
-//                            markCurrentLocation("Your Location")
                         }
                     }
                 }
@@ -531,6 +540,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val travelMode = travelModes[travelModeInt]
         var maxSWBounds: LatLng
         var maxNEBounds: LatLng
+        var coordinates = arrayListOf<LatLng>()
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
         Log.d(TAG, "")
@@ -565,26 +575,150 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.latLng)
                     maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.latLng)
 
+                    var point = path[0][0]
+                    coordinates.add(path[0][0])
                     for (i in 0 until path.size) {
+//                        Log.d(TAG, "Path $i: " + path[i].toString())
                         polyline = mMap.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
 
                         // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
+//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
                             maxSWBounds = getSWBound(maxSWBounds, path[i][j])
                             maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                            val distance = haversineDistance(point, path[i][j])
+                            if (distance >= distanceRadius) {
+                                coordinates.add(path[i][j])
+                                point = path[i][j]
+                            }
                         }
                     }
-//                    markCurrentionLocation(startingPointName)
-//                    markDestination()
-
+                    Log.d(TAG, "coordinates are: $coordinates")
                     mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                    getRecommendations(coordinates)
                 }
             }, Response.ErrorListener { _ ->
             }) {}
         val requestQueue = Volley.newRequestQueue(activity)
         requestQueue.add(directionsRequest)
     }
+
+    private fun getRecommendations(coordinates: ArrayList<LatLng>) {
+        val userChoice = arrayListOf<String>("Food") // TODO get from profile
+        val placeTypes = arrayListOf<String>()
+        if (userChoice.contains("Amusement Park")) {
+            for (i in 0 until amusementParkCategory.size) {
+                placeTypes.add(amusementParkCategory[i])
+            }
+        }
+
+        if (userChoice.contains("Food")) {
+            for (i in 0 until foodCategories.size) {
+                placeTypes.add(foodCategories[i])
+            }
+        }
+
+        if (userChoice.contains("Culture")) {
+            for (i in 0 until cultureCategories.size) {
+                placeTypes.add(cultureCategories[i])
+            }
+        }
+
+        if (userChoice.contains("Nature")) {
+            for (i in 0 until natureCategories.size) {
+                placeTypes.add(natureCategories[i])
+            }
+        }
+
+        if (userChoice.contains("Nightlife")) {
+            for (i in 0 until nightLifeCategories.size) {
+                placeTypes.add(nightLifeCategories[i])
+            }
+        }
+
+        for (i in 0 until coordinates.size) {
+            for (j in 0 until placeTypes.size) {
+                var inputText = placeTypes[j]
+                if (inputText.contains("_")) {
+                    inputText = inputText.replace("_", " ")
+                }
+
+                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json" +
+                        "?fields=formatted_address%2Cname%2Cicon%2Cphoto%2Cplace_id%2Cgeometry" +
+                        "&input=" + inputText + "&inputtype=textquery" +
+                        "&type=" + placeTypes[j] +
+                        "&locationbias=circle%3A" + locationBias + "%" +
+                        coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
+                        "&key=" + MAPS_API_KEY
+//                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/textsearch/json" +
+//                        "?location=" + coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
+//                        "&query=" + placeTypes[j] + "&radius=" + locationBias +
+//                        "&type=" + placeTypes[j] +
+//                        "&key=" + MAPS_API_KEY
+
+                val recommendationsRequest =
+                    object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
+                        val jsonResponse = JSONObject(response)
+                        val placesReturned = arrayListOf<LatLng>()
+                        Log.d(TAG, "Places Response: $jsonResponse")
+                        val status = jsonResponse.getString("status")
+                        if (status == "ZERO_RESULTS") {
+                            Log.d(TAG, "No recommendations for " + placeTypes[j] + " found at " + coordinates[i])
+                        } else {
+                            // Get places
+                            Log.d(TAG, "Get " + placeTypes[j] + " places")
+//                            Log.d(TAG, placeTypes[j] + " Response at " + coordinates[i] + ": $jsonResponse")
+                            val results: JSONArray = jsonResponse.getJSONArray("candidates")
+                            Log.d(TAG, "There is/are ${results.length()} results(s)")
+                            Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
+
+                            for (k in 0 until results.length()) {
+                                Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
+                                val result: JSONObject = results[k] as JSONObject
+                                val placeGeom = result.getString("geometry")
+                                val placeName = result.getString("name")
+                                val placeIcon = result.getString("icon")
+                                Log.d(TAG, placeIcon)
+                                val placeLat = placeGeom.split("},")[0].split(":")[2].split(",")[0].toDouble()
+                                val placeLon = placeGeom.split("},")[0].split(":")[3].toDouble()
+                                val placeLatLng = LatLng(placeLat, placeLon)
+                                val bitmap: Bitmap = Picasso.get().load(placeIcon).get()
+                                if (placeLatLng !in placesReturned) {
+                                    placesReturned.add(placeLatLng)
+                                    mMap.addMarker(MarkerOptions()
+                                        .position(placeLatLng)
+                                        .title(placeName)
+//                                        .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                                    )
+                                }
+                            }
+                        }
+                    }, Response.ErrorListener { _ ->
+                    }) {}
+                val requestQueue = Volley.newRequestQueue(activity)
+                requestQueue.add(recommendationsRequest)
+            }
+        }
+    }
+
+//    fun getBitmapFromLink(link: String?): Bitmap? {
+//        return try {
+//            val url = URL(link)
+//            val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+//            try {
+//                connection.connect()
+//            } catch (e: Exception) {
+//                Log.d("Get Image from URL Exception", e.toString())
+//            }
+//            val input: InputStream = connection.inputStream
+//            BitmapFactory.decodeStream(input)
+//        } catch (e: IOException) {
+//            Log.d("Get Image from URL IOException", e.toString())
+//            e.printStackTrace()
+//            null
+//        }
+//    }
 
     // helper function for converting the starting point marker on displayed on the map
     private fun vectorToBitmapDescriptor(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
@@ -618,5 +752,21 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         } else {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
         }
+    }
+
+    private fun haversineDistance(p1: LatLng, p2: LatLng): Double {
+        val r = 6378137; // Earth’s mean radius in meter
+        val distanceLatitude = rad(p2.latitude - p1.latitude)
+        val distanceLongitude = rad(p2.longitude - p1.longitude)
+        val a = sin(distanceLatitude / 2) * sin(distanceLatitude / 2) +
+                cos(rad(p1.latitude)) * cos(rad(p2.latitude)) *
+                sin(distanceLongitude / 2) * sin(distanceLongitude / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        val d = r * c;
+        return d // returns the distance in meter
+    }
+
+    private fun rad(x: Double): Double {
+        return x * Math.PI / 180
     }
 }
