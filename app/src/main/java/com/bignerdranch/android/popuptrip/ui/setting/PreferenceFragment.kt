@@ -27,7 +27,7 @@ class PreferenceFragment : Fragment() {
     private val nllist= listOf(popR.string.Bar,popR.string.Night_club)
     private val naturelist= listOf(popR.string.Aquarium,popR.string.Zoo,popR.string.Park,popR.string.Campground)
     private val culturelist= listOf(popR.string.Library,popR.string.Museum,popR.string.Art_Gallery,popR.string.BookStore)
-    private val dataList =  listOf("Walk","Public","Drive","Cycling")
+    private val dataList =  listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
     val foodarray = ArrayList<String>()
     val nlarray = ArrayList<String>()
     val naturearray = ArrayList<String>()
