@@ -647,7 +647,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         "?fields=formatted_address%2Cname%2Cphoto%2Cplace_id%2Cgeometry%2Crating%2Copening_hours" +
                         "&input=" + inputText + "&inputtype=textquery" +
                         "&type=" + placeTypes[j] +
-                        "&locationbias=circle%3A" + locationBias + "%" +
+                        "&locationbias=circle%3A" + locationBias + "%40" +
                         coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
                         "&key=" + MAPS_API_KEY
 //                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/textsearch/json" +
