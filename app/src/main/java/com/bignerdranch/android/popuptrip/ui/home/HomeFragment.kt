@@ -68,7 +68,7 @@ class HomeFragment : Fragment() {
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
-    private val radius = 2000
+    private val radius = 1500
     private val preferenceType = mutableListOf<String>()
 
     private var destinationName = ""
@@ -283,8 +283,7 @@ class HomeFragment : Fragment() {
                                     val placeName = resultObject.getString("name")
                                     val geometry = resultObject.getJSONObject("geometry")
                                     val location = geometry.getJSONObject("location")
-                                    val lat = location.getDouble("lat")
-                                    val lng = location.getDouble("lng")
+                                    val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
 
                                     val placeRating = resultObject.getString("rating").toFloat()
 
@@ -292,7 +291,7 @@ class HomeFragment : Fragment() {
 //                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
 //                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
 
-                                    val placeToAdd = DetailedPlace(placeId, LatLng(lat, lng), placeName, placeRating, placeAddress)
+                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress)
 
 //                                    val placePhotos = resultObject.getString("photos")
 //                                    val placeIcon = resultObject.getString("icon")

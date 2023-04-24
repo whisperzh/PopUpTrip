@@ -428,6 +428,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 Log.e(TAG, "Place not found: " + exception.statusCode)
             }
         }
+
+        setupMarkerClickListener(mMap)
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -581,7 +583,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                         // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
-                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
+//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
                             maxSWBounds = getSWBound(maxSWBounds, path[i][j])
                             maxNEBounds = getNEBound(maxNEBounds, path[i][j])
                             val distance = haversineDistance(point, path[i][j])
@@ -661,7 +663,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
                         val jsonResponse = JSONObject(response)
                         val placesReturned = arrayListOf<LatLng>()
-                        Log.d(TAG, "Places Response: $jsonResponse")
+//                        Log.d(TAG, "Places Response: $jsonResponse")
                         val status = jsonResponse.getString("status")
                         if (status == "ZERO_RESULTS") {
                             Log.d(TAG, "No recommendations for " + placeTypes[j] + " found at " + coordinates[i])
@@ -673,53 +675,50 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "There is/are ${results.length()} results(s)")
                             Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
 
+
+
                             for (k in 0 until results.length()) {
                                 Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
-                                val result: JSONObject = results[k] as JSONObject
-                                val placeGeom = result.getString("geometry")
-                                val placeName = result.getString("name")
-                                val placeLat = placeGeom.split("},")[0].split(":")[2].split(",")[0].toDouble()
-                                val placeLon = placeGeom.split("},")[0].split(":")[3].toDouble()
-                                val placeLatLng = LatLng(placeLat, placeLon)
+                                val resultObject: JSONObject = results[k] as JSONObject
+
+                                val placeId = resultObject.getString("place_id")
+                                val placeName = resultObject.getString("name")
+                                val geometry = resultObject.getJSONObject("geometry")
+                                val location = geometry.getJSONObject("location")
+                                val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                                val placeRating = resultObject.getString("rating").toFloat()
+                                val placeAddress = resultObject.getString("formatted_address")
+
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress)
+                                val markerColor: Float
+
                                 if (placeLatLng !in placesReturned) {
                                     maxSWBounds = getSWBound(maxSWBounds, placeLatLng)
                                     maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
+
                                     if (placeTypes[j] in amusementParkCategory) {
-                                        mMap.addMarker(MarkerOptions()
-                                            .position(placeLatLng)
-                                            .title(placeName)
-                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE))
-                                        )
+                                        markerColor = BitmapDescriptorFactory.HUE_ROSE
                                     } else if (placeTypes[j] in cultureCategories) {
-                                        mMap.addMarker(MarkerOptions()
-                                            .position(placeLatLng)
-                                            .title(placeName)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                                        )
+                                        markerColor = BitmapDescriptorFactory.HUE_BLUE
                                     } else if (placeTypes[j] in foodCategories) {
-                                        mMap.addMarker(MarkerOptions()
-                                            .position(placeLatLng)
-                                            .title(placeName)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-                                        )
+                                        markerColor = BitmapDescriptorFactory.HUE_ORANGE
                                     } else if (placeTypes[j] in natureCategories) {
-                                        mMap.addMarker(MarkerOptions()
-                                            .position(placeLatLng)
-                                            .title(placeName)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                                        )
+                                        markerColor = BitmapDescriptorFactory.HUE_GREEN
                                     } else { // Nightlife
-                                        mMap.addMarker(MarkerOptions()
-                                            .position(placeLatLng)
-                                            .title(placeName)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                                        )
+                                        markerColor = BitmapDescriptorFactory.HUE_MAGENTA
                                     }
+
+                                    val marker = mMap.addMarker(MarkerOptions()
+                                        .position(placeLatLng)
+                                        .title(placeName)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                                    )
+                                    marker!!.tag = placeToMark
                                 }
                             }
                             mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
                         }
                     }, Response.ErrorListener { _ ->
                     }) {}
@@ -777,5 +776,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun rad(x: Double): Double {
         return x * Math.PI / 180
+    }
+
+    private fun setupMarkerClickListener(googleMap: GoogleMap) {
+        mMap.setOnMarkerClickListener { marker ->
+            val place = marker.tag as? DetailedPlace
+
+            if (place != null) {
+                // Handle the marker click (e.g., show a details view)
+                // You can access the Place object associated with the marker
+                Log.d(TAG, "Clicked marker for place: ${place.placeName}")
+            }
+
+            false // Return false if you want the map to center on the clicked marker and show the info window
+        }
     }
 }

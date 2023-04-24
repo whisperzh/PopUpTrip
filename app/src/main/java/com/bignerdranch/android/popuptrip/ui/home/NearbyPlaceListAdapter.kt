@@ -27,7 +27,7 @@ class NearbyPlaceListAdapter (
     override fun onBindViewHolder(holder: NearbyPlaceHolder, position: Int) {
         val place = places[position]
         holder.apply {
-            Log.d(TAG, "viewHolder applied at position $position")
+//            Log.d(TAG, "viewHolder applied at position $position")
             binding.placeName.text = place.placeName
             binding.placeVicinity.text = place.placeVicinity
             binding.placeRating.rating = place.placeRating
