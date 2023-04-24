@@ -29,6 +29,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -126,7 +127,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     ): View {
         val explorationViewModel =
             ViewModelProvider(this).get(ExplorationViewModel::class.java)
-
+        startingPointName = explorationViewModel.startingPointName
+        destinationName = explorationViewModel.destinationName
+//        startingPlace = explorationViewModel.startingPlace!!
         // input arguments from navigation
         destinationId = args.destinationPlaceId
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
