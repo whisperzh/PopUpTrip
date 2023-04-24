@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:stepSize="0.5"
+        android:stepSize="0.1"
         android:numStars="5"
         android:rating="4"
         style = "?android:attr/ratingBarStyleSmall"
@@ -31,7 +31,7 @@
         app:layout_constraintTop_toBottomOf="@id/place_name" />
 
     <TextView
-        android:id="@+id/place_description"
+        android:id="@+id/place_vicinity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
