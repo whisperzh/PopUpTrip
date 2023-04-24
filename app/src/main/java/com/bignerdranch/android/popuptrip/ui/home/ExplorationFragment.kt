@@ -116,7 +116,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val amusementParkCategory = arrayListOf<String>("amusement_park")
     private val distanceRadius = 2000 // 2000m or 2km
-    private val locationBias = 5000 // 5000m
+    private val locationBias = 1000 // 1000m or 1km
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -541,7 +541,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         var coordinates = arrayListOf<LatLng>()
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
-        Log.d(TAG, "")
 
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
                 currentLocationLatLng.latitude.toString() + "," +
@@ -550,7 +549,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 destinationPlace.latLng.longitude.toString() +
                 "&mode=" + travelMode.lowercase() +
                 "&key=" + MAPS_API_KEY
-//        Log.d(TAG, "url: $urlDirections")
 
         val directionsRequest =
             object : StringRequest(Method.GET, urlDirections, Response.Listener { response ->
@@ -582,7 +580,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                         // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
-//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
+                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
                             maxSWBounds = getSWBound(maxSWBounds, path[i][j])
                             maxNEBounds = getNEBound(maxNEBounds, path[i][j])
                             val distance = haversineDistance(point, path[i][j])
