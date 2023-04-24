@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PopUpTrip</string>
     <string name="title_home">Home</string>
+    <string name="title_exploration">Exploration</string>
     <string name="title_nearby_places">Nearby Places</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_setting">Settings</string>
@@ -99,4 +100,5 @@
     <string name="BookStore">Bookstore</string>
     <string name="description_pref_back">Back_to_profilePage</string>
     <string name="go_preference">Preference: </string>
+    <string name="current_location_title">Your Location</string>
 </resources>
