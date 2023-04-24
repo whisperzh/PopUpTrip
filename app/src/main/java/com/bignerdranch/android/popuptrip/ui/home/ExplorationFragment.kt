@@ -29,6 +29,7 @@ import androidx.annotation.DrawableRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -126,7 +127,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     ): View {
         val explorationViewModel =
             ViewModelProvider(this).get(ExplorationViewModel::class.java)
-
+        startingPointName = explorationViewModel.startingPointName
+        destinationName = explorationViewModel.destinationName
+//        startingPlace = explorationViewModel.startingPlace!!
         // input arguments from navigation
         destinationId = args.destinationPlaceId
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
@@ -605,36 +608,55 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
-        val userChoice = arrayListOf<String>("Culture", "Food") // TODO get from profile
         val placeTypes = arrayListOf<String>()
-        if (userChoice.contains("Amusement Park")) {
-            for (i in 0 until amusementParkCategory.size) {
-                placeTypes.add(amusementParkCategory[i])
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val userChoiceFood = prefs.getString("food_selection", "")
+        val userChoiceCulture = prefs.getString("culture_selection", "")
+        val userChoiceNature = prefs.getString("nature_selection", "")
+        val userChoiceNightlife = prefs.getString("nightlife_selection", "")
+
+        if (userChoiceFood != "" && userChoiceFood != null) {
+            val array = userChoiceFood.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Culture")) {
-            for (i in 0 until cultureCategories.size) {
-                placeTypes.add(cultureCategories[i])
+        if (userChoiceCulture != "" && userChoiceCulture != null) {
+            val array = userChoiceCulture.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Food")) {
-            for (i in 0 until foodCategories.size) {
-                placeTypes.add(foodCategories[i])
+        if (userChoiceNature != "" && userChoiceNature != null) {
+            val array = userChoiceNature.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Nature")) {
-            for (i in 0 until natureCategories.size) {
-                placeTypes.add(natureCategories[i])
+        if (userChoiceNightlife != "" && userChoiceNightlife != null) {
+            val array = userChoiceNightlife.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Nightlife")) {
-            for (i in 0 until nightLifeCategories.size) {
-                placeTypes.add(nightLifeCategories[i])
-            }
+        if (placeTypes == null || placeTypes.size == 0) {
+            placeTypes.addAll(amusementParkCategory)
+            placeTypes.addAll(cultureCategories)
+            placeTypes.addAll(foodCategories)
+            placeTypes.addAll(natureCategories)
+            placeTypes.addAll(nightLifeCategories)
         }
 
         Log.d(TAG, "Place Types: $placeTypes")
@@ -653,11 +675,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         "&locationbias=circle%3A" + locationBias + "%40" +
                         coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
                         "&key=" + MAPS_API_KEY
-//                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/textsearch/json" +
-//                        "?location=" + coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
-//                        "&query=" + placeTypes[j] + "&radius=" + locationBias +
-//                        "&type=" + placeTypes[j] +
-//                        "&key=" + MAPS_API_KEY
 
                 val recommendationsRequest =
                     object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
