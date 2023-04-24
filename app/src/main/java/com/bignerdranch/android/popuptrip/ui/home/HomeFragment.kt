@@ -335,6 +335,8 @@ class HomeFragment : Fragment() {
         onSuccess: (response: String) -> Unit,
         onError: (error: String) -> Unit
     ) {
+
+        //TODO: fetch requests based on user preferred place type
         Log.d(TAG, "fetchNearbyPlaces() is called")
         val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=restaurant&key=$apiKey"
 

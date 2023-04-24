@@ -783,12 +783,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val place = marker.tag as? DetailedPlace
 
             if (place != null) {
-                // Handle the marker click (e.g., show a details view)
-                // You can access the Place object associated with the marker
+                //TODO: Place Detail UI dialog
                 Log.d(TAG, "Clicked marker for place: ${place.placeName}")
             }
 
-            false // Return false if you want the map to center on the clicked marker and show the info window
+            false
         }
     }
 }
