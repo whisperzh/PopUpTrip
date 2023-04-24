@@ -195,19 +195,20 @@ class PreferenceFragment : Fragment() {
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val food = foodarray.joinToString(separator = ",")
-        val nl=nlarray.joinToString(separator = ",")
-        val nature=naturearray.joinToString(separator = ",")
-        val culture=culturearray.joinToString(separator = ",")
+        val nl = nlarray.joinToString(separator = ",")
+        val nature = naturearray.joinToString(separator = ",")
+        val culture = culturearray.joinToString(separator = ",")
+
         if (food!=null) {
             prefs.edit().putString("food_selection", food).apply()
         }
         if (nl!=null){
-        prefs.edit().putString("nightlife_selection",nl).apply()}
+            prefs.edit().putString("nightlife_selection",nl).apply()}
         if(nature!=null) {
             prefs.edit().putString("nature_selection", nature).apply()
         }
         if(culture!=null){
-        prefs.edit().putString("culture_selection",culture).apply()
+            prefs.edit().putString("culture_selection",culture).apply()
         }
         super.onDestroyView()
         _binding = null
