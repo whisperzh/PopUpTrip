@@ -3,8 +3,6 @@ package com.bignerdranch.android.popuptrip.ui.home
 import android.util.Log
 import android.widget.ImageView
 import androidx.lifecycle.ViewModel
-import com.bignerdranch.android.popuptrip.R
-import com.bignerdranch.android.popuptrip.database.Place
 import java.util.*
 
 private const val TAG = "NearbyPlaceListViewModel"

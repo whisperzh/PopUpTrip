@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bignerdranch.android.popuptrip.database.Place
 import com.bignerdranch.android.popuptrip.databinding.ListItemNearbyPlaceBinding
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
