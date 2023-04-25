@@ -25,13 +25,15 @@ class PreferenceFragment : Fragment() {
     private var _binding: FragmentPreferenceBinding? = null
     private val foodlist= listOf(popR.string.Bakery,popR.string.Cafe,popR.string.Restaurant)
     private val nllist= listOf(popR.string.Bar,popR.string.Night_club)
-    private val naturelist= listOf(popR.string.Aquarium,popR.string.Zoo,popR.string.Park,popR.string.Campground)
+    private val naturelist= listOf(popR.string.Park,popR.string.Campground)
     private val culturelist= listOf(popR.string.Library,popR.string.Museum,popR.string.Art_Gallery,popR.string.BookStore)
+    private val enterlist= listOf(popR.string.Aquarium,popR.string.Zoo,popR.string.AmusementPark,popR.string.MovieTheater)
     private val dataList =  listOf("Walk","Public","Drive","Cycling")
     val foodarray = ArrayList<String>()
     val nlarray = ArrayList<String>()
     val naturearray = ArrayList<String>()
     val culturearray = ArrayList<String>()
+    val enterarray=ArrayList<String>()
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -44,18 +46,20 @@ class PreferenceFragment : Fragment() {
         _binding = FragmentPreferenceBinding.inflate(inflater,container,false)
         val foodchips = listOf(binding.BakeryChip, binding.CafeChip, binding.RestaurantChip)
         val nlchips= listOf(binding.BarChip,binding.NightClubChip)
-        val naturechips= listOf(binding.AquariumChip,binding.ZooChip,binding.ParkChip,binding.CampgroundChip)
+        val naturechips= listOf(binding.ParkChip,binding.CampgroundChip)
         val culturechips= listOf(binding.LibraryChip,binding.MuseumChip,binding.ArtGalleryChip,binding.BookStoreChip)
+        val enterchips=listOf(binding.AquariumChip,binding.ZooChip,binding.AmusementParkChip,binding.MovieTheaterChip)
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         var food_selection=prefs.getString("food_selection","")
         var nightlife_selection=prefs.getString("nightlife_selection","")
         var nature_selection=prefs.getString("nature_selection","")
         var culture_selection=prefs.getString("culture_selection","")
+        var entertainment_selection=prefs.getString("entertainment_selection","")
         foodarray.addAll(TextUtils.split(food_selection, ","))
         nlarray.addAll(TextUtils.split(nightlife_selection, ","))
         naturearray.addAll(TextUtils.split(nature_selection, ","))
         culturearray.addAll(TextUtils.split(culture_selection, ","))
-
+        enterarray.addAll(TextUtils.split(entertainment_selection, ","))
         for (item in foodarray) {
             for (i in foodlist.indices) {
                 if (item == getString(foodlist[i])) {
@@ -67,6 +71,13 @@ class PreferenceFragment : Fragment() {
             for (i in nllist.indices) {
                 if (item == getString(nllist[i])) {
                     nlchips[i].isChecked = true
+                }
+            }
+        }
+        for (item in enterarray) {
+            for (i in enterlist.indices) {
+                if (item == getString(enterlist[i])) {
+                    enterchips[i].isChecked = true
                 }
             }
         }
@@ -94,6 +105,21 @@ class PreferenceFragment : Fragment() {
                 } else {
                     if (foodarray.contains(getString(foodlist.get(i)))) {
                         foodarray.remove(getString(foodlist.get(i)))
+                    }
+
+                }
+            }
+        }
+        for (i in enterchips.indices) {
+            val chip = enterchips[i]
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    if (!enterarray.contains(getString(enterlist.get(i)))) {
+                        enterarray.add(getString(enterlist.get(i)))
+                    }
+                } else {
+                    if (enterarray.contains(getString(enterlist.get(i)))) {
+                        enterarray.remove(getString(enterlist.get(i)))
                     }
 
                 }
@@ -198,16 +224,21 @@ class PreferenceFragment : Fragment() {
         val nl=nlarray.joinToString(separator = ",")
         val nature=naturearray.joinToString(separator = ",")
         val culture=culturearray.joinToString(separator = ",")
+        val enter=enterarray.joinToString (separator= ",")
         if (food!=null) {
             prefs.edit().putString("food_selection", food).apply()
         }
         if (nl!=null){
-        prefs.edit().putString("nightlife_selection",nl).apply()}
+            prefs.edit().putString("nightlife_selection",nl).apply()}
         if(nature!=null) {
             prefs.edit().putString("nature_selection", nature).apply()
         }
         if(culture!=null){
         prefs.edit().putString("culture_selection",culture).apply()
+        }
+        if(enter!=null){
+            prefs.edit().putString("entertainment_selection",enter).apply()
+
         }
         super.onDestroyView()
         _binding = null

@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
 
@@ -86,6 +87,10 @@ class SettingFragment : Fragment() {
                 null
             )
         )
+        val logoutButton=binding.logoutButton
+    //    logoutButton.setOnClickListener(
+      //      findNavController()
+       // )
         //starButton.setOnClickListener(Navigation.createNavigateOnClickListener(
           //  popR.id.navigation_star,null
         //))   //wait for adapter&list

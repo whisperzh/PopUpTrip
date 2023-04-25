@@ -99,4 +99,7 @@
     <string name="BookStore">Bookstore</string>
     <string name="description_pref_back">Back_to_profilePage</string>
     <string name="go_preference">Preference: </string>
+    <string name="title_Entertainment">Entertainment: </string>
+    <string name="AmusementPark">Amusement Park</string>
+    <string name="MovieTheater">MovieTheater</string>
 </resources>
