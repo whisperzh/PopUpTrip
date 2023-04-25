@@ -58,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/temp_place_img" />
+        app:srcCompat="@drawable/loading_img" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"

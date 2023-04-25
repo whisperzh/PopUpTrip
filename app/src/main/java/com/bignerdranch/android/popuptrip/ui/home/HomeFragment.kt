@@ -278,7 +278,7 @@ class HomeFragment : Fragment() {
 
                                 for (i in 0 until resultsArray.length()) {
                                     val resultObject = resultsArray.getJSONObject(i)
-                                    Log.d(TAG, "result $i: $resultObject")
+//                                    Log.d(TAG, "result $i: $resultObject")
                                     val placeId = resultObject.getString("place_id")
                                     val placeName = resultObject.getString("name")
                                     val geometry = resultObject.getJSONObject("geometry")
@@ -291,17 +291,11 @@ class HomeFragment : Fragment() {
 //                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
 //                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
 
-                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress)
+                                    val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
+//                                    Log.d(TAG, "extracted photo ref: $photo_refs")
 
-//                                    val placePhotos = resultObject.getString("photos")
-//                                    val placeIcon = resultObject.getString("icon")
-//                                    val placeIconColor = resultObject.getString("icon_background_color")
-//                                    val placeIconMaskBaseUri = resultObject.getString("icon_mask_base_uri")
+                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photo_refs)
 
-
-
-                //                    val place = Place(placeId, name, vicinity, lat, lng)
-                //                    places.add(place)
                                     nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                 }
 
@@ -358,4 +352,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }

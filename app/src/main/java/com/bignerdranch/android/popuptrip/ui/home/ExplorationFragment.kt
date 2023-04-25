@@ -25,10 +25,10 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-//import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -113,9 +113,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var polyline: Polyline
     private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
-    private val natureCategories = arrayListOf<String>("aquarium", "campground", "park", "zoo")
+    private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
-    private val amusementParkCategory = arrayListOf<String>("amusement_park")
+    private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "zoo")
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
 
@@ -126,7 +126,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     ): View {
         val explorationViewModel =
             ViewModelProvider(this).get(ExplorationViewModel::class.java)
-
+        startingPointName = explorationViewModel.startingPointName
+        destinationName = explorationViewModel.destinationName
+//        startingPlace = explorationViewModel.startingPlace!!
         // input arguments from navigation
         destinationId = args.destinationPlaceId
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
@@ -605,36 +607,65 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
-        val userChoice = arrayListOf<String>("Culture", "Food") // TODO get from profile
         val placeTypes = arrayListOf<String>()
-        if (userChoice.contains("Amusement Park")) {
-            for (i in 0 until amusementParkCategory.size) {
-                placeTypes.add(amusementParkCategory[i])
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val userChoiceFood = prefs.getString("food_selection", "")
+//        val userChoiceEntertainment = prefs.getString("entertainment_selection", "")
+        val userChoiceCulture = prefs.getString("culture_selection", "")
+        val userChoiceNature = prefs.getString("nature_selection", "")
+        val userChoiceNightlife = prefs.getString("nightlife_selection", "")
+
+        if (userChoiceFood != "" && userChoiceFood != null) {
+            val array = userChoiceFood.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Culture")) {
-            for (i in 0 until cultureCategories.size) {
-                placeTypes.add(cultureCategories[i])
+//        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
+//            val array = userChoiceEntertainment.split(",")
+//
+//            for (element in array) {
+//                val value = element.lowercase().replace(" ", "_")
+//                placeTypes.add(value)
+//            }
+//        }
+
+        if (userChoiceCulture != "" && userChoiceCulture != null) {
+            val array = userChoiceCulture.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Food")) {
-            for (i in 0 until foodCategories.size) {
-                placeTypes.add(foodCategories[i])
+        if (userChoiceNature != "" && userChoiceNature != null) {
+            val array = userChoiceNature.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Nature")) {
-            for (i in 0 until natureCategories.size) {
-                placeTypes.add(natureCategories[i])
+        if (userChoiceNightlife != "" && userChoiceNightlife != null) {
+            val array = userChoiceNightlife.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
             }
         }
 
-        if (userChoice.contains("Nightlife")) {
-            for (i in 0 until nightLifeCategories.size) {
-                placeTypes.add(nightLifeCategories[i])
-            }
+        if (placeTypes == null || placeTypes.size == 0) {
+            placeTypes.addAll(entertainmentCategory)
+            placeTypes.addAll(cultureCategories)
+            placeTypes.addAll(foodCategories)
+            placeTypes.addAll(natureCategories)
+            placeTypes.addAll(nightLifeCategories)
         }
 
         Log.d(TAG, "Place Types: $placeTypes")
@@ -653,11 +684,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         "&locationbias=circle%3A" + locationBias + "%40" +
                         coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
                         "&key=" + MAPS_API_KEY
-//                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/textsearch/json" +
-//                        "?location=" + coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
-//                        "&query=" + placeTypes[j] + "&radius=" + locationBias +
-//                        "&type=" + placeTypes[j] +
-//                        "&key=" + MAPS_API_KEY
 
                 val recommendationsRequest =
                     object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
@@ -689,7 +715,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeRating = resultObject.getString("rating").toFloat()
                                 val placeAddress = resultObject.getString("formatted_address")
 
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress)
+//                                val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
+
+                                val photo = resultObject.optJSONArray("photos")
+                                val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                    val photoObject = photo.getJSONObject(0)
+                                    photoObject.optString("photo_reference", null)
+                                } else {
+                                    null
+                                }
+//                                Log.d(TAG, "resultObject photo_ref is: $photoReference")
+
+
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString())
                                 val markerColor: Float
 
                                 if (placeLatLng !in placesReturned) {
@@ -697,7 +735,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
 
-                                    if (placeTypes[j] in amusementParkCategory) {
+                                    if (placeTypes[j] in entertainmentCategory) {
                                         markerColor = BitmapDescriptorFactory.HUE_ROSE
                                     } else if (placeTypes[j] in cultureCategories) {
                                         markerColor = BitmapDescriptorFactory.HUE_BLUE
