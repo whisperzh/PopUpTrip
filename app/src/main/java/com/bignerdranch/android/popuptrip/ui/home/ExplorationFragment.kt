@@ -25,7 +25,6 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
-//import com.google.maps.android.PolyUtil
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -114,9 +113,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var polyline: Polyline
     private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
-    private val natureCategories = arrayListOf<String>("aquarium", "campground", "park", "zoo")
+    private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
-    private val amusementParkCategory = arrayListOf<String>("amusement_park")
+    private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "zoo")
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
 
@@ -611,6 +610,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val placeTypes = arrayListOf<String>()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val userChoiceFood = prefs.getString("food_selection", "")
+//        val userChoiceEntertainment = prefs.getString("entertainment_selection", "")
         val userChoiceCulture = prefs.getString("culture_selection", "")
         val userChoiceNature = prefs.getString("nature_selection", "")
         val userChoiceNightlife = prefs.getString("nightlife_selection", "")
@@ -623,6 +623,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 placeTypes.add(value)
             }
         }
+
+//        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
+//            val array = userChoiceEntertainment.split(",")
+//
+//            for (element in array) {
+//                val value = element.lowercase().replace(" ", "_")
+//                placeTypes.add(value)
+//            }
+//        }
 
         if (userChoiceCulture != "" && userChoiceCulture != null) {
             val array = userChoiceCulture.split(",")
@@ -652,7 +661,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         if (placeTypes == null || placeTypes.size == 0) {
-            placeTypes.addAll(amusementParkCategory)
+            placeTypes.addAll(entertainmentCategory)
             placeTypes.addAll(cultureCategories)
             placeTypes.addAll(foodCategories)
             placeTypes.addAll(natureCategories)
@@ -726,7 +735,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
 
-                                    if (placeTypes[j] in amusementParkCategory) {
+                                    if (placeTypes[j] in entertainmentCategory) {
                                         markerColor = BitmapDescriptorFactory.HUE_ROSE
                                     } else if (placeTypes[j] in cultureCategories) {
                                         markerColor = BitmapDescriptorFactory.HUE_BLUE
