@@ -129,13 +129,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         startingPointName = explorationViewModel.startingPointName
         destinationName = explorationViewModel.destinationName
         oldText = explorationViewModel.oldText
-//        startingPlace = explorationViewModel.startingPlace
+        startingPlace = explorationViewModel.startingPlace
+        destinationPlace = explorationViewModel.destination
+        mapBounds = explorationViewModel.mapBounds
+        maxSWBounds = explorationViewModel.maxSWBounds
+        maxNEBounds = explorationViewModel.maxNEBounds
+//        startingPointId = explorationViewModel.startingPointId
+
         // input arguments from navigation
-        destinationId = args.destinationPlaceId
+        if (args != null) {
+            // TODO check if this changes if dest changed in exploration,
+            //  switch to different tab and come back to exploration
+            destinationId = args.destinationPlaceId
+        } else {
+//            destinationId = explorationViewModel.destinationPointId
+        }
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
+        Log.d(TAG, "Recreating map in onCreateView")
         // launch the support map fragment
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
