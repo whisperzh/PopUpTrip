@@ -1,23 +1,21 @@
-package com.bignerdranch.android.popuptrip.ui.setting
+package com.bignerdranch.android.popuptrip.ui.Profile
 
 import android.R
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bignerdranch.android.popuptrip.databinding.FragmentPreferenceBinding
-import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
+import com.bignerdranch.android.popuptrip.ui.setting.SettingViewModel
 import com.bignerdranch.android.popuptrip.R as popR
 
 class PreferenceFragment : Fragment() {

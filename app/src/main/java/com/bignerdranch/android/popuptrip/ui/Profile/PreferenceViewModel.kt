@@ -1,4 +1,4 @@
-package com.bignerdranch.android.popuptrip.ui.setting
+package com.bignerdranch.android.popuptrip.ui.Profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
