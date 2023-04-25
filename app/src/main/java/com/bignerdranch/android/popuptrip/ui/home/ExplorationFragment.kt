@@ -115,7 +115,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
-    private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "zoo")
+    private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
 
@@ -128,7 +128,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             ViewModelProvider(this).get(ExplorationViewModel::class.java)
         startingPointName = explorationViewModel.startingPointName
         destinationName = explorationViewModel.destinationName
-//        startingPlace = explorationViewModel.startingPlace!!
+        oldText = explorationViewModel.oldText
+//        startingPlace = explorationViewModel.startingPlace
         // input arguments from navigation
         destinationId = args.destinationPlaceId
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
@@ -610,7 +611,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val placeTypes = arrayListOf<String>()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val userChoiceFood = prefs.getString("food_selection", "")
-//        val userChoiceEntertainment = prefs.getString("entertainment_selection", "")
+        val userChoiceEntertainment = prefs.getString("enter_selection", "")
         val userChoiceCulture = prefs.getString("culture_selection", "")
         val userChoiceNature = prefs.getString("nature_selection", "")
         val userChoiceNightlife = prefs.getString("nightlife_selection", "")
@@ -624,14 +625,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
-//        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
-//            val array = userChoiceEntertainment.split(",")
-//
-//            for (element in array) {
-//                val value = element.lowercase().replace(" ", "_")
-//                placeTypes.add(value)
-//            }
-//        }
+        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
+            val array = userChoiceEntertainment.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
 
         if (userChoiceCulture != "" && userChoiceCulture != null) {
             val array = userChoiceCulture.split(",")
@@ -744,7 +745,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     } else if (placeTypes[j] in natureCategories) {
                                         markerColor = BitmapDescriptorFactory.HUE_GREEN
                                     } else { // Nightlife
-                                        markerColor = BitmapDescriptorFactory.HUE_MAGENTA
+                                        markerColor = BitmapDescriptorFactory.HUE_VIOLET
                                     }
 
                                     val marker = mMap.addMarker(MarkerOptions()
