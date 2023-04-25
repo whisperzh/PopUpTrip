@@ -28,8 +28,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         .build()
     private var maxSWBound: LatLng = LatLng(0.0, 0.0)
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
-//    private var startingId: String? = null
-//    private var destinationId: String? = null
+    // 655 Commonwealth Avenue
+    private var startingId: String = "ChIJ-dKkUfd544kR5cY9D2MncuM"
+    // 111 Huntington Avenue
+    private var destinationId: String = "ChIJh6XMxhF644kRNS4bI8jjFC4"
 
     var startingPointName: String
         get() = savedStateHandle.get<String>(STARTING_POINT_NAME) ?: ""
@@ -63,11 +65,11 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<LatLng>(MAX_NE_BOUNDS) ?: maxNEBound
         set(value) = savedStateHandle.set(MAX_NE_BOUNDS, value)
 
-//    var startingPointId: String
-//        get() = (savedStateHandle.get<String>(STARTING_POINT_ID) ?: startingId) as String
-//        set(value) = savedStateHandle.set(STARTING_POINT_ID, value)
+    var startingPointId: String
+        get() = savedStateHandle.get<String>(STARTING_POINT_ID) ?: startingId
+        set(value) = savedStateHandle.set(STARTING_POINT_ID, value)
 
-//    var destinationPointId: String
-//        get() = (savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId) as String
-//        set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
+    var destinationPointId: String
+        get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
+        set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
 }

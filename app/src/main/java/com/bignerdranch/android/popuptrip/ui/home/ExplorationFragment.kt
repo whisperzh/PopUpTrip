@@ -134,15 +134,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
         maxNEBounds = explorationViewModel.maxNEBounds
-//        startingPointId = explorationViewModel.startingPointId
+        startingPointId = explorationViewModel.startingPointId
 
         // input arguments from navigation
-        if (args != null) {
+        destinationId = if (args != null) {
             // TODO check if this changes if dest changed in exploration,
             //  switch to different tab and come back to exploration
-            destinationId = args.destinationPlaceId
+            args.destinationPlaceId
         } else {
-//            destinationId = explorationViewModel.destinationPointId
+            explorationViewModel.destinationPointId
         }
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
 
@@ -266,6 +266,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                 // once a starting address is selected in the list
                 startingPointId = placeId
+                Log.d(TAG, "Starting point ID: $startingPointId")
                 val startFetchPlaceRequest = FetchPlaceRequest.newInstance(startingPointId, placeFields)
 
                 context?.let { context ->
