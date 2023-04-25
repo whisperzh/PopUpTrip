@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentDashboardBinding
+import com.bignerdranch.android.popuptrip.ui.destinationshown.LocationListFragment
 
 class DashboardFragment : Fragment() {
 
@@ -28,10 +30,11 @@ class DashboardFragment : Fragment() {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textDashboard
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
+        // add LocationListFragment to FrameLayout
+        childFragmentManager.beginTransaction()
+            .replace(R.id.location_list_container, LocationListFragment())
+            .commit()
+
         return root
     }
 
