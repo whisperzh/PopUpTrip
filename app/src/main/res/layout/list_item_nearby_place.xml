@@ -8,14 +8,18 @@
 
     <TextView
         android:id="@+id/place_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
         android:text="Place Name"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:textAppearance="?attr/textAppearanceHeadline6"
         app:layout_constraintStart_toEndOf="@id/place_img"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <RatingBar
         android:id="@+id/place_rating"
@@ -23,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:stepSize="0.5"
+        android:stepSize="0.1"
         android:numStars="5"
         android:rating="4"
         style = "?android:attr/ratingBarStyleSmall"
@@ -31,13 +35,17 @@
         app:layout_constraintTop_toBottomOf="@id/place_name" />
 
     <TextView
-        android:id="@+id/place_description"
+        android:id="@+id/place_vicinity"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:singleLine="true"
+        android:ellipsize="end"
         android:text="Place detail/description"
         app:layout_constraintStart_toEndOf="@id/place_img"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/place_rating" />
 
     <ImageView
@@ -50,7 +58,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/temp_place_img" />
+        app:srcCompat="@drawable/loading_img" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"

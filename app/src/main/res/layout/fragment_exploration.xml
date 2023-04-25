@@ -10,6 +10,7 @@
         android:id="@+id/startingTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:hint="@string/enter_starting_point"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,15 +64,63 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ListView
+        android:id="@+id/explorationDestAutoCompleteListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/destTextInputLayout"
+        app:layout_constraintEnd_toEndOf="@id/destTextInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/destTextInputLayout"
+        android:visibility="gone" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:layout_marginBottom="96dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/destTextInputLayout" />
+        app:layout_constraintTop_toBottomOf="@id/explorationDestAutoCompleteListView" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/adjust_map_bound_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/map"
+        app:layout_constraintTop_toTopOf="@id/map"
+        android:layout_margin="16dp"
+        android:contentDescription="@string/adjust_map_bound_title"
+        app:backgroundTint="@color/brown_theme"
+        app:tint="@color/brown_theme_dark"
+        app:srcCompat="@drawable/ic_map_bound_focus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/exploration_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/map"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        android:layout_marginBottom="32dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/back_button"
+        app:backgroundTint="@color/brown_theme"
+        app:tint="@color/brown_theme_dark"
+        app:srcCompat="@drawable/ic_map_back_arrow"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/exploration_next_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/map"
+        app:layout_constraintBottom_toBottomOf="@id/map"
+        android:layout_marginBottom="32dp"
+        android:layout_marginRight="16dp"
+        app:backgroundTint="@color/brown_theme"
+        app:tint="@color/brown_theme_dark"
+        android:text="@string/next_button"
+        app:srcCompat="@drawable/ic_map_next_arrow"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

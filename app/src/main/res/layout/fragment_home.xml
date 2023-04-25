@@ -7,16 +7,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/homeSearchBoxFragmentContainerView"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/homeDestInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.HomeSearchBoxFragment"
-        tools:layout="@layout/fragment_home_search_box"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:startIconDrawable="@drawable/ic_search"
+        app:endIconMode="clear_text"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/home_search_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/searchbar_hint" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ListView
+        android:id="@+id/homeAutoCompleteListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/homeDestInputLayout"
+        app:layout_constraintEnd_toEndOf="@id/homeDestInputLayout"
+        app:layout_constraintTop_toBottomOf="@id/homeDestInputLayout"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text_nearby"
@@ -27,19 +45,22 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/title_nearby_places"
-        android:textSize="25sp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/homeSearchBoxFragmentContainerView" />
+        app:layout_constraintTop_toBottomOf="@id/homeAutoCompleteListView" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/placeListFragmentContainerView"
-        android:name="com.bignerdranch.android.popuptrip.ui.home.NearbyPlaceListFragment"
-        tools:layout="@layout/fragment_nearby_place_list"
+    <androidx.recyclerview.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/nearby_places_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="96dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text_nearby" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_nearby"
+        tools:listitem="@layout/list_item_nearby_place"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

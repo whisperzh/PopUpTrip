@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.PopUpTrip" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/brown_theme</item>
-        <item name="colorPrimaryVariant">@color/brown_theme</item>
+        <item name="colorPrimary">@color/brown_theme_dark</item>
+        <item name="colorPrimaryVariant">@color/brown_theme_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/green_theme</item>
