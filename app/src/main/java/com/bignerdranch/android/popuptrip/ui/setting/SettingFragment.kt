@@ -34,7 +34,6 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
-        val starButton = binding.starButton
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val position = prefs.getInt("SpinnerPosition", 0)
         val switchState = prefs.getBoolean("switchState", false)
@@ -84,9 +83,7 @@ class SettingFragment : Fragment() {
     //    logoutButton.setOnClickListener(
       //      findNavController()
        // )
-        //starButton.setOnClickListener(Navigation.createNavigateOnClickListener(
-          //  popR.id.navigation_star,null
-        //))   //wait for adapter&list
+
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
