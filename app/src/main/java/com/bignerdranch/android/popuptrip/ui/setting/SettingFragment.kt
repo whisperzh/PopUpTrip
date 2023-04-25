@@ -80,13 +80,6 @@ class SettingFragment : Fragment() {
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
             }
         }
-        val profileButton = binding.profileButton
-        profileButton.setOnClickListener(
-            Navigation.createNavigateOnClickListener(
-                popR.id.navigation_profile,
-                null
-            )
-        )
         val logoutButton=binding.logoutButton
     //    logoutButton.setOnClickListener(
       //      findNavController()

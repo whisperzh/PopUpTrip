@@ -1,7 +1,6 @@
-package com.bignerdranch.android.popuptrip.ui.setting
+package com.bignerdranch.android.popuptrip.ui.Profile
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -9,7 +8,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.preference.PreferenceManager
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,8 +74,6 @@ class ProfileFragment : Fragment() {
         saveButton.setOnClickListener{
             save=true
         }
-        val quitButton=binding.quit
-        quitButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_settings,null))
         val backButton = binding.GoPrefButton
         backButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_preference,null))
         val profileViewmodel =

@@ -6,7 +6,6 @@ plugins {
 }
 
 android {
-    namespace 'com.bignerdranch.android.popuptrip'
     compileSdk 33
     compileSdkPreview "UpsideDownCake"
 
@@ -66,5 +65,4 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
-
 }
