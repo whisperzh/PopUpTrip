@@ -8,6 +8,7 @@ import com.bignerdranch.android.popuptrip.database.Place
 import com.bignerdranch.android.popuptrip.databinding.ListItemNearbyPlaceBinding
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.view.View
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.withContext
@@ -43,7 +44,12 @@ class NearbyPlaceListAdapter (
 //            Log.d(TAG, "viewHolder applied at position $position")
             binding.placeName.text = place.placeName
             binding.placeVicinity.text = place.placeVicinity
-            binding.placeRating.rating = place.placeRating
+            if(place.placeRating!=null){
+                binding.placeRating.rating = place.placeRating
+            } else {
+                binding.placeRating.visibility = View.GONE
+            }
+
 
             val photoRef = place.photoReference
             MainScope().launch {

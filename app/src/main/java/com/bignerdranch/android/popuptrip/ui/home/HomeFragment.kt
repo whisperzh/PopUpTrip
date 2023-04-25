@@ -285,7 +285,13 @@ class HomeFragment : Fragment() {
                                     val location = geometry.getJSONObject("location")
                                     val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
 
-                                    val placeRating = resultObject.getString("rating").toFloat()
+                                    val placeRating = resultObject.getString("rating")
+
+//                                    val placeRating: Float? = if (tempRating != null) {
+//                                        tempRating.toFloat()
+//                                    } else {
+//                                        null
+//                                    }
 
                                     val placeAddress = resultObject.getString("vicinity")
 //                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
@@ -294,7 +300,7 @@ class HomeFragment : Fragment() {
                                     val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
 //                                    Log.d(TAG, "extracted photo ref: $photo_refs")
 
-                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photo_refs)
+                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating!!.toFloat(), placeAddress, photo_refs)
 
                                     nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                 }
