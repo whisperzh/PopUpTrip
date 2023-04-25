@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.setting.ProfileFragment">
+    tools:context=".ui.Profile.ProfileFragment">
     <TextView
         android:id="@+id/title_profile"
         android:layout_width="match_parent"
@@ -188,34 +188,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:id="@+id/save_constraint"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="120dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="40dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:textAlignment="gravity"
-            android:textSize="20sp"
+            android:textSize="30sp"
             android:text="@string/title_save"
             android:id="@+id/save"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"></Button>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="40dp"
-            android:textAlignment="gravity"
-            android:textSize="20sp"
-            android:text="@string/title_quit"
-            android:id="@+id/quit"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"></Button>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"></Button>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

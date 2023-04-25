@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (!Places.isInitialized()) {
-            Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY);
+           Places.initialize(applicationContext, BuildConfig.MAPS_API_KEY);
         }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard,
-                R.id.navigation_notifications, R.id.navigation_settings
+                R.id.navigation_profile, R.id.navigation_settings
             )
         )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
