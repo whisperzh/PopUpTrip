@@ -159,6 +159,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="124dp"
         android:text="@string/title_logout"
+        android:id="@+id/logout_button"
         android:textSize="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

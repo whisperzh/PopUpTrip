@@ -222,7 +222,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="36dp"
+            android:layout_marginTop="14dp"
             android:text="@string/title_Nature"
             android:textAlignment="gravity"
             android:textSize="25sp"
@@ -238,27 +238,6 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintStart_toEndOf="@id/title_Nature"
             app:layout_constraintTop_toTopOf="parent">
-            <com.google.android.material.chip.Chip
-                android:id="@+id/Aquarium_chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Aquarium"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                app:checkedIcon="@drawable/favorite_24dp"
-                app:checkedIconVisible="true"
-                android:layout_margin="10dp"
-                />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/Zoo_chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/Zoo"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                app:checkedIcon="@drawable/favorite_24dp"
-                app:checkedIconVisible="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="1000dp"
-                />
             <com.google.android.material.chip.Chip
                 android:id="@+id/Park_chip"
                 android:layout_width="wrap_content"
@@ -359,4 +338,79 @@
 
         </com.google.android.material.chip.ChipGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/Entertainment_constraint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/Culture_constraint">
+        <TextView
+            android:id="@+id/title_Entertainment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/title_Entertainment"
+            android:textAlignment="gravity"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></TextView>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/EntertainmentGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toEndOf="@id/title_Entertainment"
+            app:layout_constraintTop_toTopOf="parent">
+            <com.google.android.material.chip.Chip
+                android:id="@+id/Aquarium_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Aquarium"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:checkedIcon="@drawable/favorite_24dp"
+                app:checkedIconVisible="true"
+                android:layout_margin="10dp"
+                />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/Zoo_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Zoo"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:checkedIcon="@drawable/favorite_24dp"
+                app:checkedIconVisible="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="1000dp"></com.google.android.material.chip.Chip>
+            <com.google.android.material.chip.Chip
+                android:id="@+id/AmusementPark_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/AmusementPark"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:checkedIcon="@drawable/favorite_24dp"
+                app:checkedIconVisible="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="1000dp"
+                />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/MovieTheater_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/MovieTheater"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:checkedIcon="@drawable/favorite_24dp"
+                app:checkedIconVisible="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="1000dp"></com.google.android.material.chip.Chip>
+            <!-- Chips can be declared here, or added dynamically. -->
+
+        </com.google.android.material.chip.ChipGroup>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
