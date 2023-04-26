@@ -20,6 +20,7 @@ const val MAX_SW_BOUNDS = "MAX_SW_BOUNDS"
 const val MAX_NE_BOUNDS = "MAX_NE_BOUNDS"
 const val STARTING_POINT_ID = "STARTING_POINT_ID"
 const val DESTINATION_POINT_ID = "DESTINATION_POINT_ID"
+const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -80,9 +81,13 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
         set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
 
-//    var mapVIew: SupportMapFragment
+//    var mapView: SupportMapFragment
 //        get() = savedStateHandle.get<SupportMapFragment>(MAP_VIEW) ?: supportMapFragment
 //        set(value) = savedStateHandle.set(MAP_VIEW, value)
+
+    var placesToAddToRoute: ArrayList<DetailedPlace>
+        get() = savedStateHandle.get<ArrayList<DetailedPlace>>(PLACES_TO_ADD_TO_ROUTE) ?: ArrayList()
+        set(value) = savedStateHandle.set(PLACES_TO_ADD_TO_ROUTE, value)
 
     private fun initStartPlace() {
 

@@ -82,8 +82,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
 //    private val explorationViewModel: ExplorationViewModel by viewModels()
 
+    // FOLLOWING VARIABLES NEED TO BE STORED IN VIEW MODEL
     private lateinit var mMap: GoogleMap
-    // FOLLOWING VARIABLES NEED TO BE STORED IN VIEWMODEL
     private lateinit var mapBounds: LatLngBounds
     private lateinit var destinationId: String
     private lateinit var destinationPlace: Place
@@ -94,6 +94,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var oldText: String? = null
     private lateinit var maxSWBounds: LatLng
     private lateinit var maxNEBounds: LatLng
+    private var placesToAdd: ArrayList<DetailedPlace> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -136,6 +137,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         maxSWBounds = explorationViewModel.maxSWBounds
         maxNEBounds = explorationViewModel.maxNEBounds
         startingPointId = explorationViewModel.startingPointId
+        placesToAdd = explorationViewModel.placesToAddToRoute
 
         // input arguments from navigation
         destinationId = if (args != null) {
@@ -843,9 +845,25 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             if (place != null) {
                 //TODO: Place Detail UI dialog
                 Log.d(TAG, "Clicked marker for place: ${place.placeName}")
+
+                // if add button clicked or checkbox checked
+//                addPlaceToRoute(place)
+
+                // if remove button clicked or checkbox unchecked
+//                removePlaceFromRoute(place)
             }
 
             false
         }
+    }
+
+    // When a detailed place is added to the route by the user
+    private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
+        placesToAdd.add(detailedPlace)
+    }
+
+    // When a detailed place is removed from the route by the user
+    private fun removePlaceFromRoute(detailedPlace: DetailedPlace) {
+        placesToAdd.remove(detailedPlace)
     }
 }
