@@ -7,6 +7,7 @@ import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.android.libraries.places.api.model.Place
 
 private const val TAG = "ExplorationViewModel"
@@ -21,6 +22,7 @@ const val MAX_NE_BOUNDS = "MAX_NE_BOUNDS"
 const val STARTING_POINT_ID = "STARTING_POINT_ID"
 const val DESTINATION_POINT_ID = "DESTINATION_POINT_ID"
 const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
+const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -88,6 +90,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var placesToAddToRoute: ArrayList<DetailedPlace>
         get() = savedStateHandle.get<ArrayList<DetailedPlace>>(PLACES_TO_ADD_TO_ROUTE) ?: ArrayList()
         set(value) = savedStateHandle.set(PLACES_TO_ADD_TO_ROUTE, value)
+
+    var markersAdded: ArrayList<Marker>
+        get() = savedStateHandle.get<ArrayList<Marker>>(MARKERS_TO_ADD) ?: ArrayList()
+        set(value) = savedStateHandle.set(MARKERS_TO_ADD, value)
 
     private fun initStartPlace() {
 
