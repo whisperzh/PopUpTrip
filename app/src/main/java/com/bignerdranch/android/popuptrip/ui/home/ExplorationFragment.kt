@@ -130,6 +130,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         destinationName = explorationViewModel.destinationName
         oldText = explorationViewModel.oldText
         startingPlace = explorationViewModel.startingPlace
+//        currentLocationLatLng = startingPlace.latLng
         destinationPlace = explorationViewModel.destination
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
@@ -149,9 +150,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
         Log.d(TAG, "Recreating map in onCreateView")
+
         // launch the support map fragment
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+//        explorationViewModel.mapVIew = mapFragment
 
         fusedLocationClient = activity?.let {
             LocationServices
@@ -226,7 +230,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                     } else if (newText.toString() == "Your Location" && startingPointName == "") {
                         Log.d(TAG, "Start point set to current location")
-                        mMap.clear()
+//                        mMap.clear()
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
@@ -548,6 +552,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // get route from startingPlace to destinationPlace
     private fun getDirections() {
+        Log.d(TAG, "check currentLationLatLng is null?")
         if (!this::currentLocationLatLng.isInitialized) {
             Log.d(TAG, "Current location is null")
             getLocation()

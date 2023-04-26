@@ -2,6 +2,9 @@ package com.bignerdranch.android.popuptrip.ui.home
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.libraries.places.api.model.Place
@@ -17,10 +20,14 @@ const val MAX_SW_BOUNDS = "MAX_SW_BOUNDS"
 const val MAX_NE_BOUNDS = "MAX_NE_BOUNDS"
 const val STARTING_POINT_ID = "STARTING_POINT_ID"
 const val DESTINATION_POINT_ID = "DESTINATION_POINT_ID"
+//const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+//    private var startPlace: DetailedPlace = DetailedPlace()
     private var startPlace: Place = Place.builder().build()
     private var destinationPlace: Place = Place.builder().build()
+//    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
+
     // include entire world
     private var mapBound: LatLngBounds = LatLngBounds.builder()
         .include(LatLng(-90.0, -180.0))
@@ -72,4 +79,13 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var destinationPointId: String
         get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
         set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
+
+//    var mapVIew: SupportMapFragment
+//        get() = savedStateHandle.get<SupportMapFragment>(MAP_VIEW) ?: supportMapFragment
+//        set(value) = savedStateHandle.set(MAP_VIEW, value)
+
+    private fun initStartPlace() {
+
+    }
+
 }

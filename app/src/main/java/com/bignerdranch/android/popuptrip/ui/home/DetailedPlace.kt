@@ -14,5 +14,9 @@ data class DetailedPlace(
     val placeVicinity: String,
     val photoReference: String,
 //    val placeIsOpen: Boolean,
-//    val placePhotos: kotlin.collections.List<ImageView>
-)
+) {
+    // Default constructor
+    constructor() : this("ChIJ-dKkUfd544kR5cY9D2MncuM", LatLng(0.0, 0.0), "dummy name", 0.0f, "", "")
+}
+
+
