@@ -155,6 +155,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
 
+        // inflate Place Detailed Dialog
+        val detailedPlaceDialogLayout = LayoutInflater.from(requireContext()).inflate(R.layout.detailed_place_dialog, null)
+
         Log.d(TAG, "Recreating map in onCreateView")
 
         // launch the support map fragment
@@ -733,6 +736,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             for (k in 0 until results.length()) {
                                 Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
                                 val resultObject: JSONObject = results[k] as JSONObject
+                                Log.d(TAG, "returned JSON object: $resultObject")
 
                                 val placeId = resultObject.getString("place_id")
                                 val placeName = resultObject.getString("name")
@@ -742,8 +746,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeRating = resultObject.getString("rating").toFloat()
                                 val placeAddress = resultObject.getString("formatted_address")
 
-//                                val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
-
                                 val photo = resultObject.optJSONArray("photos")
                                 val photoReference: String? = if (photo != null && photo.length() > 0) {
                                     val photoObject = photo.getJSONObject(0)
@@ -751,10 +753,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 } else {
                                     null
                                 }
-//                                Log.d(TAG, "resultObject photo_ref is: $photoReference")
+                                val placeOpeningHours = resultObject.getJSONObject("opening_hours")
+                                val placeOpenNow: Boolean? = if (placeOpeningHours != null) {
+                                    placeOpeningHours.getString("open_now").toBoolean()
+                                } else {
+                                    null
+                                }
 
-
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString())
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeOpenNow = placeOpenNow)
                                 val markerColor: Float
 
                                 if (placeLatLng !in placesReturned) {
@@ -762,16 +768,21 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
 
-                                    markerColor = if (placeTypes[j] in entertainmentCategory) {
-                                        BitmapDescriptorFactory.HUE_ROSE
+                                    if (placeTypes[j] in entertainmentCategory) {
+                                        markerColor = BitmapDescriptorFactory.HUE_ROSE
+                                        placeToMark.placeCategory = getString(R.string.category_title_entertainment)
                                     } else if (placeTypes[j] in cultureCategories) {
-                                        BitmapDescriptorFactory.HUE_BLUE
+                                        markerColor = BitmapDescriptorFactory.HUE_BLUE
+                                        placeToMark.placeCategory = getString(R.string.category_title_culture)
                                     } else if (placeTypes[j] in foodCategories) {
-                                        BitmapDescriptorFactory.HUE_ORANGE
+                                        markerColor = BitmapDescriptorFactory.HUE_ORANGE
+                                        placeToMark.placeCategory = getString(R.string.category_title_food)
                                     } else if (placeTypes[j] in natureCategories) {
-                                        BitmapDescriptorFactory.HUE_GREEN
+                                        markerColor = BitmapDescriptorFactory.HUE_GREEN
+                                        placeToMark.placeCategory = getString(R.string.category_title_nature)
                                     } else { // Nightlife
-                                        BitmapDescriptorFactory.HUE_VIOLET
+                                        markerColor = BitmapDescriptorFactory.HUE_VIOLET
+                                        placeToMark.placeCategory = getString(R.string.category_title_nightlife)
                                     }
 
                                     val marker = mMap.addMarker(MarkerOptions()

@@ -14,9 +14,13 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -47,7 +51,9 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
+import com.bignerdranch.android.popuptrip.R
 import com.google.android.libraries.places.api.model.Place
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -59,7 +65,13 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val args: HomeFragmentArgs by navArgs()
 
+    // Recycler list & dialog implementation
     private val nearbyPlaceListViewModel: NearbyPlaceListViewModel by viewModels()
+    private lateinit var detailedPlaceDialog: AlertDialog
+    private lateinit var placeRatingBar: RatingBar
+    private lateinit var placeVicinityTextView: TextView
+    private lateinit var placeTypesTextView: TextView
+    private lateinit var placeImageView: ImageView
 
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
@@ -98,6 +110,24 @@ class HomeFragment : Fragment() {
         preferenceType.add("restaurant")
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        // inflate Place Detailed Dialog
+        val detailedPlaceDialogLayout = LayoutInflater.from(requireContext()).inflate(R.layout.detailed_place_dialog, null)
+
+        placeRatingBar = detailedPlaceDialogLayout.findViewById<RatingBar>(R.id.detailed_place_dialog_rating)
+        placeVicinityTextView = detailedPlaceDialogLayout.findViewById<TextView>(R.id.detailed_place_dialog_vicinity)
+        placeImageView = detailedPlaceDialogLayout.findViewById<ImageView>(R.id.detailed_place_dialog_img)
+        placeTypesTextView = detailedPlaceDialogLayout.findViewById(R.id.detailed_place_dialog_types)
+
+        detailedPlaceDialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(detailedPlaceDialogLayout)
+            .setPositiveButton(R.string.detailed_place_dialog_select_button) { _, _ ->
+                // Handle positive button click
+            }
+            .setNeutralButton(R.string.back_button) { _, _ ->
+                // Handle negative button click
+            }
+            .create()
 
         // to inflate nearby places list
         binding.nearbyPlacesRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -278,7 +308,7 @@ class HomeFragment : Fragment() {
 
                                 for (i in 0 until resultsArray.length()) {
                                     val resultObject = resultsArray.getJSONObject(i)
-//                                    Log.d(TAG, "result $i: $resultObject")
+                                    Log.d(TAG, "result $i: $resultObject")
                                     val placeId = resultObject.getString("place_id")
                                     val placeName = resultObject.getString("name")
                                     val geometry = resultObject.getJSONObject("geometry")
@@ -287,26 +317,49 @@ class HomeFragment : Fragment() {
 
                                     val placeRating = resultObject.getString("rating")
 
-//                                    val placeRating: Float? = if (tempRating != null) {
-//                                        tempRating.toFloat()
-//                                    } else {
-//                                        null
-//                                    }
+                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
+                                    val placeOpenNow: Boolean? = if (placeOpeningHours != null) {
+                                        placeOpeningHours.getString("open_now").toBoolean()
+                                    } else {
+                                        null
+                                    }
+
+                                    val placeTypes = jsonArrayToStringList(resultObject.optJSONArray("types"))
+                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
                                     val placeAddress = resultObject.getString("vicinity")
-//                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
-//                                    val placeOpenNow = placeOpeningHours.getBoolean("open_now")
 
-                                    val photo_refs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
-//                                    Log.d(TAG, "extracted photo ref: $photo_refs")
+                                    val photRefs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
 
-                                    val placeToAdd = DetailedPlace(placeId, placeLatLng, placeName, placeRating!!.toFloat(), placeAddress, photo_refs)
+                                    val placeToAdd = DetailedPlace(placeId,
+                                        placeLatLng,
+                                        placeName,
+                                        placeRating!!.toFloat(),
+                                        placeAddress,
+                                        photRefs,
+                                        placeTypes = placeTypes.joinToString(),
+                                        placeOpenNow = placeOpenNow)
 
                                     nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                 }
 
                                 val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
-                                binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces)
+                                binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
+                                    // Handle item click here
+                                    val clickedPlace = nearbyPlaces[position]
+                                    Toast.makeText(context, "Clicked: ${clickedPlace.placeName}", Toast.LENGTH_SHORT).show()
+                                    detailedPlaceDialog.setTitle(clickedPlace.placeName)
+                                    placeRatingBar.rating = clickedPlace.placeRating
+                                    placeVicinityTextView.text = clickedPlace.placeVicinity
+
+                                    if(clickedPlace.placeTypes!=null){
+                                        placeTypesTextView.text = clickedPlace.placeTypes
+                                    } else {
+                                        placeTypesTextView.visibility = GONE
+                                    }
+
+                                    detailedPlaceDialog.show()
+                                }
                             },
                             onError = { error ->
                                 Log.i(TAG, "Failed to fetch nearby places $error")
@@ -352,6 +405,14 @@ class HomeFragment : Fragment() {
             })
 
         requestQueue.add(stringRequest)
+    }
+
+    fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
+        val list = mutableListOf<String>()
+        for (i in 0 until jsonArray.length()) {
+            list.add(jsonArray.getString(i))
+        }
+        return list
     }
 
     override fun onDestroyView() {

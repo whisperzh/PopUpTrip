@@ -13,10 +13,18 @@ data class DetailedPlace(
     val placeRating: Float,
     val placeVicinity: String,
     val photoReference: String,
-//    val placeIsOpen: Boolean,
+    var placeCategory: String? = null,
+    var placeTypes: String? = null,
+    var placeOpenNow: Boolean? = null,
 ) {
     // Default constructor
-    constructor() : this("ChIJ-dKkUfd544kR5cY9D2MncuM", LatLng(0.0, 0.0), "dummy name", 0.0f, "", "")
+    constructor() : this(
+        "ChIJ-dKkUfd544kR5cY9D2MncuM",
+        LatLng(0.0, 0.0),
+        "dummy name",
+        0.0f,
+        "",
+        "")
 }
 
 
