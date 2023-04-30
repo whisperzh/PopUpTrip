@@ -74,6 +74,7 @@ class HomeFragment : Fragment() {
     private lateinit var placeVicinityTextView: TextView
     private lateinit var placeTypesTextView: TextView
     private lateinit var placeImageView: ImageView
+    private lateinit var placeIdToSend: String
 
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
@@ -127,12 +128,22 @@ class HomeFragment : Fragment() {
         detailedPlaceDialog = MaterialAlertDialogBuilder(requireContext())
             .setView(detailedPlaceDialogLayout)
             .setPositiveButton(R.string.detailed_place_dialog_select_button) { _, _ ->
-                // Handle positive button click
+                // Launch navigation to exploration page
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        findNavController().navigate(
+                            HomeFragmentDirections.homeToExplorationAction(placeIdToSend)
+                        )
+                    }
+                }
             }
             .setNeutralButton(R.string.back_button) { _, _ ->
                 // Handle negative button click
             }
             .create()
+
+        // outside click does not close the dialog
+        detailedPlaceDialog.setCanceledOnTouchOutside(false)
 
         // to inflate nearby places list
         binding.nearbyPlacesRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -329,7 +340,11 @@ class HomeFragment : Fragment() {
                                     val placeOpenNow: Boolean? =
                                         placeOpeningHours?.optString("open_now")?.toBoolean()
 
-                                    val placeTypes = jsonArrayToStringList(resultObject.optJSONArray("types"))
+                                    val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
+
+                                    // remove "point of interest", "establishment"
+                                    val placeTypes = placeTypesTemp.dropLast(2)
+
 //                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
                                     val placeAddress = resultObject.getString("vicinity")
@@ -349,7 +364,7 @@ class HomeFragment : Fragment() {
                                         placeRating,
                                         placeAddress,
                                         photoReference,
-                                        placeTypes = placeTypes.joinToString(),
+                                        placeTypes = placeTypes.joinToString().replace("_", " "),
                                         placeOpenNow = placeOpenNow)
 
                                     nearbyPlaceListViewModel.updatePlaces(placeToAdd)
@@ -359,7 +374,7 @@ class HomeFragment : Fragment() {
                                 binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
                                     // Handle item click here
                                     val clickedPlace = nearbyPlaces[position]
-                                    Toast.makeText(context, "Clicked: ${clickedPlace.placeName}", Toast.LENGTH_SHORT).show()
+                                    placeIdToSend = clickedPlace.placeId
                                     detailedPlaceDialog.setTitle(clickedPlace.placeName)
                                     if(clickedPlace.placeRating==null){
                                         placeRatingBar.visibility = GONE
@@ -373,6 +388,12 @@ class HomeFragment : Fragment() {
                                         placeTypesTextView.text = clickedPlace.placeTypes
                                     } else {
                                         placeTypesTextView.visibility = GONE
+                                    }
+
+                                    if(clickedPlace.placeImgBitmap!=null){
+                                        placeImageView.setImageBitmap(clickedPlace.placeImgBitmap)
+                                    } else {
+                                        placeImageView.setImageResource(R.drawable.no_available_img)
                                     }
 
                                     detailedPlaceDialog.show()

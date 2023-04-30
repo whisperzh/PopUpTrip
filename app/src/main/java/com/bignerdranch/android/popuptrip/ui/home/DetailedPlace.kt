@@ -1,4 +1,5 @@
 package com.bignerdranch.android.popuptrip.ui.home
+import android.graphics.Bitmap
 import android.widget.ImageView
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -16,6 +17,7 @@ data class DetailedPlace(
     var placeCategory: String? = null,
     var placeTypes: String? = null,
     var placeOpenNow: Boolean? = null,
+    var placeImgBitmap: Bitmap? = null,
 ) {
     // Default constructor
     constructor() : this(
