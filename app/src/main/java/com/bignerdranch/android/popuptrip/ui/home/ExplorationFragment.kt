@@ -96,8 +96,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var oldText: String? = null
     private lateinit var maxSWBounds: LatLng
     private lateinit var maxNEBounds: LatLng
-    private var placesToAdd: ArrayList<DetailedPlace> = ArrayList()
-    private var markersAdded: ArrayList<Marker> = ArrayList()
+    private var placesToAdd: ArrayList<DetailedPlace> = ArrayList() // Places selected by user to add to route
+    private var markersAdded: ArrayList<Marker> = ArrayList() // Markers for recommended places
+    private lateinit var polyline: Polyline
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -114,7 +115,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
-    private lateinit var polyline: Polyline
     private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
     private val natureCategories = arrayListOf<String>("campground", "park")
@@ -288,6 +288,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPointName = startingPlace.name
                         currentLocationLatLng = startingPlace.latLng
                         startingPointAddressInputEditText.setText(startingPointName)
+                        Log.d(TAG, "Starting Place: $startingPlace")
                         Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
                         Log.d(TAG, "On starting point selected")
                         markCurrentLocation(startingPointName)
@@ -369,7 +370,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             destinationPlace = response.place
                             destinationName = destinationPlace.name
                             destinationAddressInputEditText.setText(destinationName)
-                            Log.i(TAG, "Starting Point Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
+                            Log.i(TAG, "Destination Point Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
                             // to clear any previously selected locations
                             mMap.clear()
@@ -410,10 +411,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //            mMap.clear()
             getLocation()
         }
-            if (this::currentLocationLatLng.isInitialized) {
-                markDestination()
-                markCurrentLocation("Your Location")
-                getDirections()
+
+//        getLocation()
+//        markDestination()
+//        markCurrentLocation("Your Location")
+//        getDirections()
+
+        if (this::currentLocationLatLng.isInitialized) {
+            markDestination()
+            markCurrentLocation("Your Location")
+            getDirections()
         }
 
         binding.adjustMapBoundButton.setOnClickListener{
@@ -447,6 +454,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
             destinationPlace = response.place
             destinationName = destinationPlace.name
+            Log.d(TAG, "Destination Place: $destinationPlace")
             Log.i(TAG, "Destination Place Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
             binding.destTextInputTextfield.setText(destinationName)
@@ -460,6 +468,102 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         setupMarkerClickListener(mMap)
+
+        // Re-plot the markers (used when toggling away the coming back to Exploration page)
+        Log.d(TAG, "Checking if anything to re-plot onMapReady")
+        for (i in 0 until markersAdded.size) {
+            Log.d(TAG, "Re-plotting markers in onMapReady")
+            val marker: Marker = markersAdded[i]
+            val position: LatLng = marker.position
+            if (placesToAdd.size > 0) {
+                for (j in 0 until placesToAdd.size) {
+                    val detailedPlace: DetailedPlace = placesToAdd[j]
+                    val markerColor = when (detailedPlace.placeCategory) {
+                        getString(R.string.category_title_entertainment) -> {
+                            BitmapDescriptorFactory.HUE_ROSE
+                        }
+                        getString(R.string.category_title_culture) -> {
+                            BitmapDescriptorFactory.HUE_BLUE
+                        }
+                        getString(R.string.category_title_food) -> {
+                            BitmapDescriptorFactory.HUE_ORANGE
+                        }
+                        getString(R.string.category_title_nature) -> {
+                            BitmapDescriptorFactory.HUE_GREEN
+                        }
+                        else -> { // Nightlife
+                            BitmapDescriptorFactory.HUE_VIOLET
+                        }
+                    }
+
+                    if (detailedPlace.placeLatLng == position) {
+                        markersAdded.removeAt(i)
+//                        marker.remove()
+                        val updatedMarker = mMap.addMarker(MarkerOptions()
+                            .position(position)
+                            .title(detailedPlace.placeName)
+                            .alpha(0.6f)
+                            .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                        )
+
+                        if (updatedMarker != null) {
+                            updatedMarker.tag = detailedPlace
+                            markersAdded.add(i, updatedMarker)
+                        }
+
+                        break
+                    }
+
+                    // Not selected by user to be in the route
+                    if (j == placesToAdd.size - 1) {
+                        markersAdded.removeAt(i)
+//                        marker.remove()
+                        val updatedMarker = mMap.addMarker(MarkerOptions()
+                            .position(position)
+                            .title(detailedPlace.placeName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                        )
+
+                        if (updatedMarker != null) {
+                            updatedMarker.tag = detailedPlace
+                            markersAdded.add(i, updatedMarker)
+                        }
+                    }
+                }
+            } else {
+                val markerTitle = marker.title
+                val markerTag: DetailedPlace = marker.tag as DetailedPlace
+                val markerColor = when (markerTag.placeCategory) {
+                    getString(R.string.category_title_entertainment) -> {
+                        BitmapDescriptorFactory.HUE_ROSE
+                    }
+                    getString(R.string.category_title_culture) -> {
+                        BitmapDescriptorFactory.HUE_BLUE
+                    }
+                    getString(R.string.category_title_food) -> {
+                        BitmapDescriptorFactory.HUE_ORANGE
+                    }
+                    getString(R.string.category_title_nature) -> {
+                        BitmapDescriptorFactory.HUE_GREEN
+                    }
+                    else -> { // Nightlife
+                        BitmapDescriptorFactory.HUE_VIOLET
+                    }
+                }
+                markersAdded.removeAt(i)
+//                marker.remove()
+                val updatedMarker = mMap.addMarker(MarkerOptions()
+                    .position(position)
+                    .title(markerTitle)
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                )
+
+                if (updatedMarker != null) {
+                    updatedMarker.tag = markerTag
+                    markersAdded.add(i, updatedMarker)
+                }
+            }
+        }
     }
 
     private fun isLocationEnabled(): Boolean {
@@ -878,79 +982,94 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
         placesToAdd.add(detailedPlace)
 
-//        val markerColor = if (detailedPlace.placeType in entertainmentCategory) {
-//            BitmapDescriptorFactory.HUE_ROSE
-//        } else if (detailedPlace.placeType in cultureCategories) {
-//            BitmapDescriptorFactory.HUE_BLUE
-//        } else if (detailedPlace.placeType in foodCategories) {
-//            BitmapDescriptorFactory.HUE_ORANGE
-//        } else if (detailedPlace.placeType in natureCategories) {
-//            BitmapDescriptorFactory.HUE_GREEN
-//        } else { // Nightlife
-//            BitmapDescriptorFactory.HUE_VIOLET
-//        }
+        val markerColor = when (detailedPlace.placeCategory) {
+            getString(R.string.category_title_entertainment) -> {
+                BitmapDescriptorFactory.HUE_ROSE
+            }
+            getString(R.string.category_title_culture) -> {
+                BitmapDescriptorFactory.HUE_BLUE
+            }
+            getString(R.string.category_title_food) -> {
+                BitmapDescriptorFactory.HUE_ORANGE
+            }
+            getString(R.string.category_title_nature) -> {
+                BitmapDescriptorFactory.HUE_GREEN
+            }
+            else -> { // Nightlife
+                BitmapDescriptorFactory.HUE_VIOLET
+            }
+        }
 
-//        for (i in 0 until markersAdded.size) {
-//            val marker: Marker = markersAdded[i]
-//            val position: LatLng = marker.position
-//            if (marker.position == detailedPlace.placeLatLng) {
-//                marker.remove()
-//                // Re-plot the marker, alpha = 0.6
-//                val updatedMarker = mMap.addMarker(MarkerOptions()
-//                    .position(position)
-//                    .title(detailedPlace.placeName)
-//                    .alpha(0.6f)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-//                )
-//
-//                if (updatedMarker != null) {
-//                    updatedMarker.tag = detailedPlace
-//                    markersAdded.add(updatedMarker)
-//                }
-//            }
-//        }
+        for (i in 0 until markersAdded.size) {
+            val marker: Marker = markersAdded[i]
+            val position: LatLng = marker.position
+            if (marker.position == detailedPlace.placeLatLng) {
+                markersAdded.removeAt(i)
+                marker.remove()
+                // Re-plot the marker, alpha = 0.6
+                val updatedMarker = mMap.addMarker(MarkerOptions()
+                    .position(position)
+                    .title(detailedPlace.placeName)
+                    .alpha(0.6f)
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                )
+
+                if (updatedMarker != null) {
+                    updatedMarker.tag = detailedPlace
+                    markersAdded.add(i, updatedMarker)
+                }
+            }
+        }
     }
 
     // When a detailed place is removed from the route by the user
     private fun removePlaceFromRoute(detailedPlace: DetailedPlace) {
         placesToAdd.remove(detailedPlace)
 
-//        val markerColor = if (detailedPlace.placeType in entertainmentCategory) {
-//            BitmapDescriptorFactory.HUE_ROSE
-//        } else if (detailedPlace.placeType in cultureCategories) {
-//            BitmapDescriptorFactory.HUE_BLUE
-//        } else if (detailedPlace.placeType in foodCategories) {
-//            BitmapDescriptorFactory.HUE_ORANGE
-//        } else if (detailedPlace.placeType in natureCategories) {
-//            BitmapDescriptorFactory.HUE_GREEN
-//        } else { // Nightlife
-//            BitmapDescriptorFactory.HUE_VIOLET
-//        }
-//
-//        for (i in 0 until markersAdded.size) {
-//            val marker: Marker = markersAdded[i]
-//            val position: LatLng = marker.position
-//            if (marker.position == detailedPlace.placeLatLng) {
-//                marker.remove()
-//                // Re-plot the marker, alpha = 1.0
-//                val updatedMarker = mMap.addMarker(MarkerOptions()
-//                    .position(position)
-//                    .title(detailedPlace.placeName)
-//                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-//                )
-//
-//                if (updatedMarker != null) {
-//                    updatedMarker.tag = detailedPlace
-//                    markersAdded.add(updatedMarker)
-//                }
-//            }
-//        }
+        val markerColor = when (detailedPlace.placeCategory) {
+            getString(R.string.category_title_entertainment) -> {
+                BitmapDescriptorFactory.HUE_ROSE
+            }
+            getString(R.string.category_title_culture) -> {
+                BitmapDescriptorFactory.HUE_BLUE
+            }
+            getString(R.string.category_title_food) -> {
+                BitmapDescriptorFactory.HUE_ORANGE
+            }
+            getString(R.string.category_title_nature) -> {
+                BitmapDescriptorFactory.HUE_GREEN
+            }
+            else -> { // Nightlife
+                BitmapDescriptorFactory.HUE_VIOLET
+            }
+        }
+
+        for (i in 0 until markersAdded.size) {
+            val marker: Marker = markersAdded[i]
+            val position: LatLng = marker.position
+            if (marker.position == detailedPlace.placeLatLng) {
+                markersAdded.removeAt(i)
+                marker.remove()
+                // Re-plot the marker, alpha = 1.0
+                val updatedMarker = mMap.addMarker(MarkerOptions()
+                    .position(position)
+                    .title(detailedPlace.placeName)
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                )
+
+                if (updatedMarker != null) {
+                    updatedMarker.tag = detailedPlace
+                    markersAdded.add(i, updatedMarker)
+                }
+            }
+        }
     }
 
     private fun getCurrentDateTime(): LocalDateTime? {
         return LocalDateTime.now()
     }
 
+    // To send data to Itinerary
     private fun createPOSTRequestItinerary() {
         /** Params for POST request:
          * start_time: DATE_TIME

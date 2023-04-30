@@ -2,13 +2,9 @@ package com.bignerdranch.android.popuptrip.ui.home
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.Polyline
 import com.google.android.libraries.places.api.model.Place
 
 private const val TAG = "ExplorationViewModel"
@@ -29,8 +25,9 @@ const val POLYLINE = "POLYLINE"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
 //    private var startPlace: DetailedPlace = DetailedPlace()
-    private var startPlace: Place = Place.builder().build()
-    private var destinationPlace: Place = Place.builder().build()
+//    private var startPlace: Place = Place.builder().build()
+//    private lateinit var startPlace: Place
+//    private var destinationPlace: Place = Place.builder().build()
 //    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
 
     // include entire world
@@ -42,8 +39,8 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
     // 655 Commonwealth Avenue
     private var startingId: String = "ChIJ-dKkUfd544kR5cY9D2MncuM"
-    // 111 Huntington Avenue
-    private var destinationId: String = "ChIJh6XMxhF644kRNS4bI8jjFC4"
+    // 575 Memorial Drive
+    private var destinationId: String = "ChIJEU9Qpft544kRJ4DIMqb2VhA"
 //    private var polylineDefault: Polyline = ""
 
     var startingPointName: String
@@ -59,11 +56,11 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         set(value) = savedStateHandle.set(OLD_TEXT_STRING, value)
 
     var startingPlace: Place
-        get() = savedStateHandle.get<Place>(STARTING_PLACE) ?: startPlace
+        get() = savedStateHandle.get<Place>(STARTING_PLACE) ?: initStartPlace()
         set(value) = savedStateHandle.set(STARTING_PLACE, value)
 
     var destination: Place
-        get() = savedStateHandle.get<Place>(DESTINATION_PLACE) ?: destinationPlace
+        get() = savedStateHandle.get<Place>(DESTINATION_PLACE) ?: initDestination()
         set(value) = savedStateHandle.set(DESTINATION_PLACE, value)
 
     var mapBounds: LatLngBounds
@@ -102,8 +99,24 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
 //        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
 //        set(value) = savedStateHandle.set(POLYLINE, value)
 
-    private fun initStartPlace() {
+    private fun initStartPlace(): Place {
+        val placeBuilder = Place.builder()
+            .setAddress("655 Commonwealth Ave, Boston, MA 02215, USA")
+            .setId("ChIJ-dKkUfd544kR5cY9D2MncuM")
+            .setLatLng(LatLng(42.34993389999999,-71.1027624))
+            .setName("655 Commonwealth Ave")
 
+        return placeBuilder.build()
+    }
+
+    private fun initDestination(): Place {
+        val placeBuilder = Place.builder()
+            .setAddress("575 Memorial Dr, Cambridge, MA 02139, USA")
+            .setId("ChIJEU9Qpft544kRJ4DIMqb2VhA")
+            .setLatLng(LatLng(42.3544178,-71.1057659))
+            .setName("575 Memorial Dr")
+
+        return placeBuilder.build()
     }
 
 }
