@@ -97,11 +97,16 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate called")
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i(TAG, "onCreateView called")
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -166,6 +171,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated called")
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -311,6 +317,8 @@ class HomeFragment : Fragment() {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
+                            nearbyPlaceListViewModel.clearPlaceList()
+
                             fetchNearbyPlaces(
                             requireContext(),
                             currentLocationLatLng.latitude,
@@ -318,7 +326,7 @@ class HomeFragment : Fragment() {
                             radius,
                             MAPS_API_KEY,
                             onSuccess = { response ->
-                                Log.i(TAG, "Succeed to fetch nearby places")
+                                Log.d(TAG, "Succeed to fetch nearby places")
                                 val jsonResponse = JSONObject(response)
                                 val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
 
@@ -506,11 +514,9 @@ class HomeFragment : Fragment() {
 
             requestQueue.add(stringRequest)
         }
-
-
     }
 
-    fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
+    private fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
         val list = mutableListOf<String>()
         for (i in 0 until jsonArray.length()) {
             list.add(jsonArray.getString(i))
@@ -518,9 +524,29 @@ class HomeFragment : Fragment() {
         return list
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.i(TAG, "onStart called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, "onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "onPause called")
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i(TAG, "onDestroyView called")
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy called")
     }
 
 
