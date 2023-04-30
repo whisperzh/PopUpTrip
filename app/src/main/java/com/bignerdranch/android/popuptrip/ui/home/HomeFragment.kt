@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,6 +16,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -81,7 +83,12 @@ class HomeFragment : Fragment() {
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
     private val radius = 1500
-    private val preferenceType = mutableListOf<String>()
+
+    private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
+    private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
+    private val natureCategories = arrayListOf<String>("campground", "park")
+    private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
+    private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
 
     private var destinationName = ""
 
@@ -106,8 +113,6 @@ class HomeFragment : Fragment() {
             destinationName = receivedName
         }
 
-        // TODO: get user preferred types of places for recommendation
-        preferenceType.add("restaurant")
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
@@ -315,28 +320,35 @@ class HomeFragment : Fragment() {
                                     val location = geometry.getJSONObject("location")
                                     val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
 
-                                    val placeRating = resultObject.getString("rating")
+                                    val rating = resultObject.optString("rating", null)
 
-                                    val placeOpeningHours = resultObject.getJSONObject("opening_hours")
-                                    val placeOpenNow: Boolean? = if (placeOpeningHours != null) {
-                                        placeOpeningHours.getString("open_now").toBoolean()
-                                    } else {
-                                        null
-                                    }
+                                    val placeRating = rating?.toFloat()
+
+
+                                    val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                                    val placeOpenNow: Boolean? =
+                                        placeOpeningHours?.optString("open_now")?.toBoolean()
 
                                     val placeTypes = jsonArrayToStringList(resultObject.optJSONArray("types"))
-                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
+//                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
                                     val placeAddress = resultObject.getString("vicinity")
 
-                                    val photRefs = resultObject.getJSONArray("photos").getJSONObject(0).getString("photo_reference")
+                                    val photo = resultObject.optJSONArray("photos")
+                                    val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                        val photoObject = photo.getJSONObject(0)
+                                        photoObject.optString("photo_reference", null)
+                                    } else {
+                                        null
+                                    }
+//                                    val photRefs = resultObject.optJSONArray("photos").optJSONObject(0).optString("photo_reference")
 
                                     val placeToAdd = DetailedPlace(placeId,
                                         placeLatLng,
                                         placeName,
-                                        placeRating!!.toFloat(),
+                                        placeRating,
                                         placeAddress,
-                                        photRefs,
+                                        photoReference,
                                         placeTypes = placeTypes.joinToString(),
                                         placeOpenNow = placeOpenNow)
 
@@ -349,7 +361,12 @@ class HomeFragment : Fragment() {
                                     val clickedPlace = nearbyPlaces[position]
                                     Toast.makeText(context, "Clicked: ${clickedPlace.placeName}", Toast.LENGTH_SHORT).show()
                                     detailedPlaceDialog.setTitle(clickedPlace.placeName)
-                                    placeRatingBar.rating = clickedPlace.placeRating
+                                    if(clickedPlace.placeRating==null){
+                                        placeRatingBar.visibility = GONE
+                                    } else {
+                                        placeRatingBar.visibility = VISIBLE
+                                        placeRatingBar.rating = clickedPlace.placeRating
+                                    }
                                     placeVicinityTextView.text = clickedPlace.placeVicinity
 
                                     if(clickedPlace.placeTypes!=null){
@@ -388,23 +405,88 @@ class HomeFragment : Fragment() {
         onSuccess: (response: String) -> Unit,
         onError: (error: String) -> Unit
     ) {
+        val placeTypes = arrayListOf<String>()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val userChoiceFood = prefs.getString("food_selection", "")
+        val userChoiceEntertainment = prefs.getString("enter_selection", "")
+        val userChoiceCulture = prefs.getString("culture_selection", "")
+        val userChoiceNature = prefs.getString("nature_selection", "")
+        val userChoiceNightlife = prefs.getString("nightlife_selection", "")
 
-        //TODO: fetch requests based on user preferred place type
-        Log.d(TAG, "fetchNearbyPlaces() is called")
-        val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=restaurant&key=$apiKey"
+        if (userChoiceFood != "" && userChoiceFood != null) {
+            val array = userChoiceFood.split(",")
 
-        val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
 
-        val stringRequest = StringRequest(
-            Request.Method.GET, requestUrl,
-            Response.Listener { response ->
-                onSuccess(response)
-            },
-            Response.ErrorListener { error ->
-                onError(error.toString())
-            })
+        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
+            val array = userChoiceEntertainment.split(",")
 
-        requestQueue.add(stringRequest)
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceCulture != "" && userChoiceCulture != null) {
+            val array = userChoiceCulture.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceNature != "" && userChoiceNature != null) {
+            val array = userChoiceNature.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceNightlife != "" && userChoiceNightlife != null) {
+            val array = userChoiceNightlife.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (placeTypes == null || placeTypes.size == 0) {
+            placeTypes.addAll(entertainmentCategory)
+            placeTypes.addAll(cultureCategories)
+            placeTypes.addAll(foodCategories)
+            placeTypes.addAll(natureCategories)
+            placeTypes.addAll(nightLifeCategories)
+        }
+
+        Log.d(TAG, "Place Types: $placeTypes")
+        for (i in 0 until placeTypes.size) {
+            //TODO: fetch requests based on user preferred place type
+            Log.d(TAG, "fetchNearbyPlaces() is called on place type: ${placeTypes[i]}")
+            val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=${placeTypes[i]}&key=$apiKey"
+
+            val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+
+            val stringRequest = StringRequest(
+                Request.Method.GET, requestUrl,
+                Response.Listener { response ->
+                    onSuccess(response)
+                },
+                Response.ErrorListener { error ->
+                    onError(error.toString())
+                })
+
+            requestQueue.add(stringRequest)
+        }
+
+
     }
 
     fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {

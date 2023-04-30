@@ -15,6 +15,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
+import com.bignerdranch.android.popuptrip.R
 import kotlinx.coroutines.launch
 
 
@@ -52,30 +53,30 @@ class NearbyPlaceListAdapter (
             binding.placeName.text = place.placeName
             binding.placeVicinity.text = place.placeVicinity
             if(place.placeRating!=null){
+                binding.placeRating.visibility = View.VISIBLE
                 binding.placeRating.rating = place.placeRating
             } else {
                 binding.placeRating.visibility = View.GONE
             }
 
-
             val photoRef = place.photoReference
-            MainScope().launch {
-                val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
-                if (bitmap != null) {
-                    binding.placeImg.setImageBitmap(bitmap)
-                    Log.d(TAG, "ImageView fetch succeeded")
-                } else {
-                    // Handle the error (e.g., show a placeholder or error image)
-                    Log.d(TAG, "ImageView fetch failed")
+            if (photoRef!=null){
+                MainScope().launch {
+                    val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
+                    if (bitmap != null) {
+                        binding.placeImg.setImageBitmap(bitmap)
+                        Log.d(TAG, "ImageView fetch succeeded")
+                    } else {
+                        // Handle the error (e.g., show a placeholder or error image)
+                        Log.d(TAG, "ImageView fetch failed")
+                    }
                 }
+            } else {
+                binding.placeImg.setImageResource(R.drawable.no_available_img)
             }
-
         }
-
-
-
-
     }
+
     override fun getItemCount() = places.size
 
     private suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {

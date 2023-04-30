@@ -753,12 +753,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 } else {
                                     null
                                 }
-                                val placeOpeningHours = resultObject.getJSONObject("opening_hours")
-                                val placeOpenNow: Boolean? = if (placeOpeningHours != null) {
-                                    placeOpeningHours.getString("open_now").toBoolean()
-                                } else {
-                                    null
-                                }
+                                val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                                val placeOpenNow: Boolean? =
+                                    placeOpeningHours?.getString("open_now")?.toBoolean()
 
                                 val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeOpenNow = placeOpenNow)
                                 val markerColor: Float
