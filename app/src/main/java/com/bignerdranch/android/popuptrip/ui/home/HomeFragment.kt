@@ -74,6 +74,7 @@ class HomeFragment : Fragment() {
     private lateinit var placeVicinityTextView: TextView
     private lateinit var placeTypesTextView: TextView
     private lateinit var placeImageView: ImageView
+    private lateinit var placeIdToSend: String
 
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
@@ -96,11 +97,16 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate called")
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i(TAG, "onCreateView called")
         val homeViewModel =
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
@@ -127,12 +133,22 @@ class HomeFragment : Fragment() {
         detailedPlaceDialog = MaterialAlertDialogBuilder(requireContext())
             .setView(detailedPlaceDialogLayout)
             .setPositiveButton(R.string.detailed_place_dialog_select_button) { _, _ ->
-                // Handle positive button click
+                // Launch navigation to exploration page
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        findNavController().navigate(
+                            HomeFragmentDirections.homeToExplorationAction(placeIdToSend)
+                        )
+                    }
+                }
             }
             .setNeutralButton(R.string.back_button) { _, _ ->
                 // Handle negative button click
             }
             .create()
+
+        // outside click does not close the dialog
+        detailedPlaceDialog.setCanceledOnTouchOutside(false)
 
         // to inflate nearby places list
         binding.nearbyPlacesRecyclerView.layoutManager = LinearLayoutManager(context)
@@ -155,6 +171,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(TAG, "onViewCreated called")
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -300,6 +317,8 @@ class HomeFragment : Fragment() {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
+                            nearbyPlaceListViewModel.clearPlaceList()
+
                             fetchNearbyPlaces(
                             requireContext(),
                             currentLocationLatLng.latitude,
@@ -307,7 +326,7 @@ class HomeFragment : Fragment() {
                             radius,
                             MAPS_API_KEY,
                             onSuccess = { response ->
-                                Log.i(TAG, "Succeed to fetch nearby places")
+                                Log.d(TAG, "Succeed to fetch nearby places")
                                 val jsonResponse = JSONObject(response)
                                 val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
 
@@ -329,7 +348,11 @@ class HomeFragment : Fragment() {
                                     val placeOpenNow: Boolean? =
                                         placeOpeningHours?.optString("open_now")?.toBoolean()
 
-                                    val placeTypes = jsonArrayToStringList(resultObject.optJSONArray("types"))
+                                    val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
+
+                                    // remove "point of interest", "establishment"
+                                    val placeTypes = placeTypesTemp.dropLast(2)
+
 //                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
                                     val placeAddress = resultObject.getString("vicinity")
@@ -349,7 +372,7 @@ class HomeFragment : Fragment() {
                                         placeRating,
                                         placeAddress,
                                         photoReference,
-                                        placeTypes = placeTypes.joinToString(),
+                                        placeTypes = placeTypes.joinToString().replace("_", " "),
                                         placeOpenNow = placeOpenNow)
 
                                     nearbyPlaceListViewModel.updatePlaces(placeToAdd)
@@ -359,7 +382,7 @@ class HomeFragment : Fragment() {
                                 binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
                                     // Handle item click here
                                     val clickedPlace = nearbyPlaces[position]
-                                    Toast.makeText(context, "Clicked: ${clickedPlace.placeName}", Toast.LENGTH_SHORT).show()
+                                    placeIdToSend = clickedPlace.placeId
                                     detailedPlaceDialog.setTitle(clickedPlace.placeName)
                                     if(clickedPlace.placeRating==null){
                                         placeRatingBar.visibility = GONE
@@ -373,6 +396,12 @@ class HomeFragment : Fragment() {
                                         placeTypesTextView.text = clickedPlace.placeTypes
                                     } else {
                                         placeTypesTextView.visibility = GONE
+                                    }
+
+                                    if(clickedPlace.placeImgBitmap!=null){
+                                        placeImageView.setImageBitmap(clickedPlace.placeImgBitmap)
+                                    } else {
+                                        placeImageView.setImageResource(R.drawable.no_available_img)
                                     }
 
                                     detailedPlaceDialog.show()
@@ -485,11 +514,9 @@ class HomeFragment : Fragment() {
 
             requestQueue.add(stringRequest)
         }
-
-
     }
 
-    fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
+    private fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
         val list = mutableListOf<String>()
         for (i in 0 until jsonArray.length()) {
             list.add(jsonArray.getString(i))
@@ -497,9 +524,29 @@ class HomeFragment : Fragment() {
         return list
     }
 
+    override fun onStart() {
+        super.onStart()
+        Log.i(TAG, "onStart called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, "onResume called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "onPause called")
+    }
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.i(TAG, "onDestroyView called")
         _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy called")
     }
 
 

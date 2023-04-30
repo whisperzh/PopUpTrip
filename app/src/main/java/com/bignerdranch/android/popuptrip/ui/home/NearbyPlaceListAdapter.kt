@@ -64,6 +64,7 @@ class NearbyPlaceListAdapter (
                 MainScope().launch {
                     val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
                     if (bitmap != null) {
+                        place.placeImgBitmap = bitmap
                         binding.placeImg.setImageBitmap(bitmap)
                         Log.d(TAG, "ImageView fetch succeeded")
                     } else {
