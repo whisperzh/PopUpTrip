@@ -319,6 +319,8 @@ class HomeFragment : Fragment() {
 
                             nearbyPlaceListViewModel.clearPlaceList()
 
+                            // to store placeId of added places
+                            val placesReturned = arrayListOf<String>()
                             fetchNearbyPlaces(
                             requireContext(),
                             currentLocationLatLng.latitude,
@@ -333,49 +335,53 @@ class HomeFragment : Fragment() {
                                 for (i in 0 until resultsArray.length()) {
                                     val resultObject = resultsArray.getJSONObject(i)
                                     Log.d(TAG, "result $i: $resultObject")
+
                                     val placeId = resultObject.getString("place_id")
-                                    val placeName = resultObject.getString("name")
-                                    val geometry = resultObject.getJSONObject("geometry")
-                                    val location = geometry.getJSONObject("location")
-                                    val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                                    // check if this place already exist in the recommended list
+                                    if (!placesReturned.contains(placeId)){
+                                        placesReturned.add(placeId)
 
-                                    val rating = resultObject.optString("rating", null)
+                                        val geometry = resultObject.getJSONObject("geometry")
+                                        val location = geometry.getJSONObject("location")
+                                        val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                                        val placeName = resultObject.getString("name")
+                                        val rating = resultObject.optString("rating", null)
+                                        val placeRating = rating?.toFloat()
 
-                                    val placeRating = rating?.toFloat()
+                                        val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                                        val placeOpenNow: Boolean? =
+                                            placeOpeningHours?.optString("open_now")?.toBoolean()
 
+                                        val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
 
-                                    val placeOpeningHours = resultObject.optJSONObject("opening_hours")
-                                    val placeOpenNow: Boolean? =
-                                        placeOpeningHours?.optString("open_now")?.toBoolean()
-
-                                    val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
-
-                                    // remove "point of interest", "establishment"
-                                    val placeTypes = placeTypesTemp.dropLast(2)
+                                        // remove "point of interest", "establishment"
+                                        val placeTypes = placeTypesTemp.dropLast(2)
 
 //                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
-                                    val placeAddress = resultObject.getString("vicinity")
+                                        val placeAddress = resultObject.getString("vicinity")
 
-                                    val photo = resultObject.optJSONArray("photos")
-                                    val photoReference: String? = if (photo != null && photo.length() > 0) {
-                                        val photoObject = photo.getJSONObject(0)
-                                        photoObject.optString("photo_reference", null)
+                                        val photo = resultObject.optJSONArray("photos")
+                                        val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                            val photoObject = photo.getJSONObject(0)
+                                            photoObject.optString("photo_reference", null)
+                                        } else {
+                                            null
+                                        }
+
+                                        val placeToAdd = DetailedPlace(placeId,
+                                            placeLatLng,
+                                            placeName,
+                                            placeRating,
+                                            placeAddress,
+                                            photoReference,
+                                            placeTypes = placeTypes.joinToString().replace("_", " "),
+                                            placeOpenNow = placeOpenNow)
+
+                                        nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                     } else {
-                                        null
+                                        Log.d(TAG, "DUPLICATE PLACE")
                                     }
-//                                    val photRefs = resultObject.optJSONArray("photos").optJSONObject(0).optString("photo_reference")
-
-                                    val placeToAdd = DetailedPlace(placeId,
-                                        placeLatLng,
-                                        placeName,
-                                        placeRating,
-                                        placeAddress,
-                                        photoReference,
-                                        placeTypes = placeTypes.joinToString().replace("_", " "),
-                                        placeOpenNow = placeOpenNow)
-
-                                    nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                 }
 
                                 val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
