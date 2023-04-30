@@ -36,6 +36,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.android.volley.Response
+import com.android.volley.toolbox.HttpResponse
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
@@ -66,11 +67,12 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.Double.max
 import java.lang.Double.min
+import java.net.URI
+import java.time.LocalDateTime
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
-
 
 private const val TAG = "ExplorationFragment"
 class ExplorationFragment: Fragment(), OnMapReadyCallback {
@@ -606,6 +608,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     for (i in 0 until path.size) {
 //                        Log.d(TAG, "Path $i: " + path[i].toString())
                         polyline = mMap.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                        Log.d(TAG, "Polyline: $polyline")
 
                         // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
@@ -934,5 +937,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //                }
 //            }
 //        }
+    }
+
+    private fun getCurrentDateTime(): LocalDateTime? {
+        return LocalDateTime.now()
+    }
+
+    private fun createPOSTRequestItinerary() {
+        /** Params for POST request:
+         * start_time: DATE_TIME
+         * starting_location
+         * destination
+         * places
+         */
+
+        val jsonObject = JSONObject()
+        jsonObject.put("start_time", getCurrentDateTime())
+        jsonObject.put("starting_location", currentLocationLatLng)
+        jsonObject.put("destination", destinationPlace.latLng)
+        jsonObject.put("places", placesToAdd)
+
+        val jsonObjectString = jsonObject.toString()
     }
 }

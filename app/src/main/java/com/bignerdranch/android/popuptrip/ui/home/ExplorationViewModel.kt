@@ -8,6 +8,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.libraries.places.api.model.Place
 
 private const val TAG = "ExplorationViewModel"
@@ -23,6 +24,7 @@ const val STARTING_POINT_ID = "STARTING_POINT_ID"
 const val DESTINATION_POINT_ID = "DESTINATION_POINT_ID"
 const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
+const val POLYLINE = "POLYLINE"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -42,6 +44,7 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private var startingId: String = "ChIJ-dKkUfd544kR5cY9D2MncuM"
     // 111 Huntington Avenue
     private var destinationId: String = "ChIJh6XMxhF644kRNS4bI8jjFC4"
+//    private var polylineDefault: Polyline = ""
 
     var startingPointName: String
         get() = savedStateHandle.get<String>(STARTING_POINT_NAME) ?: ""
@@ -94,6 +97,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var markersAdded: ArrayList<Marker>
         get() = savedStateHandle.get<ArrayList<Marker>>(MARKERS_TO_ADD) ?: ArrayList()
         set(value) = savedStateHandle.set(MARKERS_TO_ADD, value)
+
+//    var polyline: Polyline
+//        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
+//        set(value) = savedStateHandle.set(POLYLINE, value)
 
     private fun initStartPlace() {
 
