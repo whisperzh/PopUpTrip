@@ -14,19 +14,28 @@ import kotlinx.coroutines.withContext
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import android.widget.ImageView
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
+import com.bignerdranch.android.popuptrip.R
 import kotlinx.coroutines.launch
 
 
 class NearbyPlaceHolder(
-    val binding: ListItemNearbyPlaceBinding
-) : RecyclerView.ViewHolder(binding.root) {
+    val binding: ListItemNearbyPlaceBinding,
+    private val onPlaceClick: (Int) -> Unit
+) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    init {
+        itemView.setOnClickListener(this)
+    }
+
+    override fun onClick(v: View?) {
+        onPlaceClick(adapterPosition)
+    }
 }
 
 private const val TAG = "NearbyPlaceListAdapter"
 class NearbyPlaceListAdapter (
-    private val places: List<DetailedPlace>
+    private val places: List<DetailedPlace>,
+    private val onPlaceClick: (Int) -> Unit
 ) : RecyclerView.Adapter<NearbyPlaceHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -34,7 +43,7 @@ class NearbyPlaceListAdapter (
     ) : NearbyPlaceHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ListItemNearbyPlaceBinding.inflate(inflater, parent, false)
-        return NearbyPlaceHolder(binding)
+        return NearbyPlaceHolder(binding, onPlaceClick)
     }
     override fun onBindViewHolder(holder: NearbyPlaceHolder, position: Int) {
         val place = places[position]
@@ -44,33 +53,38 @@ class NearbyPlaceListAdapter (
             binding.placeName.text = place.placeName
             binding.placeVicinity.text = place.placeVicinity
             if(place.placeRating!=null){
+                binding.placeRating.visibility = View.VISIBLE
                 binding.placeRating.rating = place.placeRating
             } else {
                 binding.placeRating.visibility = View.GONE
             }
 
-
-            val photoRef = place.photoReference
-            MainScope().launch {
-                val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
-                if (bitmap != null) {
-                    binding.placeImg.setImageBitmap(bitmap)
-                    Log.d(TAG, "ImageView fetch succeeded")
+            if(place.placeImgBitmap!=null){
+                binding.placeImg.setImageBitmap(place.placeImgBitmap)
+            } else {
+                val photoRef = place.photoReference
+                if (photoRef!=null){
+                    MainScope().launch {
+                        val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
+                        if (bitmap != null) {
+                            place.placeImgBitmap = bitmap
+                            binding.placeImg.setImageBitmap(bitmap)
+                            Log.d(TAG, "ImageView fetch succeeded")
+                        } else {
+                            // Handle the error (e.g., show a placeholder or error image)
+                            Log.d(TAG, "ImageView fetch failed")
+                        }
+                    }
                 } else {
-                    // Handle the error (e.g., show a placeholder or error image)
-                    Log.d(TAG, "ImageView fetch failed")
+                    binding.placeImg.setImageResource(R.drawable.no_available_img)
                 }
             }
-
         }
-
-
-
-
     }
+
     override fun getItemCount() = places.size
 
-    suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {
+    private suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             val apiUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=$maxWidth&photoreference=$photoReference&key=$apiKey"
             var bitmap: Bitmap? = null

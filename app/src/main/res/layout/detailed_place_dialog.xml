@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RatingBar
+        android:id="@+id/detailed_place_dialog_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="0dp"
+        android:stepSize="0.1"
+        android:numStars="5"
+        android:rating="4"
+        android:visibility="visible"
+        style = "?android:attr/ratingBarStyleSmall"
+        app:layout_constraintStart_toEndOf="@id/detailed_place_dialog_img"
+        app:layout_constraintTop_toTopOf="@id/detailed_place_dialog_img"/>
+
+    <TextView
+        android:id="@+id/detailed_place_dialog_types"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:textAppearance="?attr/textAppearanceCaption"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12dp"
+        android:singleLine="false"
+        android:text="Place Types"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/detailed_place_dialog_img"
+        app:layout_constraintTop_toBottomOf="@id/detailed_place_dialog_rating"/>
+
+    <TextView
+        android:id="@+id/detailed_place_dialog_vicinity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:singleLine="false"
+        android:text="Place address"
+        app:layout_constraintStart_toEndOf="@id/detailed_place_dialog_img"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailed_place_dialog_types"/>
+
+    <ImageView
+        android:id="@+id/detailed_place_dialog_img"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        app:srcCompat="@drawable/loading_img"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -113,4 +113,12 @@
     <string name="enter_your_Email">Enter Email</string>
     <string name="pleaseFillAllTheBlanks">Please fill all the blanks</string>
     <string name="pleaseDoubleCheckYourPassword">Please Double Check Your Password</string>
+    <string name="detailed_place_dialog_select_button">Select as Destination</string>
+    <string name="detailed_place_dialog_add_button">Add to Plan</string>
+    <string name="detailed_place_dialog_remove_button">Remove from Plan</string>
+    <string name="category_title_food">FOOD</string>
+    <string name="category_title_nightlife">NIGHTLIFE</string>
+    <string name="category_title_nature">NATURE</string>
+    <string name="category_title_culture">CULTURE</string>
+    <string name="category_title_entertainment">ENTERTAINMENT</string>
 </resources>
