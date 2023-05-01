@@ -103,7 +103,8 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         val placeBuilder = Place.builder()
             .setAddress("655 Commonwealth Ave, Boston, MA 02215, USA")
             .setId("ChIJ-dKkUfd544kR5cY9D2MncuM")
-            .setLatLng(LatLng(42.34993389999999,-71.1027624))
+            .setLatLng(LatLng(0.0, 0.0))
+//            .setLatLng(LatLng(42.34993389999999,-71.1027624))
             .setName("655 Commonwealth Ave")
 
         return placeBuilder.build()
