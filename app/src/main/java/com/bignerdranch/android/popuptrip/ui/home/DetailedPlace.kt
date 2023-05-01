@@ -18,6 +18,7 @@ data class DetailedPlace(
     var placeTypes: String? = null,
     var placeOpenNow: Boolean? = null,
     var placeImgBitmap: Bitmap? = null,
+    var addedToPlan: Boolean = false,
 ) {
     // Default constructor
     constructor() : this(

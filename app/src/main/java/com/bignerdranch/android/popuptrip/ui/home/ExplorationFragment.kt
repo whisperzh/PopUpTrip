@@ -4,9 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Context.*
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color.*
 import android.location.Location
@@ -21,10 +23,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.ListView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -60,14 +61,21 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.maps.android.PolyUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.InputStream
 import java.lang.Double.max
 import java.lang.Double.min
+import java.net.HttpURLConnection
 import java.net.URI
+import java.net.URL
 import java.time.LocalDateTime
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -123,6 +131,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
 
+    // place detail dialog setup
+    private lateinit var detailedPlaceDialog: AlertDialog
+    private lateinit var placeRatingBar: RatingBar
+    private lateinit var placeVicinityTextView: TextView
+    private lateinit var placeTypesTextView: TextView
+    private lateinit var placeImageView: ImageView
+    private lateinit var userSelectedPlace: DetailedPlace
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -157,6 +173,22 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         // inflate Place Detailed Dialog
         val detailedPlaceDialogLayout = LayoutInflater.from(requireContext()).inflate(R.layout.detailed_place_dialog, null)
+
+        placeRatingBar = detailedPlaceDialogLayout.findViewById<RatingBar>(R.id.detailed_place_dialog_rating)
+        placeVicinityTextView = detailedPlaceDialogLayout.findViewById<TextView>(R.id.detailed_place_dialog_vicinity)
+        placeImageView = detailedPlaceDialogLayout.findViewById<ImageView>(R.id.detailed_place_dialog_img)
+        placeTypesTextView = detailedPlaceDialogLayout.findViewById(R.id.detailed_place_dialog_types)
+
+        detailedPlaceDialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(detailedPlaceDialogLayout)
+            .setPositiveButton(R.string.detailed_place_dialog_add_button, null)
+            .setNeutralButton(R.string.back_button) { _, _ ->
+                // Handle negative button click
+            }
+            .create()
+
+        // outside click does not close the dialog
+        detailedPlaceDialog.setCanceledOnTouchOutside(false)
 
         Log.d(TAG, "Recreating map in onCreateView")
 
@@ -434,6 +466,28 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     findNavController().navigate(home)
+                }
+            }
+        }
+
+        detailedPlaceDialog.setOnShowListener{
+            val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+            if(!userSelectedPlace.addedToPlan){
+                positiveButton.setText(R.string.detailed_place_dialog_add_button)
+                positiveButton.setOnClickListener {
+                    // Add the place to list of places to visit
+                    userSelectedPlace.addedToPlan = true
+                    addPlaceToRoute(userSelectedPlace)
+                    detailedPlaceDialog.dismiss()
+                }
+            } else {
+                positiveButton.setText(R.string.detailed_place_dialog_remove_button)
+                positiveButton.setOnClickListener {
+                    // Add the place to list of places to visit
+                    userSelectedPlace.addedToPlan = false
+                    removePlaceFromRoute(userSelectedPlace)
+                    detailedPlaceDialog.dismiss()
                 }
             }
         }
@@ -964,14 +1018,65 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val place = marker.tag as? DetailedPlace
 
             if (place != null) {
-                //TODO: Place Detail UI dialog
+                //Place Detail UI dialog
+                userSelectedPlace = place
                 Log.d(TAG, "Clicked marker for place: ${place.placeName}")
 
-                // if add button clicked or checkbox checked
-//                addPlaceToRoute(place)
+                detailedPlaceDialog.setTitle(place.placeName)
+                if(place.placeRating==null){
+                    placeRatingBar.visibility = View.GONE
+                } else {
+                    placeRatingBar.visibility = View.VISIBLE
+                    placeRatingBar.rating = place.placeRating
+                }
+                placeVicinityTextView.text = place.placeVicinity
 
-                // if remove button clicked or checkbox unchecked
-//                removePlaceFromRoute(place)
+                if(place.placeTypes!=null){
+                    placeTypesTextView.text = place.placeTypes
+                } else {
+                    placeTypesTextView.visibility = View.GONE
+                }
+
+                val photoRef = place.photoReference
+                if (photoRef!=null){
+                    MainScope().launch {
+                        val bitmap = fetchPlaceImage(photoRef, placeImageView.maxWidth, MAPS_API_KEY)
+                        if (bitmap != null) {
+                            place.placeImgBitmap = bitmap
+                            placeImageView.setImageBitmap(bitmap)
+                            Log.d(TAG, "ImageView fetch succeeded")
+                        } else {
+                            // Handle the error (e.g., show a placeholder or error image)
+                            Log.d(TAG, "ImageView fetch failed")
+                        }
+                    }
+                } else {
+                    placeImageView.setImageResource(R.drawable.no_available_img)
+                }
+
+                // setup the button according to whether the place has been added or not
+                val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+
+                detailedPlaceDialog.show()
+
+//                if(!place.addedToPlan){
+//                    positiveButton.setText(R.string.detailed_place_dialog_add_button)
+//                    positiveButton.setOnClickListener {
+//                        // Add the place to list of places to visit
+//                        place.addedToPlan = true
+//                        addPlaceToRoute(place)
+//                        detailedPlaceDialog.dismiss()
+//                    }
+//                } else {
+//                    positiveButton.setText(R.string.detailed_place_dialog_remove_button)
+//                    positiveButton.setOnClickListener {
+//                        // Add the place to list of places to visit
+//                        place.addedToPlan = false
+//                        removePlaceFromRoute(place)
+//                        detailedPlaceDialog.dismiss()
+//                    }
+//                }
+
             }
 
             false
@@ -1085,5 +1190,31 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         jsonObject.put("places", placesToAdd)
 
         val jsonObjectString = jsonObject.toString()
+    }
+
+    private suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            val apiUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=$maxWidth&photoreference=$photoReference&key=$apiKey"
+            var bitmap: Bitmap? = null
+
+            try {
+                val url = URL(apiUrl)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connect()
+
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val inputStream: InputStream = connection.inputStream
+                    bitmap = BitmapFactory.decodeStream(inputStream)
+                }
+
+                connection.disconnect()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            bitmap
+        }
     }
 }
