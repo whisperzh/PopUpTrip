@@ -1039,45 +1039,31 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     placeTypesTextView.visibility = View.GONE
                 }
 
-                val photoRef = place.photoReference
-                if (photoRef!=null){
-                    MainScope().launch {
-                        val bitmap = fetchPlaceImage(photoRef, placeImageView.maxWidth, MAPS_API_KEY)
-                        if (bitmap != null) {
-                            place.placeImgBitmap = bitmap
-                            placeImageView.setImageBitmap(bitmap)
-                            Log.d(TAG, "ImageView fetch succeeded")
-                        } else {
-                            // Handle the error (e.g., show a placeholder or error image)
-                            Log.d(TAG, "ImageView fetch failed")
-                        }
-                    }
+                if(place.placeImgBitmap!=null){
+                    placeImageView.setImageBitmap(place.placeImgBitmap)
                 } else {
-                    placeImageView.setImageResource(R.drawable.no_available_img)
+                    val photoRef = place.photoReference
+                    if (photoRef!=null){
+                        MainScope().launch {
+                            val bitmap = fetchPlaceImage(photoRef, placeImageView.maxWidth, MAPS_API_KEY)
+                            if (bitmap != null) {
+                                place.placeImgBitmap = bitmap
+                                placeImageView.setImageBitmap(bitmap)
+                                Log.d(TAG, "ImageView fetch succeeded")
+                            } else {
+                                // Handle the error (e.g., show a placeholder or error image)
+                                Log.d(TAG, "ImageView fetch failed")
+                            }
+                        }
+                    } else {
+                        placeImageView.setImageResource(R.drawable.no_available_img)
+                    }
                 }
 
                 // setup the button according to whether the place has been added or not
                 val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 
                 detailedPlaceDialog.show()
-
-//                if(!place.addedToPlan){
-//                    positiveButton.setText(R.string.detailed_place_dialog_add_button)
-//                    positiveButton.setOnClickListener {
-//                        // Add the place to list of places to visit
-//                        place.addedToPlan = true
-//                        addPlaceToRoute(place)
-//                        detailedPlaceDialog.dismiss()
-//                    }
-//                } else {
-//                    positiveButton.setText(R.string.detailed_place_dialog_remove_button)
-//                    positiveButton.setOnClickListener {
-//                        // Add the place to list of places to visit
-//                        place.addedToPlan = false
-//                        removePlaceFromRoute(place)
-//                        detailedPlaceDialog.dismiss()
-//                    }
-//                }
 
             }
 
