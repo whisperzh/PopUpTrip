@@ -556,7 +556,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         val updatedMarker = mMap.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
-                            .alpha(0.6f)
                             .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                         )
 
@@ -575,6 +574,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         val updatedMarker = mMap.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
+                            .alpha(0.6f)
                             .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                         )
 
@@ -609,6 +609,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 val updatedMarker = mMap.addMarker(MarkerOptions()
                     .position(position)
                     .title(markerTitle)
+                    .alpha(0.6f)
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                 )
 
@@ -943,6 +944,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     val marker = mMap.addMarker(MarkerOptions()
                                         .position(placeLatLng)
                                         .title(placeName)
+                                        .alpha(0.6f)
                                         .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                                     )
                                     marker!!.tag = placeToMark
@@ -1111,11 +1113,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             if (marker.position == detailedPlace.placeLatLng) {
                 markersAdded.removeAt(i)
                 marker.remove()
-                // Re-plot the marker, alpha = 0.6
+                // Re-plot the marker
                 val updatedMarker = mMap.addMarker(MarkerOptions()
                     .position(position)
                     .title(detailedPlace.placeName)
-                    .alpha(0.6f)
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                 )
 
@@ -1155,10 +1156,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             if (marker.position == detailedPlace.placeLatLng) {
                 markersAdded.removeAt(i)
                 marker.remove()
-                // Re-plot the marker, alpha = 1.0
+                // Re-plot the marker
                 val updatedMarker = mMap.addMarker(MarkerOptions()
                     .position(position)
                     .title(detailedPlace.placeName)
+                    .alpha(0.6f)
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
                 )
 
