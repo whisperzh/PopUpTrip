@@ -59,21 +59,25 @@ class NearbyPlaceListAdapter (
                 binding.placeRating.visibility = View.GONE
             }
 
-            val photoRef = place.photoReference
-            if (photoRef!=null){
-                MainScope().launch {
-                    val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
-                    if (bitmap != null) {
-                        place.placeImgBitmap = bitmap
-                        binding.placeImg.setImageBitmap(bitmap)
-                        Log.d(TAG, "ImageView fetch succeeded")
-                    } else {
-                        // Handle the error (e.g., show a placeholder or error image)
-                        Log.d(TAG, "ImageView fetch failed")
-                    }
-                }
+            if(place.placeImgBitmap!=null){
+                binding.placeImg.setImageBitmap(place.placeImgBitmap)
             } else {
-                binding.placeImg.setImageResource(R.drawable.no_available_img)
+                val photoRef = place.photoReference
+                if (photoRef!=null){
+                    MainScope().launch {
+                        val bitmap = fetchPlaceImage(photoRef, binding.placeImg.maxWidth, MAPS_API_KEY)
+                        if (bitmap != null) {
+                            place.placeImgBitmap = bitmap
+                            binding.placeImg.setImageBitmap(bitmap)
+                            Log.d(TAG, "ImageView fetch succeeded")
+                        } else {
+                            // Handle the error (e.g., show a placeholder or error image)
+                            Log.d(TAG, "ImageView fetch failed")
+                        }
+                    }
+                } else {
+                    binding.placeImg.setImageResource(R.drawable.no_available_img)
+                }
             }
         }
     }
