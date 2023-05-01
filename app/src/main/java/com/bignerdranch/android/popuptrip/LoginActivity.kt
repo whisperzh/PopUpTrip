@@ -20,13 +20,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthCredential
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var mGoogleSignInClient: GoogleSignInClient
-    private var RC_SIGN_IN:Int=1
-
+    // See: https://developer.android.com/training/basics/intents/result
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -35,29 +40,9 @@ class LoginActivity : AppCompatActivity() {
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
         setContentView(binding.root)
-        binding.LoginButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
-        binding.resetPasswordButton.setOnClickListener {
-            signOut()
-        }
+        bindComponents()
+        auth = Firebase.auth
 
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestEmail()
-            .build()
-
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        val account: GoogleSignInAccount? = GoogleSignIn.getLastSignedInAccount(this)
-//        updateUI(account)
-
-
-        binding.signInWithGoogleButton.setOnClickListener {
-            //TODO:
-            signIn()
-        }
 
         // Register the permissions callback, which handles the user's response to the
         // system permissions dialog. Save the return value, an instance of
@@ -135,65 +120,48 @@ class LoginActivity : AppCompatActivity() {
                     Manifest.permission.INTERNET)
             }
         }
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun bindComponents() {
+            binding.createAccountButton.setOnClickListener {
+                val intent = Intent(this, RegisterActivity::class.java)
+                startActivity(intent)
+            }
+            binding.LoginButton.setOnClickListener {
+                login()
+            }
+            binding.resetPasswordButton.setOnClickListener {
 
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
-            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
-            handleSignInResult(task)
+            }
         }
-    }
 
-    private fun signIn() {
-        val signInIntent: Intent = mGoogleSignInClient.getSignInIntent()
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
-    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
-        try {
-            val account = completedTask.getResult(ApiException::class.java)
-            val acct = GoogleSignIn.getLastSignedInAccount(this)
-            if (acct != null) {
-                val personName = acct.displayName
-                val personGivenName = acct.givenName
-                val personFamilyName = acct.familyName
-                val personEmail = acct.email
-                val personId = acct.id
-//                val personPhoto: Uri? = acct.photoUrl
-                Log.d("personName", personName!!)
-                Log.d("personGivenName", personGivenName!!)
-                Log.d("personFamilyName", personFamilyName!!)
-                Log.d("personEmail", personEmail!!)
-                Log.d("personId", personId!!)
-            }
-            // Signed in successfully, show authenticated UI.
-//            updateUI(account)
-        } catch (e: ApiException) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode())
-//            updateUI(null)
+        private fun login() {
+            var email = binding.username.editText?.text.toString()
+            var password = binding.password.editText?.text.toString()
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "signInWithEmail:success")
+                        val user = auth.currentUser
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication succeed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "signInWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication failed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
         }
-    }
 
-    private fun signOut() {
-        mGoogleSignInClient.signOut()
-            .addOnCompleteListener(this) {
-                Toast.makeText(this,"you've been logged out",Toast.LENGTH_SHORT)
-            }
-    }
-
-    /**
-     * If the user deletes their account, you must delete the information that your app obtained from the Google APIs.
-     */
-    private fun revokeAccess() {
-        mGoogleSignInClient.revokeAccess()
-            .addOnCompleteListener(this) {
-                // ...
-            }
-    }
 }

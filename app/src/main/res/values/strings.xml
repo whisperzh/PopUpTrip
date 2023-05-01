@@ -107,4 +107,10 @@
     <string name="adjust_map_bound_title">Adjust View Bounds</string>
     <string name="next_button">NEXT</string>
     <string name="back_button">BACK</string>
+    <string name="signUp_txt">Sign Up</string>
+    <string name="enter_your_username">Enter User Name</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_your_Email">Enter Email</string>
+    <string name="pleaseFillAllTheBlanks">Please fill all the blanks</string>
+    <string name="pleaseDoubleCheckYourPassword">Please Double Check Your Password</string>
 </resources>

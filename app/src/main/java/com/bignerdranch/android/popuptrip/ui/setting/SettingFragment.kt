@@ -18,6 +18,8 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
@@ -80,13 +82,18 @@ class SettingFragment : Fragment() {
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
             }
         }
-        val logoutButton=binding.logoutButton
+//        val logoutButton=binding.logoutButton
     //    logoutButton.setOnClickListener(
       //      findNavController()
        // )
         //starButton.setOnClickListener(Navigation.createNavigateOnClickListener(
           //  popR.id.navigation_star,null
         //))   //wait for adapter&list
+        binding.logoutButton.setOnClickListener {
+            Firebase.auth.signOut()
+            Toast.makeText(context,"You have been logged out",Toast.LENGTH_SHORT).show()
+            activity?.finish()
+        }
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
