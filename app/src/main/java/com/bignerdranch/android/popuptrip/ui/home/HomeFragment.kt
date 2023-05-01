@@ -85,11 +85,13 @@ class HomeFragment : Fragment() {
     private val permissionId = 2
     private val radius = 1500
 
+    // user preference setup
     private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
+    private var userPreferenceList: ArrayList<String>? = null
 
     private var destinationName = ""
 
@@ -107,8 +109,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i(TAG, "onCreateView called")
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
 
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
@@ -175,10 +175,22 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // list of nearby places in viewModel is updated with fetch response
-                getCurrentLocationAndFetchPlaces()
-//                val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
-//                binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces)
+                //TODO: check if preferences are changed, if so, fetch. If not, use view model
+                if (userPreferenceList==null){
+                    // list of nearby places in viewModel is updated with fetch response
+                    getCurrentLocationAndFetchPlaces()
+                } else {
+                    val tempUserPrefenceList = getPlaceTypePreference()
+                    val sortedUserPreferenceList = userPreferenceList!!.sorted()
+                    val sortedTempList = tempUserPrefenceList.sorted()
+                    // no change in user preference, therefore no need to fetch
+                    if(sortedUserPreferenceList==sortedTempList){
+                        val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
+                        recyclerViewItemClickSetup()
+                    } else {
+                        getCurrentLocationAndFetchPlaces()
+                    }
+                }
             }
         }
 
@@ -383,35 +395,7 @@ class HomeFragment : Fragment() {
                                         Log.d(TAG, "DUPLICATE PLACE")
                                     }
                                 }
-
-                                val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
-                                binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
-                                    // Handle item click here
-                                    val clickedPlace = nearbyPlaces[position]
-                                    placeIdToSend = clickedPlace.placeId
-                                    detailedPlaceDialog.setTitle(clickedPlace.placeName)
-                                    if(clickedPlace.placeRating==null){
-                                        placeRatingBar.visibility = GONE
-                                    } else {
-                                        placeRatingBar.visibility = VISIBLE
-                                        placeRatingBar.rating = clickedPlace.placeRating
-                                    }
-                                    placeVicinityTextView.text = clickedPlace.placeVicinity
-
-                                    if(clickedPlace.placeTypes!=null){
-                                        placeTypesTextView.text = clickedPlace.placeTypes
-                                    } else {
-                                        placeTypesTextView.visibility = GONE
-                                    }
-
-                                    if(clickedPlace.placeImgBitmap!=null){
-                                        placeImageView.setImageBitmap(clickedPlace.placeImgBitmap)
-                                    } else {
-                                        placeImageView.setImageResource(R.drawable.no_available_img)
-                                    }
-
-                                    detailedPlaceDialog.show()
-                                }
+                                recyclerViewItemClickSetup()
                             },
                             onError = { error ->
                                 Log.i(TAG, "Failed to fetch nearby places $error")
@@ -440,6 +424,38 @@ class HomeFragment : Fragment() {
         onSuccess: (response: String) -> Unit,
         onError: (error: String) -> Unit
     ) {
+        userPreferenceList = getPlaceTypePreference()
+
+        Log.d(TAG, "Place Types: $userPreferenceList")
+        for (i in 0 until userPreferenceList!!.size) {
+            //TODO: fetch requests based on user preferred place type
+            Log.d(TAG, "fetchNearbyPlaces() is called on place type: ${userPreferenceList!![i]}")
+            val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=${userPreferenceList!![i]}&key=$apiKey"
+
+            val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+
+            val stringRequest = StringRequest(
+                Request.Method.GET, requestUrl,
+                Response.Listener { response ->
+                    onSuccess(response)
+                },
+                Response.ErrorListener { error ->
+                    onError(error.toString())
+                })
+
+            requestQueue.add(stringRequest)
+        }
+    }
+
+    private fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
+        val list = mutableListOf<String>()
+        for (i in 0 until jsonArray.length()) {
+            list.add(jsonArray.getString(i))
+        }
+        return list
+    }
+
+    private fun getPlaceTypePreference(): ArrayList<String> {
         val placeTypes = arrayListOf<String>()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val userChoiceFood = prefs.getString("food_selection", "")
@@ -501,59 +517,44 @@ class HomeFragment : Fragment() {
             placeTypes.addAll(nightLifeCategories)
         }
 
-        Log.d(TAG, "Place Types: $placeTypes")
-        for (i in 0 until placeTypes.size) {
-            //TODO: fetch requests based on user preferred place type
-            Log.d(TAG, "fetchNearbyPlaces() is called on place type: ${placeTypes[i]}")
-            val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=${placeTypes[i]}&key=$apiKey"
+        return placeTypes
+    }
 
-            val requestQueue: RequestQueue = Volley.newRequestQueue(context)
+    private fun recyclerViewItemClickSetup(){
+        val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
+        binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
+            // Handle item click here
+            val clickedPlace = nearbyPlaces[position]
+            placeIdToSend = clickedPlace.placeId
+            detailedPlaceDialog.setTitle(clickedPlace.placeName)
+            if(clickedPlace.placeRating==null){
+                placeRatingBar.visibility = GONE
+            } else {
+                placeRatingBar.visibility = VISIBLE
+                placeRatingBar.rating = clickedPlace.placeRating
+            }
+            placeVicinityTextView.text = clickedPlace.placeVicinity
 
-            val stringRequest = StringRequest(
-                Request.Method.GET, requestUrl,
-                Response.Listener { response ->
-                    onSuccess(response)
-                },
-                Response.ErrorListener { error ->
-                    onError(error.toString())
-                })
+            if(clickedPlace.placeTypes!=null){
+                placeTypesTextView.text = clickedPlace.placeTypes
+            } else {
+                placeTypesTextView.visibility = GONE
+            }
 
-            requestQueue.add(stringRequest)
+            if(clickedPlace.placeImgBitmap!=null){
+                placeImageView.setImageBitmap(clickedPlace.placeImgBitmap)
+            } else {
+                placeImageView.setImageResource(R.drawable.no_available_img)
+            }
+
+            detailedPlaceDialog.show()
         }
     }
 
-    private fun jsonArrayToStringList(jsonArray: JSONArray): List<String> {
-        val list = mutableListOf<String>()
-        for (i in 0 until jsonArray.length()) {
-            list.add(jsonArray.getString(i))
-        }
-        return list
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.i(TAG, "onStart called")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.i(TAG, "onResume called")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.i(TAG, "onPause called")
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         Log.i(TAG, "onDestroyView called")
         _binding = null
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i(TAG, "onDestroy called")
-    }
-
 
 }
