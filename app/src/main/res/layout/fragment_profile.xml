@@ -68,7 +68,7 @@
             android:id="@+id/change_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change Email Address: "
+            android:text="@string/changeEmail"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></TextView>
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
-            android:text="change email"
+            android:text="@string/emailButton"
             app:layout_constraintStart_toEndOf="@id/change_email"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -96,7 +96,7 @@
             android:id="@+id/changePassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change Password: "
+            android:text="@string/changepassword"
             android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></TextView>
@@ -106,7 +106,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="44dp"
             android:layout_marginTop="4dp"
-            android:text="change password"
+            android:text="@string/passwordButton"
             android:id="@+id/changePasswordButton"
             app:layout_constraintStart_toEndOf="@id/changePassword"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>

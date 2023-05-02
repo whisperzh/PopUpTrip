@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PopUpTrip</string>
+    <string name="title_home">主界面</string>
+    <string name="title_exploration">探索</string>
+    <string name="title_nearby_places">周围的地点</string>
+    <string name="title_dashboard">面板</string>
+    <string name="title_setting">设置</string>
+    <string name="title_switch">暗夜模式</string>
+    <string name="title_language">语言</string>
+    <string name="title_mode">主题</string>
+    <string name="title_profile">个人信息</string>
+    <string name="title_logout">登出</string>
+    <string name="description_profile">去个人页面</string>
+    <string name="change_name">用户名: </string>
+    <string name="title_password">安全: </string>
+    <string name="change_password">安全</string>
+    <string name="title_photo">头像: </string>
+    <string name="description_photo">点击切换头像</string>
+    <string name="title_save">保存</string>
+    <string name="title_quit">退出</string>
+    <string name="title_food">食物:</string>
+    <string name="title_pref">爱好</string>
+    <string name="title_place">你喜欢的地方:</string>
+    <string name="title_star">星标: </string>
+    <string name="star_button">星标</string>
+    <string name="title_method">出行方式: </string>
+    <string name="title_notifications">通知</string>
+    <string name="searchbar_hint">输入地点</string>
+    <string name="home_search_box_content">输入到达地点</string>
+    <string name="enter_starting_point">输入出发地点</string>
+    <string name="enter_destination">输入到达地点</string>
+    <string name="use_current_location">使用现在地点</string>
+    <string name="search">搜索</string>
+    <string name="clear_search">清除搜索</string>
+    <string name="email_username">邮箱地址</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="password">输入密码</string>
+    <string name="login_txt">登录</string>
+    <string name="createAccountTxt">创建账户</string>
+    <string name="resetPasswordTxt">重设密码</string>
+    <string name="signInTxt">登入</string>
+    <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
+    <string name="title_exploration_page">探索</string>
+    <string name="Restaurant">餐厅</string>
+    <string name="Cafe">咖啡厅</string>
+    <string name="Bakery">面包房</string>
+    <string name="title_NightLife">夜生活: </string>
+    <string name="Bar">酒吧</string>
+    <string name="Night_club">夜店</string>
+    <string name="title_Nature">自然:</string>
+    <string name="Aquarium">水族馆</string>
+    <string name="Zoo">动物园</string>
+    <string name="Park">公园</string>
+    <string name="Campground">营地</string>
+    <string name="title_Culture">文化:</string>
+    <string name="Library">图书馆</string>
+    <string name="Museum">博物馆</string>
+    <string name="Art_Gallery">美术展</string>
+    <string name="BookStore">书店</string>
+    <string name="description_pref_back">退回页面</string>
+    <string name="go_preference">偏好: </string>
+    <string name="title_Entertainment">娱乐: </string>
+    <string name="AmusementPark">游乐园</string>
+    <string name="MovieTheater">电影院</string>
+    <string name="current_location_title">你的地点</string>
+    <string name="adjust_map_bound_title">调整边界</string>
+    <string name="next_button">下一个</string>
+    <string name="back_button">上一个</string>
+    <string name="signUp_txt">注册</string>
+    <string name="enter_your_username">输入用户名</string>
+    <string name="confirm_password">确认密码</string>
+    <string name="enter_your_Email">用户名</string>
+    <string name="pleaseFillAllTheBlanks">请填上所有的空</string>
+    <string name="pleaseDoubleCheckYourPassword">再次确认您的密码</string>
+    <string name="detailed_place_dialog_select_button">选做终点</string>
+    <string name="detailed_place_dialog_add_button">加入计划</string>
+    <string name="detailed_place_dialog_remove_button">从计划移除</string>
+    <string name="category_title_food">食物</string>
+    <string name="category_title_nightlife">夜生活</string>
+    <string name="category_title_nature">自然</string>
+    <string name="category_title_culture">文化</string>
+    <string name="category_title_entertainment">娱乐</string>
+    <string name="yourPasswordIsTooShort">您的密码太短了</string>
+    <string name="emailIsRequired">需要邮箱</string>
+    <string name="invalidEmail">无效邮箱</string>
+    <string name="somethingWentWrong">有些事情出了问题</string>
+    <string name="pleaseCheckYourEmailToResetPassword">请检查邮箱中的邮件去重设密码</string>
+    <string name="changeEmail">更改邮箱</string>
+    <string name="emailButton">更改</string>
+    <string name="changepassword">更改密码</string>
+    <string name="passwordButton">更改</string>
+    <string name="sendEmail">发送邮件</string>
+    <string name="cancel">取消</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">欢迎碎片</string>
+    <string name="submit">提交</string>
+    <string name="resetYourPassword">重设你的密码</string>
+
+</resources>
