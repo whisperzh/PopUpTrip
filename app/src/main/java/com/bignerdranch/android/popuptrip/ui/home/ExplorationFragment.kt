@@ -144,6 +144,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private var mapFragment: SupportMapFragment? = null
 
+    private var needToFetchDesti = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -166,12 +168,13 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         startingPoint = explorationViewModel.startingPoint
 
         // input arguments from navigation
-        destinationId = if (args != null) {
+        if (args != null) {
             // TODO check if this changes if dest changed in exploration,
             //  switch to different tab and come back to exploration
-            args.destinationPlaceId
+            destinationId = args.destinationPlaceId
+            needToFetchDesti = true
         } else {
-            explorationViewModel.destinationPointId
+            destinationId = explorationViewModel.destinationPointId
         }
         Log.d(TAG, "OnCreateView called! Destination ID received in exploration: $destinationId")
 
@@ -370,7 +373,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-
+                    Log.d(TAG, "text inside the destination searchbox: $newText")
+                    Log.d(TAG, "text from destinationName: $destinationName")
                     if (newText.toString() != destinationName){
                         Log.d(TAG, "destinationName: $destinationName")
                         Log.d(TAG, "new string entered: ${newText.toString()}")
@@ -387,8 +391,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val predictions = response.autocompletePredictions
                                 autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
                                 destinationListView.adapter = autoCompleteAdapter
-                                Log.i(TAG, "Visibility of destination listView is set to VISIBLE")
-                                destinationListView.visibility = View.VISIBLE
+                                if (newText.toString() != destinationName){
+                                    Log.i(TAG, "Visibility of destination listView is set to VISIBLE")
+                                    destinationListView.visibility = View.VISIBLE
+                                }
                             }.addOnFailureListener { _ ->
                                 Log.i(TAG, "onTextChangedListener error")
                             }
@@ -522,23 +528,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // create the fetch requests
-        val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
+        if(needToFetchDesti){
+            // create the fetch requests
+            Log.d(TAG, "Navigated from homepage, need to fetch destinaiton")
+            val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
 
-        // fetch destination place
-        Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
-            destinationPlace = response.place
-            destinationName = destinationPlace.name
-            Log.d(TAG, "Destination Place: $destinationPlace")
-            Log.i(TAG, "Destination Place Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
+            // fetch destination place
+            Places.createClient(requireContext()).fetchPlace(destFetchPlaceRequest).addOnSuccessListener { response ->
+                destinationPlace = response.place
+                destinationName = destinationPlace.name
+                Log.d(TAG, "Destination Place: $destinationPlace")
+                Log.i(TAG, "Destination Place Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
-            binding.destTextInputTextfield.setText(destinationName)
-            markDestination()
-            mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+                binding.destTextInputTextfield.setText(destinationName)
+                markDestination()
+                mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
 
-        }.addOnFailureListener { exception ->
-            if (exception is ApiException) {
-                Log.e(TAG, "Place not found: " + exception.statusCode)
+            }.addOnFailureListener { exception ->
+                if (exception is ApiException) {
+                    Log.e(TAG, "Place not found: " + exception.statusCode)
+                }
             }
         }
 
@@ -1263,4 +1272,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             bitmap
         }
     }
+
+
 }
