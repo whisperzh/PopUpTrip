@@ -17,6 +17,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    override fun onStart() {
+        super.onStart()
+        Toast.makeText(
+            this,
+            "You've been logged in.",
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

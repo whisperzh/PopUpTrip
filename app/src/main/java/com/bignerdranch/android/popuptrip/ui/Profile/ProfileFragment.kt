@@ -20,6 +20,9 @@ import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.DialogChangeEmailBinding
 import com.bignerdranch.android.popuptrip.databinding.FragmentProfileBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,6 +37,8 @@ class ProfileFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     var oldPassword=""
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -112,41 +117,42 @@ class ProfileFragment : Fragment() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
         val oldPasswordEditText = dialogView.findViewById<EditText>(R.id.old_password_edit_text)
         val newPasswordEditText = dialogView.findViewById<EditText>(R.id.new_password_edit_text)
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(dialogView)
-            .setTitle("Change Password")
-            .setPositiveButton("OK") { _, _ ->
-                // Handle password change
-                oldPassword = prefs.getString("password","Qaz123").toString() //need to same to previous, but not have data base yet
-                val newPassword = newPasswordEditText.text.toString()
-                val pattern =
-                    "^(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{6,}$".toRegex() //set the logic(one number&Uppercase)
-                if (oldPasswordEditText.text.toString().equals(oldPassword)) {//fit old password
-                    if (newPassword.matches(pattern)) {
-                        // password is valid, save to database
-                        prefs.edit().putString("password", newPassword).apply()//save to sharePref(need to implement encryption)
-                        oldPassword=newPassword
-                        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Password does not meet requirements",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }else{
-                    Toast.makeText(
-                        requireContext(),
-                        "Wrong Old Password",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .create()
-
-        dialog.show()
+        auth.currentUser!!.email
+//        val dialog = MaterialAlertDialogBuilder(requireContext())
+//            .setView(dialogView)
+//            .setTitle("Change Password")
+//            .setPositiveButton("OK") { _, _ ->
+//                // Handle password change
+//                oldPassword = prefs.getString("password","Qaz123").toString() //need to same to previous, but not have data base yet
+//                val newPassword = newPasswordEditText.text.toString()
+//                val pattern =
+//                    "^(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{6,}$".toRegex() //set the logic(one number&Uppercase)
+//                if (oldPasswordEditText.text.toString().equals(oldPassword)) {//fit old password
+//                    if (newPassword.matches(pattern)) {
+//                        // password is valid, save to database
+//                        prefs.edit().putString("password", newPassword).apply()//save to sharePref(need to implement encryption)
+//                        oldPassword=newPassword
+//                        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT)
+//                            .show()
+//                    } else {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Password does not meet requirements",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }else{
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Wrong Old Password",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//            .setNegativeButton("Cancel", null)
+//            .create()
+//
+//        dialog.show()
     }
     @SuppressLint("MissingInflateParams")
     private fun showChangeEmailDialog() {
