@@ -95,7 +95,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //    private val explorationViewModel: ExplorationViewModel by viewModels()
 
     // FOLLOWING VARIABLES NEED TO BE STORED IN VIEW MODEL
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
     private lateinit var mapBounds: LatLngBounds
     private lateinit var destinationId: String
     private lateinit var destinationPlace: Place
@@ -109,6 +109,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var placesToAdd: ArrayList<DetailedPlace> = ArrayList() // Places selected by user to add to route
     private var markersAdded: ArrayList<Marker> = ArrayList() // Markers for recommended places
     private lateinit var polyline: Polyline
+    private var startingPoint: ArrayList<Any> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -141,6 +142,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private lateinit var placeImageView: ImageView
     private lateinit var userSelectedPlace: DetailedPlace
 
+    private var mapFragment: SupportMapFragment? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -152,7 +155,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         destinationName = explorationViewModel.destinationName
         oldText = explorationViewModel.oldText
         startingPlace = explorationViewModel.startingPlace
-//        currentLocationLatLng = startingPlace.latLng
+        currentLocationLatLng = startingPlace.latLng
         destinationPlace = explorationViewModel.destination
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
@@ -160,6 +163,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         startingPointId = explorationViewModel.startingPointId
         placesToAdd = explorationViewModel.placesToAddToRoute
         markersAdded = explorationViewModel.markersAdded
+        startingPoint = explorationViewModel.startingPoint
 
         // input arguments from navigation
         destinationId = if (args != null) {
@@ -195,8 +199,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         Log.d(TAG, "Recreating map in onCreateView")
 
         // launch the support map fragment
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+//        mapFragment.getMapAsync(this)
+        mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        if (mapFragment == null) {
+            mapFragment = SupportMapFragment.newInstance()
+            childFragmentManager.beginTransaction().replace(R.id.map, mapFragment!!).commit()
+        }
+        mapFragment!!.getMapAsync(this)
 
 //        explorationViewModel.mapVIew = mapFragment
 
@@ -210,6 +220,13 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         Log.d(TAG, "Fused Location Client null?: $fusedLocationClientIsNull")
 
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val mapFragmentNull = (mapFragment == null)
+        Log.d(TAG, "mapFragment is null? $mapFragmentNull")
+//        mapFragment?.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -236,7 +253,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     Log.d(TAG, "starting point onTextChanged is triggered")
                     if (newText.toString() != startingPointName && newText.toString() != "Your Location") {
                         if (newText.toString() != "") {
-                            mMap.clear()
+                            mMap?.clear()
                         }
                         // Create a request for place predictions
                         Log.d(TAG, "Create request for place predictions")
@@ -261,7 +278,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     } else if (newText.toString() == "Your Location" && startingPointName != "" && startingPointName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
 //                        polyline.remove()
-                        mMap.clear()
+                        mMap?.clear()
                         startingPointName = "Your Location"
                         getLocation()
                         getDirections()
@@ -296,7 +313,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             Log.d(TAG, "starting point setOnItemClickListener is triggered")
             // to clear any previously selected locations
-            mMap.clear()
+            mMap?.clear()
             markDestination()
             val selectedPrediction = autoCompleteAdapter.getItem(position)
             Log.i(TAG, "Visibility of listView is set to GONE")
@@ -321,6 +338,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPlace = response.place
                         startingPointName = startingPlace.name
                         currentLocationLatLng = startingPlace.latLng
+                        startingPoint.clear()
+                        startingPoint.add(startingPointName)
+                        startingPoint.add(currentLocationLatLng)
+                        Log.d(TAG, "Starting Point at specified location: $startingPoint")
                         startingPointAddressInputEditText.setText(startingPointName)
                         Log.d(TAG, "Starting Place: $startingPlace")
                         Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
@@ -407,7 +428,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.i(TAG, "Destination Point Selected: ${destinationPlace.name}, ${destinationPlace.id}, ${destinationPlace.latLng}")
 
                             // to clear any previously selected locations
-                            mMap.clear()
+                            mMap?.clear()
                             Log.d(TAG, "On destination selected")
 
                             markDestination()
@@ -417,7 +438,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 // resize map bounds and draw the route
                                 getDirections()
                             } else {
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+                                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
                             }
 
                         }.addOnFailureListener { exception ->
@@ -444,18 +465,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             // to clear any previously selected locations
 //            mMap.clear()
             getLocation()
-        }
-
-//        getLocation()
-//        markDestination()
-//        markCurrentLocation("Your Location")
-//        getDirections()
-
-        if (this::currentLocationLatLng.isInitialized) {
-            markDestination()
             markCurrentLocation("Your Location")
-            getDirections()
         }
+
+//        // if LatLng refers to init start place -> placeholder used, need to get current location
+//        if (currentLocationLatLng == LatLng(0.0, 0.0)) {
+//            getLocation()
+//            markDestination()
+//            markCurrentLocation("Your Location")
+//            getDirections()
+//        }
 
         binding.adjustMapBoundButton.setOnClickListener{
             resizeMapView()
@@ -515,7 +534,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             binding.destTextInputTextfield.setText(destinationName)
             markDestination()
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+            mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
 
         }.addOnFailureListener { exception ->
             if (exception is ApiException) {
@@ -523,7 +542,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
-        setupMarkerClickListener(mMap)
+        setupMarkerClickListener(mMap!!)
 
         // Re-plot the markers (used when toggling away the coming back to Exploration page)
         Log.d(TAG, "Checking if anything to re-plot onMapReady")
@@ -555,7 +574,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     if (detailedPlace.placeLatLng == position) {
                         markersAdded.removeAt(i)
 //                        marker.remove()
-                        val updatedMarker = mMap.addMarker(MarkerOptions()
+                        val updatedMarker = mMap!!.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
                             .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
@@ -573,7 +592,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     if (j == placesToAdd.size - 1) {
                         markersAdded.removeAt(i)
 //                        marker.remove()
-                        val updatedMarker = mMap.addMarker(MarkerOptions()
+                        val updatedMarker = mMap!!.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
                             .alpha(0.6f)
@@ -608,7 +627,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
                 markersAdded.removeAt(i)
 //                marker.remove()
-                val updatedMarker = mMap.addMarker(MarkerOptions()
+                val updatedMarker = mMap!!.addMarker(MarkerOptions()
                     .position(position)
                     .title(markerTitle)
                     .alpha(0.6f)
@@ -695,6 +714,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
                             binding.startingTextInputTextfield.setText("Your Location")
+                            startingPoint.clear()
+                            startingPoint.add("Your Location")
+                            startingPoint.add(currentLocationLatLng)
+                            Log.d(TAG, "Starting Point at Current Location: $startingPoint")
                         }
                     }
                 }
@@ -771,8 +794,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     coordinates.add(path[0][0])
                     for (i in 0 until path.size) {
 //                        Log.d(TAG, "Path $i: " + path[i].toString())
-                        polyline = mMap.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-                        Log.d(TAG, "Polyline: $polyline")
+                        polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                        Log.d(TAG, "Polyline: $polyline" )
 
                         // modify map bounds to include the route
                         for (j in 0 until path[i].size) {
@@ -788,7 +811,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     }
                     Log.d(TAG, "coordinates are: $coordinates")
                     mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                    mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
                     getRecommendations(coordinates)
                 }
             }, Response.ErrorListener { _ ->
@@ -860,6 +883,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         Log.d(TAG, "Place Types: $placeTypes")
+        markersAdded.clear()
 
         for (i in 0 until coordinates.size) {
             for (j in 0 until placeTypes.size) {
@@ -891,7 +915,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             val results: JSONArray = jsonResponse.getJSONArray("candidates")
                             Log.d(TAG, "There is/are ${results.length()} results(s)")
                             Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
-                            markersAdded.clear()
+
                             for (k in 0 until results.length()) {
                                 Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
                                 val resultObject: JSONObject = results[k] as JSONObject
@@ -941,7 +965,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                         placeToMark.placeCategory = getString(R.string.category_title_nightlife)
                                     }
 
-                                    val marker = mMap.addMarker(MarkerOptions()
+                                    val marker = mMap?.addMarker(MarkerOptions()
                                         .position(placeLatLng)
                                         .title(placeName)
                                         .alpha(0.6f)
@@ -950,12 +974,13 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     marker!!.tag = placeToMark
 
                                     if (marker != null) {
+                                        Log.d(TAG, "Add Marker to markersAdded")
                                         markersAdded.add(marker)
                                     }
                                 }
                             }
                             mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
+                            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
                         }
                     }, Response.ErrorListener { _ ->
                     }) {}
@@ -977,7 +1002,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun markDestination(){
         Log.d(TAG, "markDestination called")
-        mMap.addMarker(MarkerOptions()
+        mMap?.addMarker(MarkerOptions()
             .position(destinationPlace.latLng)
             .title(destinationPlace.name)
             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
@@ -985,7 +1010,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun markCurrentLocation(name: String){
         Log.d(TAG, "markCurrentLocation called")
-        mMap.addMarker(MarkerOptions()
+        mMap?.addMarker(MarkerOptions()
             .position(currentLocationLatLng)
             .title(name)
             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
@@ -993,9 +1018,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun resizeMapView(){
         if (this::mapBounds.isInitialized){
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
         } else {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.latLng, 15f))
         }
     }
 
@@ -1016,7 +1041,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun setupMarkerClickListener(googleMap: GoogleMap) {
-        mMap.setOnMarkerClickListener { marker ->
+        mMap?.setOnMarkerClickListener { marker ->
             val place = marker.tag as? DetailedPlace
 
             if (place != null) {
@@ -1039,31 +1064,45 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     placeTypesTextView.visibility = View.GONE
                 }
 
-                if(place.placeImgBitmap!=null){
-                    placeImageView.setImageBitmap(place.placeImgBitmap)
-                } else {
-                    val photoRef = place.photoReference
-                    if (photoRef!=null){
-                        MainScope().launch {
-                            val bitmap = fetchPlaceImage(photoRef, placeImageView.maxWidth, MAPS_API_KEY)
-                            if (bitmap != null) {
-                                place.placeImgBitmap = bitmap
-                                placeImageView.setImageBitmap(bitmap)
-                                Log.d(TAG, "ImageView fetch succeeded")
-                            } else {
-                                // Handle the error (e.g., show a placeholder or error image)
-                                Log.d(TAG, "ImageView fetch failed")
-                            }
+                val photoRef = place.photoReference
+                if (photoRef!=null){
+                    MainScope().launch {
+                        val bitmap = fetchPlaceImage(photoRef, placeImageView.maxWidth, MAPS_API_KEY)
+                        if (bitmap != null) {
+                            place.placeImgBitmap = bitmap
+                            placeImageView.setImageBitmap(bitmap)
+                            Log.d(TAG, "ImageView fetch succeeded")
+                        } else {
+                            // Handle the error (e.g., show a placeholder or error image)
+                            Log.d(TAG, "ImageView fetch failed")
                         }
-                    } else {
-                        placeImageView.setImageResource(R.drawable.no_available_img)
                     }
+                } else {
+                    placeImageView.setImageResource(R.drawable.no_available_img)
                 }
 
                 // setup the button according to whether the place has been added or not
                 val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 
                 detailedPlaceDialog.show()
+
+    //                if(!place.addedToPlan){
+    //                    positiveButton.setText(R.string.detailed_place_dialog_add_button)
+    //                    positiveButton.setOnClickListener {
+    //                        // Add the place to list of places to visit
+    //                        place.addedToPlan = true
+    //                        addPlaceToRoute(place)
+    //                        detailedPlaceDialog.dismiss()
+    //                    }
+    //                } else {
+    //                    positiveButton.setText(R.string.detailed_place_dialog_remove_button)
+    //                    positiveButton.setOnClickListener {
+    //                        // Add the place to list of places to visit
+    //                        place.addedToPlan = false
+    //                        removePlaceFromRoute(place)
+    //                        detailedPlaceDialog.dismiss()
+    //                    }
+    //                }
 
             }
 
@@ -1073,6 +1112,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // When a detailed place is added to the route by the user
     private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
+        Log.d(TAG, "At addPlaceToRoute()")
         placesToAdd.add(detailedPlace)
 
         val markerColor = when (detailedPlace.placeCategory) {
@@ -1093,14 +1133,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
+        Log.d(TAG, "markersAdded size: ${markersAdded.size}")
         for (i in 0 until markersAdded.size) {
+            Log.d(TAG, "In for-loop in atPlacesToAdd")
             val marker: Marker = markersAdded[i]
             val position: LatLng = marker.position
             if (marker.position == detailedPlace.placeLatLng) {
+                Log.d(TAG, "Adding $marker to placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
-                val updatedMarker = mMap.addMarker(MarkerOptions()
+                val updatedMarker = mMap?.addMarker(MarkerOptions()
                     .position(position)
                     .title(detailedPlace.placeName)
                     .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
@@ -1116,6 +1159,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // When a detailed place is removed from the route by the user
     private fun removePlaceFromRoute(detailedPlace: DetailedPlace) {
+        Log.d(TAG, "At removePlaceFromRoute()")
         placesToAdd.remove(detailedPlace)
 
         val markerColor = when (detailedPlace.placeCategory) {
@@ -1140,10 +1184,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val marker: Marker = markersAdded[i]
             val position: LatLng = marker.position
             if (marker.position == detailedPlace.placeLatLng) {
+                Log.d(TAG, "Removing $marker from placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
-                val updatedMarker = mMap.addMarker(MarkerOptions()
+                val updatedMarker = mMap?.addMarker(MarkerOptions()
                     .position(position)
                     .title(detailedPlace.placeName)
                     .alpha(0.6f)
@@ -1162,15 +1207,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun createPOSTRequestItinerary() {
         /** Params for POST request:
          * user_email
-         * starting_location
+         * starting_location: starting_point: 1st arg is name of location, 2nd arg is LatLng of location
          * destination
          * places
          */
 
         val jsonObject = JSONObject()
         jsonObject.put("user_email", "new_user@bu.edu")
-        jsonObject.put("starting_location", currentLocationLatLng)
-        jsonObject.put("destination", destinationPlace.latLng)
+        jsonObject.put("starting_location", startingPoint)
+        jsonObject.put("destination", destinationPlace)
         jsonObject.put("places", placesToAdd)
 
         val url = "http://54.147.60.104:80/add-itinerary/"
