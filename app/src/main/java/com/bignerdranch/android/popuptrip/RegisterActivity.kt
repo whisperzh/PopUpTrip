@@ -42,6 +42,8 @@ class RegisterActivity : AppCompatActivity() {
             }else if(!binding.regPassword.editText!!.text.toString().equals(binding.regCofirmPassword.editText!!.text.toString()))
             {
                 Toast.makeText(this,R.string.pleaseDoubleCheckYourPassword,Toast.LENGTH_SHORT)
+            }else if(password.length<6){
+                Toast.makeText(this,R.string.yourPasswordIsTooShort,Toast.LENGTH_SHORT)
             }else
             {
 //                dbReference.child("User_Table").child(email).child("username").setValue(userName)
