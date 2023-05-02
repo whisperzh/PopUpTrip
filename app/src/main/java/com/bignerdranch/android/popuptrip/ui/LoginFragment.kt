@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment
 import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.databinding.FragmentLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -39,6 +41,7 @@ class LoginFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+        auth = Firebase.auth
     }
 
     override fun onCreateView(
@@ -48,6 +51,7 @@ class LoginFragment : Fragment() {
         binding=FragmentLoginBinding.inflate(layoutInflater,container,false)
         // Inflate the layout for this fragment
         bindComponents()
+
         return binding.root
     }
     private fun bindComponents() {
@@ -61,6 +65,7 @@ class LoginFragment : Fragment() {
                     .commit()
             }
             binding.LoginButton.setOnClickListener {
+                auth = Firebase.auth
                 login()
             }
             binding.resetPasswordButton.setOnClickListener {
