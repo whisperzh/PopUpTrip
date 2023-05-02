@@ -883,6 +883,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
 
         Log.d(TAG, "Place Types: $placeTypes")
+        markersAdded.clear()
 
         for (i in 0 until coordinates.size) {
             for (j in 0 until placeTypes.size) {
@@ -914,7 +915,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             val results: JSONArray = jsonResponse.getJSONArray("candidates")
                             Log.d(TAG, "There is/are ${results.length()} results(s)")
                             Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
-                            markersAdded.clear()
+
                             for (k in 0 until results.length()) {
                                 Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
                                 val resultObject: JSONObject = results[k] as JSONObject
@@ -973,6 +974,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     marker!!.tag = placeToMark
 
                                     if (marker != null) {
+                                        Log.d(TAG, "Add Marker to markersAdded")
                                         markersAdded.add(marker)
                                     }
                                 }
@@ -1110,6 +1112,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // When a detailed place is added to the route by the user
     private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
+        Log.d(TAG, "At addPlaceToRoute()")
         placesToAdd.add(detailedPlace)
 
         val markerColor = when (detailedPlace.placeCategory) {
@@ -1130,7 +1133,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
+        Log.d(TAG, "markersAdded size: ${markersAdded.size}")
         for (i in 0 until markersAdded.size) {
+            Log.d(TAG, "In for-loop in atPlacesToAdd")
             val marker: Marker = markersAdded[i]
             val position: LatLng = marker.position
             if (marker.position == detailedPlace.placeLatLng) {
@@ -1154,6 +1159,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // When a detailed place is removed from the route by the user
     private fun removePlaceFromRoute(detailedPlace: DetailedPlace) {
+        Log.d(TAG, "At removePlaceFromRoute()")
         placesToAdd.remove(detailedPlace)
 
         val markerColor = when (detailedPlace.placeCategory) {
