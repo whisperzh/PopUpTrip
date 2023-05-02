@@ -23,6 +23,18 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     // See: https://developer.android.com/training/basics/intents/result
+    private lateinit var auth: FirebaseAuth
+    override fun onStart() {
+        super.onStart()
+        auth = Firebase.auth
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
