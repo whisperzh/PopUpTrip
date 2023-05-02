@@ -8,12 +8,12 @@ import java.util.*
 
 @Entity
 data class DetailedPlace(
-    @PrimaryKey val placeId: String,
-    val placeLatLng: LatLng,
-    val placeName: String,
-    val placeRating: Float? = null,
-    val placeVicinity: String,
-    val photoReference: String? = null,
+    @PrimaryKey var placeId: String,
+    var placeLatLng: LatLng,
+    var placeName: String,
+    var placeRating: Float? = null,
+    var placeVicinity: String,
+    var photoReference: String? = null,
     var placeCategory: String? = null,
     var placeTypes: String? = null,
     var placeOpenNow: Boolean? = null,
@@ -22,21 +22,18 @@ data class DetailedPlace(
 ) {
     // Default constructor
     constructor() : this(
-        "ChIJ-dKkUfd544kR5cY9D2MncuM",
+        "dummy id",
         LatLng(0.0, 0.0),
-        "dummy name",
-        0.0f,
         "",
-        "")
+        placeVicinity = "",)
 
     // Basic constructor
     constructor(placeId: String) : this (
         placeId = placeId,
         LatLng(0.0, 0.0),
-        "dummy name",
-        0.0f,
         "",
-        "")
+        placeVicinity = "",)
+
 }
 
 

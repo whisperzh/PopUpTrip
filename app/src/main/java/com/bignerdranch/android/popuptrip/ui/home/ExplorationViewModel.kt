@@ -1,5 +1,8 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
+import android.graphics.Bitmap
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -22,15 +25,22 @@ const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
 const val POLYLINE = "POLYLINE"
 const val STARTING_POINT = "STARTING_POINT"
+const val NEED_TO_FETCH = "NEED_TO_FETCH"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
+//    private var startPlace: DetailedPlace = DetailedPlace()
+//    private var startPlace: Place = Place.builder().build()
+//    private lateinit var startPlace: Place
+//    private var destinationPlace: Place = Place.builder().build()
+//    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
+
+
     // include entire world
     private var mapBound: LatLngBounds = LatLngBounds.builder()
         .include(LatLng(-90.0, -180.0))
         .include(LatLng(90.0, 180.0))
         .build()
-
     private var maxSWBound: LatLng = LatLng(0.0, 0.0)
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
 
@@ -40,25 +50,19 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private var destinationId: String = "ChIJEU9Qpft544kRJ4DIMqb2VhA"
 //    private var polylineDefault: Polyline = ""
 
-    var startingPointName: String
-        get() = savedStateHandle.get<String>(STARTING_POINT_NAME) ?: ""
-        set(value) = savedStateHandle.set(STARTING_POINT_NAME, value)
-
-    var destinationName: String
-        get() = savedStateHandle.get<String>(DESTINATION_NAME) ?: ""
-        set(value) = savedStateHandle.set(DESTINATION_NAME, value)
-
     var oldText: String?
         get() = savedStateHandle.get<String>(OLD_TEXT_STRING)
         set(value) = savedStateHandle.set(OLD_TEXT_STRING, value)
 
-    var startingPlace: Place
-        get() = savedStateHandle.get<Place>(STARTING_PLACE) ?: initStartPlace()
-        set(value) = savedStateHandle.set(STARTING_PLACE, value)
+    var needToFetch: Boolean?
+        get() = savedStateHandle.get<Boolean>(NEED_TO_FETCH) ?: true
+        set(value) = savedStateHandle.set(NEED_TO_FETCH, value)
 
-    var destination: Place
-        get() = savedStateHandle.get<Place>(DESTINATION_PLACE) ?: initDestination()
-        set(value) = savedStateHandle.set(DESTINATION_PLACE, value)
+    private var _destinationPlace = DetailedPlace()
+    val destinationPlace: DetailedPlace get() = _destinationPlace
+
+    private var _startingPlace = DetailedPlace()
+    val startingPlace: DetailedPlace get() = _startingPlace
 
     var mapBounds: LatLngBounds
         get() = savedStateHandle.get<LatLngBounds>(MAP_BOUNDS) ?: mapBound
@@ -71,14 +75,6 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var maxNEBounds: LatLng
         get() = savedStateHandle.get<LatLng>(MAX_NE_BOUNDS) ?: maxNEBound
         set(value) = savedStateHandle.set(MAX_NE_BOUNDS, value)
-
-    var startingPointId: String
-        get() = savedStateHandle.get<String>(STARTING_POINT_ID) ?: startingId
-        set(value) = savedStateHandle.set(STARTING_POINT_ID, value)
-
-    var destinationPointId: String
-        get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
-        set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
 
 //    var mapView: SupportMapFragment
 //        get() = savedStateHandle.get<SupportMapFragment>(MAP_VIEW) ?: supportMapFragment
@@ -100,28 +96,99 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
 //        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
 //        set(value) = savedStateHandle.set(POLYLINE, value)
 
-    // The following 2 functions were inspired by
-    // https://developers.google.com/maps/documentation/places/android-sdk/reference/com/google/android/libraries/places/api/model/Place.Builder
-    private fun initStartPlace(): Place {
-        val placeBuilder = Place.builder()
-            .setAddress("655 Commonwealth Ave, Boston, MA 02215, USA")
-            .setId("ChIJ-dKkUfd544kR5cY9D2MncuM")
-            // set LatLng to 0, 0 so that start place is updated with current location, i.e. if LatLng refers to init start place -> placeholder used, need to get current location
-            .setLatLng(LatLng(0.0, 0.0))
-//            .setLatLng(LatLng(42.34993389999999,-71.1027624))
-            .setName("655 Commonwealth Ave")
-
-        return placeBuilder.build()
+    fun updateDestinationPlace(place: DetailedPlace){
+        _destinationPlace = place
     }
 
-    private fun initDestination(): Place {
-        val placeBuilder = Place.builder()
-            .setAddress("575 Memorial Dr, Cambridge, MA 02139, USA")
-            .setId("ChIJEU9Qpft544kRJ4DIMqb2VhA")
-            .setLatLng(LatLng(42.3544178,-71.1057659))
-            .setName("575 Memorial Dr")
+    fun updateStartingPlace(place: DetailedPlace){
+        _startingPlace = place
+    }
+    fun updatePlaceId(place: String, id: String){
+        if (place=="s"){
+            _startingPlace.placeId = id
+        } else {
+            _destinationPlace.placeId = id
+        }
+    }
 
-        return placeBuilder.build()
+    fun updatePlaceLatLng(place: String, latLng: LatLng){
+        if (place=="s"){
+            _startingPlace.placeLatLng ?: latLng
+        } else {
+            _destinationPlace.placeLatLng ?: latLng
+        }
+    }
+
+    fun updatePlaceName(place: String, name: String){
+        if (place=="s"){
+            _startingPlace.placeName ?: name
+        } else {
+            _destinationPlace.placeName ?: name
+        }
+    }
+
+    fun updatePlaceRating(place: String, rating: Float){
+        if (place=="s"){
+            startingPlace?.placeRating = rating
+        } else {
+            destinationPlace?.placeRating = rating
+        }
+    }
+
+    fun updatePlaceVicinity(place: String, vicinity: String){
+        if (place=="s"){
+            startingPlace?.placeVicinity ?: vicinity
+        } else {
+            destinationPlace?.placeVicinity ?: vicinity
+        }
+    }
+
+    fun updatePlacePhotoRef(place: String, photoRef: String){
+        if (place=="s"){
+            startingPlace?.photoReference = photoRef
+        } else {
+            destinationPlace?.photoReference = photoRef
+        }
+    }
+
+    fun updatePlaceCategory(place: String, cat: String){
+        if (place=="s"){
+            _startingPlace.placeCategory = cat
+        } else {
+            _destinationPlace.placeCategory = cat
+        }
+    }
+
+    fun updatePlaceTypes(place: String, types: String){
+        if (place=="s"){
+            startingPlace?.placeTypes = types
+        } else {
+            destinationPlace?.placeTypes = types
+        }
+    }
+
+    fun updatePlaceOpen(place: String, isOpen: Boolean){
+        if (place=="s"){
+            startingPlace?.placeOpenNow = isOpen
+        } else {
+            destinationPlace?.placeOpenNow = isOpen
+        }
+    }
+
+    fun updatePlaceImg(place: String, bitmap: Bitmap){
+        if (place=="s"){
+            startingPlace?.placeImgBitmap = bitmap
+        } else {
+            destinationPlace?.placeImgBitmap = bitmap
+        }
+    }
+
+    fun updatePlaceAdded(place: String, added: Boolean){
+        if (place=="s"){
+            startingPlace?.addedToPlan ?: added
+        } else {
+            destinationPlace?.addedToPlan ?: added
+        }
     }
 
 }
