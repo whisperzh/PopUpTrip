@@ -420,6 +420,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             destinationAddressInputEditText.setText(destinationPlace.placeName)
 
+
+
                             explorationViewModel.updateDestinationPlace(destinationPlace)
                             Log.d(TAG, "new destination place in viewModel: ${destinationPlace.placeName}")
 
