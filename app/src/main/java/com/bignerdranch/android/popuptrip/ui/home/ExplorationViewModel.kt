@@ -29,13 +29,6 @@ const val NEED_TO_FETCH = "NEED_TO_FETCH"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-//    private var startPlace: DetailedPlace = DetailedPlace()
-//    private var startPlace: Place = Place.builder().build()
-//    private lateinit var startPlace: Place
-//    private var destinationPlace: Place = Place.builder().build()
-//    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
-
-
     // include entire world
     private var mapBound: LatLngBounds = LatLngBounds.builder()
         .include(LatLng(-90.0, -180.0))

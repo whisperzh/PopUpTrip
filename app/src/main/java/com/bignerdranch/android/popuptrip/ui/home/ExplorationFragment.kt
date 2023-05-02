@@ -202,7 +202,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
 //        mapFragment.getMapAsync(this)
 
-        // launch the support map fragment
+        // Re-create the map e.g. if user switches from exploration to another tab
+        // e.g. Personal Profile, and back to exploration by clicking the Home tab
         Log.d(TAG, "Launch support map fragment")
         mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         if (mapFragment == null) {
@@ -420,10 +421,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             destinationAddressInputEditText.setText(destinationPlace.placeName)
 
-
+                            // Update the destinationPlaceId if user changes the destination in Exploration page
+                            // Adapted from
+                            // https://medium.com/@helmersebastian/why-to-use-fragment-arguments-in-android-fbaa375d08c3
+                            // https://stackoverflow.com/questions/46551228/how-to-pass-and-get-value-from-fragment-and-activity
+                            val updatedArgs = Bundle().apply {
+                                putString("destinationPlaceId", placeId)
+                            }
+                            arguments = updatedArgs
 
                             explorationViewModel.updateDestinationPlace(destinationPlace)
-                            Log.d(TAG, "new destination place in viewModel: ${destinationPlace.placeName}")
+                            Log.d(TAG, "new destination place in viewModel: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
 
                             // to clear any previously selected locations
                             mMap?.clear()
@@ -462,7 +470,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             getLocation()
             getDirections()
             markDestination()
-            Log.d(TAG, "LINE 474: startingplace name: ${startingPlace.placeName}")
+            Log.d(TAG, "LINE 474: starting place name: ${startingPlace.placeName}")
             markStartingLocation(startingPlace.placeName)
             startingPointAddressInputEditText.setText("Your Location")
 
@@ -652,6 +660,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
+    // The following 5 functions pertaining to getting the user's current location is obtained from
+    // https://techpassmaster.com/get-current-location-in-android-studio-using-kotlin/
     private fun isLocationEnabled(): Boolean {
         val locationManager: LocationManager =
             activity?.getSystemService(LOCATION_SERVICE) as LocationManager
@@ -793,6 +803,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 "&mode=" + travelMode.lowercase() +
                 "&key=" + MAPS_API_KEY
 
+        // Adapted from https://lwgmnz.me/google-maps-and-directions-api-using-kotlin/
         val directionsRequest =
             object : StringRequest(Method.GET, urlDirections, Response.Listener { response ->
                 val jsonResponse = JSONObject(response)
@@ -812,6 +823,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         //                Log.d(TAG, PolyUtil.decode(points).toString())
                         path.add(PolyUtil.decode(points))
                     }
+                    // get the max SW and NE bounds so the map is zoomed out to the point where
+                    // the route can be seen without having to manually move the map around
                     maxSWBounds = getSWBound(startingPlace.placeLatLng, destinationPlace.placeLatLng)
                     maxNEBounds = getNEBound(startingPlace.placeLatLng, destinationPlace.placeLatLng)
 
@@ -845,6 +858,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         requestQueue.add(directionsRequest)
     }
 
+    // get recommended places based on user's preferences set in Personal Profile
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
         val placeTypes = arrayListOf<String>()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -1049,6 +1063,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
+    // Obtained from
+    // https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
     private fun haversineDistance(p1: LatLng, p2: LatLng): Double {
         val r = 6378137; // Earth’s mean radius in meter
         val distanceLatitude = rad(p2.latitude - p1.latitude)
