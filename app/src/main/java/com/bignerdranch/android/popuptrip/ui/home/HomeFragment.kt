@@ -180,9 +180,9 @@ class HomeFragment : Fragment() {
                     // list of nearby places in viewModel is updated with fetch response
                     getCurrentLocationAndFetchPlaces()
                 } else {
-                    val tempUserPrefenceList = getPlaceTypePreference()
+                    val tempUserPreferenceList = getPlaceTypePreference()
                     val sortedUserPreferenceList = userPreferenceList!!.sorted()
-                    val sortedTempList = tempUserPrefenceList.sorted()
+                    val sortedTempList = tempUserPreferenceList.sorted()
                     // no change in user preference, therefore no need to fetch
                     if(sortedUserPreferenceList==sortedTempList){
                         val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
