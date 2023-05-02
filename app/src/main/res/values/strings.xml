@@ -132,4 +132,9 @@
     <string name="passwordButton">change password</string>
     <string name="sendEmail">send email</string>
     <string name="cancel">cancel</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="submit">Submit</string>
+    <string name="resetYourPassword">Reset Your Password</string>
+
 </resources>
