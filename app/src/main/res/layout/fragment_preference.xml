@@ -139,7 +139,8 @@
                 style="@style/Widget.MaterialComponents.Chip.Choice"
                 app:checkedIcon="@drawable/favorite_24dp"
                 app:checkedIconVisible="true"
-                android:layout_margin="6dp"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="1000dp"
                 />
             <com.google.android.material.chip.Chip
                 android:id="@+id/Restaurant_chip"
@@ -377,6 +378,16 @@
                 android:layout_margin="10dp"
                 />
             <com.google.android.material.chip.Chip
+                android:id="@+id/MovieTheater_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/MovieTheater"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                app:checkedIcon="@drawable/favorite_24dp"
+                app:checkedIconVisible="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="1000dp"></com.google.android.material.chip.Chip>
+            <com.google.android.material.chip.Chip
                 android:id="@+id/Zoo_chip"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -385,7 +396,7 @@
                 app:checkedIcon="@drawable/favorite_24dp"
                 app:checkedIconVisible="true"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="1000dp"></com.google.android.material.chip.Chip>
+                android:layout_marginRight="10dp"></com.google.android.material.chip.Chip>
             <com.google.android.material.chip.Chip
                 android:id="@+id/AmusementPark_chip"
                 android:layout_width="wrap_content"
@@ -397,16 +408,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="1000dp"
                 />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/MovieTheater_chip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/MovieTheater"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                app:checkedIcon="@drawable/favorite_24dp"
-                app:checkedIconVisible="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="1000dp"></com.google.android.material.chip.Chip>
+
             <!-- Chips can be declared here, or added dynamically. -->
 
         </com.google.android.material.chip.ChipGroup>

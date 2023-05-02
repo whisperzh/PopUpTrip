@@ -174,6 +174,7 @@ class PreferenceFragment : Fragment() {
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         val position = prefs.getInt("MethodSpinnerPosition", 0)
+        lastSelectedItem = dataList.get(position)
         binding.methodSpinner.adapter = adapter//bind the adapter
         binding.methodSpinner.setSelection(position)
         binding.methodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
