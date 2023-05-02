@@ -122,4 +122,9 @@
     <string name="category_title_culture">CULTURE</string>
     <string name="category_title_entertainment">ENTERTAINMENT</string>
     <string name="yourPasswordIsTooShort">Your password is too short!</string>
+    <string name="emailIsRequired">Email is required</string>
+    <string name="invalidEmail">Invalid email!</string>
+    <string name="somethingWentWrong">Something went wrong</string>
+    <string name="pleaseCheckYourEmailToResetPassword">Please check your email to reset password</string>
+
 </resources>
