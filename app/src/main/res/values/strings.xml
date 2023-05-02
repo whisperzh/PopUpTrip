@@ -32,7 +32,7 @@
     <string name="use_current_location">Use current location</string>
     <string name="search">Search</string>
     <string name="clear_search">Clear Search</string>
-    <string name="email_username">Name or Email Address</string>
+    <string name="email_username">Email Address</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
