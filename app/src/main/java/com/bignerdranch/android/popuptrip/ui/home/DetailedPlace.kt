@@ -28,6 +28,15 @@ data class DetailedPlace(
         0.0f,
         "",
         "")
+
+    // Basic constructor
+    constructor(placeId: String) : this (
+        placeId = placeId,
+        LatLng(0.0, 0.0),
+        "dummy name",
+        0.0f,
+        "",
+        "")
 }
 
 

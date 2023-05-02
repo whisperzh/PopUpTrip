@@ -39,6 +39,7 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         .build()
     private var maxSWBound: LatLng = LatLng(0.0, 0.0)
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
+
     // 655 Commonwealth Avenue
     private var startingId: String = "ChIJ-dKkUfd544kR5cY9D2MncuM"
     // 575 Memorial Drive

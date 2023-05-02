@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.util.Log
+import android.util.Patterns
 import android.widget.Toast
 import com.bignerdranch.android.popuptrip.databinding.ActivityRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -27,7 +28,39 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
         bindComponents()
         auth = Firebase.auth
+        resetPassword("rmzhang@bu.edu")
+    }
 
+    private fun fireBaseCreateUser(email:String,password:String,userName:String)
+    {
+        try {
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "createUserWithEmail:success")
+                        val user = auth.currentUser!!
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication succeed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                        dbReference.child("User_Table").child(user.uid).child("username").setValue(userName)
+                        finish()
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        Toast.makeText(
+                            baseContext,
+                            "Authentication failed.",
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
+        }catch (Exp:Exception)
+        {
+            print(Exp)
+        }
     }
 
     private fun bindComponents(){
@@ -48,37 +81,33 @@ class RegisterActivity : AppCompatActivity() {
             {
 //                dbReference.child("User_Table").child(email).child("username").setValue(userName)
 //                dbReference.child("User_Table").child(email).child("passhash").setValue(password.hashCode())
-                try {
-                    auth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this) { task ->
-                            if (task.isSuccessful) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success")
-                                val user = auth.currentUser!!
-                                Toast.makeText(
-                                    baseContext,
-                                    "Authentication succeed.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                                dbReference.child("User_Table").child(user.uid).child("username").setValue(userName)
-                                finish()
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                                Toast.makeText(
-                                    baseContext,
-                                    "Authentication failed.",
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                            }
-                        }
-                }catch (Exp:Exception)
-                {
-                    print(Exp)
-                }
+                    fireBaseCreateUser(email, password,userName)
             }
 
         }
     }
 
+    private fun resetPassword(email:String){
+        if(email.isEmpty())
+        {
+            Toast.makeText(this,R.string.emailIsRequired,Toast.LENGTH_SHORT).show()
+        }
+        if(Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        {
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(this) { task->
+                if(task.isSuccessful)
+                {
+                    Toast.makeText(this,R.string.pleaseCheckYourEmailToResetPassword,Toast.LENGTH_SHORT).show()
+                }else
+                {
+                    Toast.makeText(this,R.string.somethingWentWrong,Toast.LENGTH_SHORT).show()
+
+                }
+
+            }
+        }else
+        {
+            Toast.makeText(this,R.string.invalidEmail,Toast.LENGTH_SHORT).show()
+        }
+    }
 }
