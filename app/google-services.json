@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "11834339712",
+    "firebase_url": "https://popup-trip-default-rtdb.firebaseio.com",
+    "project_id": "popup-trip",
+    "storage_bucket": "popup-trip.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11834339712:android:5fd8b6d21766a6e6bb9165",
+        "android_client_info": {
+          "package_name": "com.bignerdranch.android.popuptrip"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "11834339712-epjfio0oslrod95dd3b0k04rd6ks9g4u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bignerdranch.android.popuptrip",
+            "certificate_hash": "0c658c7d2bde663a029e85c3f8b62579eb296771"
+          }
+        },
+        {
+          "client_id": "11834339712-143lt29e55bbjmvhu1j75jl8j9pmq1mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2hu9B12OOTC4ZiV8qMTCJPEN10KbNreI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "11834339712-143lt29e55bbjmvhu1j75jl8j9pmq1mb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

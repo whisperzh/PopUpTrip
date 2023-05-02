@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'androidx.navigation.safeargs'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -10,6 +11,7 @@ android {
     compileSdkPreview "UpsideDownCake"
 
     defaultConfig {
+        resourceConfigurations += ["en", "fr", "es", "de", "zh"]
         applicationId "com.bignerdranch.android.popuptrip"
         minSdk 30
         targetSdk 33
@@ -36,7 +38,6 @@ android {
         viewBinding true
     }
 }
-
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -65,4 +66,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.google.android.gms:play-services-auth:20.5.0'
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
+
+    implementation platform('com.google.firebase:firebase-bom:31.5.0')
+    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
 }
+

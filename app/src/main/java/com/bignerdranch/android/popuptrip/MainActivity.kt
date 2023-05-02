@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip
 
 import android.os.Bundle
+import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -9,11 +10,21 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
 import com.google.android.libraries.places.api.Places
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    override fun onStart() {
+        super.onStart()
+        Toast.makeText(
+            this,
+            "You've been logged in.",
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,5 +48,12 @@ class MainActivity : AppCompatActivity() {
         )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Firebase.auth.signOut()
+        Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
+        finish()
     }
 }

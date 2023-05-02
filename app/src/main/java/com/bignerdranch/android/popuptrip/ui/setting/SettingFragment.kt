@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip.ui.setting
 
 import android.R
+import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -12,12 +13,16 @@ import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import java.util.*
 
 class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
@@ -61,6 +66,27 @@ class SettingFragment : Fragment() {
                     toast.show()
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
+                if (selectedItem.equals("Simplified Chinese")) {
+                    val locale = Locale("zh")
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(Locale.SIMPLIFIED_CHINESE)
+                    val resources = requireContext().resources
+                    val oldConfig = resources.configuration
+                    val displayMetrics = resources.displayMetrics
+                    resources.updateConfiguration(config, displayMetrics)
+                }
+                if (selectedItem.equals("English")) {
+                    val locale = Locale("en")
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(Locale.ENGLISH)
+                    val resources = requireContext().resources
+                    val oldConfig = resources.configuration
+                    val displayMetrics = resources.displayMetrics
+                    resources.updateConfiguration(config, displayMetrics)
+                }
+
                 lastSelectedItem = selectedItem
 
             }
@@ -80,13 +106,21 @@ class SettingFragment : Fragment() {
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
             }
         }
-        val logoutButton=binding.logoutButton
+//        val logoutButton=binding.logoutButton
     //    logoutButton.setOnClickListener(
       //      findNavController()
        // )
         //starButton.setOnClickListener(Navigation.createNavigateOnClickListener(
           //  popR.id.navigation_star,null
         //))   //wait for adapter&list
+        binding.logoutButton.setOnClickListener {
+            Firebase.auth.signOut()
+            Toast.makeText(context,"You have been logged out",Toast.LENGTH_SHORT).show()
+            activity?.finish()
+        }
+        binding.themeText.apply {
+            setText(popR.string.title_mode)
+        }
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
