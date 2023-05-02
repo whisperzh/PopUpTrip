@@ -25,18 +25,12 @@ const val STARTING_POINT = "STARTING_POINT"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
-//    private var startPlace: DetailedPlace = DetailedPlace()
-//    private var startPlace: Place = Place.builder().build()
-//    private lateinit var startPlace: Place
-//    private var destinationPlace: Place = Place.builder().build()
-//    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
-
-
     // include entire world
     private var mapBound: LatLngBounds = LatLngBounds.builder()
         .include(LatLng(-90.0, -180.0))
         .include(LatLng(90.0, 180.0))
         .build()
+
     private var maxSWBound: LatLng = LatLng(0.0, 0.0)
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
 
@@ -106,10 +100,13 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
 //        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
 //        set(value) = savedStateHandle.set(POLYLINE, value)
 
+    // The following 2 functions were inspired by
+    // https://developers.google.com/maps/documentation/places/android-sdk/reference/com/google/android/libraries/places/api/model/Place.Builder
     private fun initStartPlace(): Place {
         val placeBuilder = Place.builder()
             .setAddress("655 Commonwealth Ave, Boston, MA 02215, USA")
             .setId("ChIJ-dKkUfd544kR5cY9D2MncuM")
+            // set LatLng to 0, 0 so that start place is updated with current location, i.e. if LatLng refers to init start place -> placeholder used, need to get current location
             .setLatLng(LatLng(0.0, 0.0))
 //            .setLatLng(LatLng(42.34993389999999,-71.1027624))
             .setName("655 Commonwealth Ave")
