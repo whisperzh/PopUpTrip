@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip.ui.Profile
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
+import com.bignerdranch.android.popuptrip.R as popR
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.preference.PreferenceManager
 import android.provider.MediaStore
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +22,13 @@ import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.DialogChangeEmailBinding
 import com.bignerdranch.android.popuptrip.databinding.FragmentProfileBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import java.io.File
 import java.io.FileOutputStream
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 class ProfileFragment : Fragment() {
     private var lastSelectedItem: String? = null
@@ -29,6 +36,8 @@ class ProfileFragment : Fragment() {
     private val PICK_IMAGE_REQUEST_CODE=1
     private var save=false
     var text=""
+    private var dbReference:DatabaseReference=FirebaseDatabase.getInstance().getReferenceFromUrl("https://popup-trip-default-rtdb.firebaseio.com/")
+    private lateinit var auth: FirebaseAuth
     private val dataList =  listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -39,10 +48,10 @@ class ProfileFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        auth=Firebase.auth
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val saved=prefs.getString("EditedName","")
-        val position = prefs.getInt("MethodSpinnerPosition", 0)
         binding.profileName.setText(saved)
         text = saved ?: "" // Set text variable to saved value, or empty string if null
         val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -107,46 +116,78 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun showChangePasswordDialog(){
+    private fun showChangePasswordDialog() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
-        val oldPasswordEditText = dialogView.findViewById<EditText>(R.id.old_password_edit_text)
-        val newPasswordEditText = dialogView.findViewById<EditText>(R.id.new_password_edit_text)
+        val dialogView =
+            LayoutInflater.from(requireContext()).inflate(R.layout.dialog_change_password, null)
+        val email=dialogView.findViewById<EditText>(R.id.email_edit_text)
+        //val oldPasswordEditText = dialogView.findViewById<EditText>(R.id.old_password_edit_text)
+        //val newPasswordEditText = dialogView.findViewById<EditText>(R.id.new_password_edit_text)
+//        val dialog = MaterialAlertDialogBuilder(requireContext())
+//            .setView(dialogView)
+//            .setTitle("Change Password")
+//            .setPositiveButton("OK") { _, _ ->
+//                // Handle password change
+//                oldPassword = prefs.getString("password","Qaz123").toString() //need to same to previous, but not have data base yet
+//                val newPassword = newPasswordEditText.text.toString()
+//                val pattern =
+//                    "^(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{6,}$".toRegex() //set the logic(one number&Uppercase)
+//                if (oldPasswordEditText.text.toString().equals(oldPassword)) {//fit old password
+//                    if (newPassword.matches(pattern)) {
+//                        // password is valid, save to database
+//                        prefs.edit().putString("password", newPassword).apply()//save to sharePref(need to implement encryption)
+//                        oldPassword=newPassword
+//                        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT)
+//                            .show()
+//                    } else {
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Password does not meet requirements",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }else{
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Wrong Old Password",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            }
+//            .setNegativeButton("Cancel", null)
+//            .create()
+
         val dialog = MaterialAlertDialogBuilder(requireContext())
             .setView(dialogView)
             .setTitle("Change Password")
-            .setPositiveButton("OK") { _, _ ->
-                // Handle password change
-                oldPassword = prefs.getString("password","Qaz123").toString() //need to same to previous, but not have data base yet
-                val newPassword = newPasswordEditText.text.toString()
-                val pattern =
-                    "^(?=.*[A-Z])(?=.*[0-9])(?=\\S+$).{6,}$".toRegex() //set the logic(one number&Uppercase)
-                if (oldPasswordEditText.text.toString().equals(oldPassword)) {//fit old password
-                    if (newPassword.matches(pattern)) {
-                        // password is valid, save to database
-                        prefs.edit().putString("password", newPassword).apply()//save to sharePref(need to implement encryption)
-                        oldPassword=newPassword
-                        Toast.makeText(requireContext(), "Password updated", Toast.LENGTH_SHORT)
-                            .show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Password does not meet requirements",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }else{
-                    Toast.makeText(
-                        requireContext(),
-                        "Wrong Old Password",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
+            .setPositiveButton(popR.string.sendEmail) { _, _ ->
+                resetPassword(email.text.toString())
+            }.setNegativeButton(popR.string.cancel,null)
             .create()
-
         dialog.show()
+    }
+    private fun resetPassword(email:String){
+        if(email.isEmpty())
+        {
+            Toast.makeText(requireContext(),R.string.emailIsRequired,Toast.LENGTH_SHORT).show()
+        }
+        if(Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        {
+            auth.sendPasswordResetEmail(email).addOnCompleteListener(requireActivity()) { task->
+                if(task.isSuccessful)
+                {
+                    Toast.makeText(requireContext(),R.string.pleaseCheckYourEmailToResetPassword,Toast.LENGTH_SHORT).show()
+                }else
+                {
+                    Toast.makeText(requireContext(),R.string.somethingWentWrong,Toast.LENGTH_SHORT).show()
+
+                }
+
+            }
+        }else
+        {
+            Toast.makeText(requireContext(),R.string.invalidEmail,Toast.LENGTH_SHORT).show()
+        }
     }
     @SuppressLint("MissingInflateParams")
     private fun showChangeEmailDialog() {
@@ -211,6 +252,7 @@ class ProfileFragment : Fragment() {
             .setNegativeButton("Cancel", null)
             .show()
     }
+
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         if(save) {
@@ -219,4 +261,5 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
 }

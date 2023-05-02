@@ -11,6 +11,7 @@ android {
     compileSdkPreview "UpsideDownCake"
 
     defaultConfig {
+        resourceConfigurations += ["en", "fr", "es", "de", "zh"]
         applicationId "com.bignerdranch.android.popuptrip"
         minSdk 30
         targetSdk 33
