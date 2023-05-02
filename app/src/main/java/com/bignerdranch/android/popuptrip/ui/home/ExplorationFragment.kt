@@ -1134,6 +1134,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val marker: Marker = markersAdded[i]
             val position: LatLng = marker.position
             if (marker.position == detailedPlace.placeLatLng) {
+                Log.d(TAG, "Adding $marker to placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
@@ -1177,6 +1178,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val marker: Marker = markersAdded[i]
             val position: LatLng = marker.position
             if (marker.position == detailedPlace.placeLatLng) {
+                Log.d(TAG, "Removing $marker from placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
@@ -1193,10 +1195,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         }
-    }
-
-    private fun getCurrentDateTime(): LocalDateTime? {
-        return LocalDateTime.now()
     }
 
     // To send data to Itinerary
