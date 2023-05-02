@@ -36,8 +36,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.HttpResponse
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
@@ -889,9 +891,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             val results: JSONArray = jsonResponse.getJSONArray("candidates")
                             Log.d(TAG, "There is/are ${results.length()} results(s)")
                             Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
-
-
-
+                            markersAdded.clear()
                             for (k in 0 until results.length()) {
                                 Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
                                 val resultObject: JSONObject = results[k] as JSONObject
@@ -1158,26 +1158,39 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun getCurrentDateTime(): LocalDateTime? {
-        return LocalDateTime.now()
-    }
-
     // To send data to Itinerary
     private fun createPOSTRequestItinerary() {
         /** Params for POST request:
-         * start_time: DATE_TIME
+         * user_email
          * starting_location
          * destination
          * places
          */
 
         val jsonObject = JSONObject()
-        jsonObject.put("start_time", getCurrentDateTime())
+        jsonObject.put("user_email", "new_user@bu.edu")
         jsonObject.put("starting_location", currentLocationLatLng)
         jsonObject.put("destination", destinationPlace.latLng)
         jsonObject.put("places", placesToAdd)
 
-        val jsonObjectString = jsonObject.toString()
+        val url = "http://54.147.60.104:80/add-itinerary/"
+
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.POST,
+            url,
+            jsonObject,
+            { response ->
+                // Handle response
+                Log.d(TAG, "Response from Itinerary: $response")
+            },
+            { error ->
+                // Handle error
+                Log.d(TAG, "Error from Itinerary: $error")
+            }
+        )
+
+        val queue = Volley.newRequestQueue(context)
+        queue.add(jsonObjectRequest)
     }
 
     private suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {
