@@ -126,5 +126,9 @@
     <string name="invalidEmail">Invalid email!</string>
     <string name="somethingWentWrong">Something went wrong</string>
     <string name="pleaseCheckYourEmailToResetPassword">Please check your email to reset password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="submit">Submit</string>
+    <string name="resetYourPassword">Reset Your Password</string>
 
 </resources>

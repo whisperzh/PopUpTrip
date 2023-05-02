@@ -23,7 +23,6 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     // See: https://developer.android.com/training/basics/intents/result
-    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,9 +31,6 @@ class LoginActivity : AppCompatActivity() {
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
         setContentView(binding.root)
-        bindComponents()
-        auth = Firebase.auth
-
 
         // Register the permissions callback, which handles the user's response to the
         // system permissions dialog. Save the return value, an instance of
@@ -115,50 +111,7 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun bindComponents() {
-            binding.createAccountButton.setOnClickListener {
-                val intent = Intent(this, RegisterActivity::class.java)
-                startActivity(intent)
-            }
-            binding.LoginButton.setOnClickListener {
-                login()
-            }
-            binding.resetPasswordButton.setOnClickListener {
 
-            }
-        }
 
-        private fun login() {
-            var email = binding.username.editText?.text.toString()
-            var password = binding.password.editText?.text.toString()
-            if(email.equals("")||password.equals(""))
-            {
-                Toast.makeText(this,"Please fill in all the blanks",Toast.LENGTH_SHORT).show()
-            }else {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(this) { task ->
-                        if (task.isSuccessful) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success")
-                            val user = auth.currentUser
-                            Toast.makeText(
-                                baseContext,
-                                "Authentication succeed.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                            val intent = Intent(this, MainActivity::class.java)
-                            startActivity(intent)
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            Toast.makeText(
-                                baseContext,
-                                "Authentication failed.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
-                    }
-            }
-        }
 
 }
