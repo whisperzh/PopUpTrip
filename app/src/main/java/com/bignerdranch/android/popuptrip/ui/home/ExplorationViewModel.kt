@@ -21,6 +21,7 @@ const val DESTINATION_POINT_ID = "DESTINATION_POINT_ID"
 const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
 const val POLYLINE = "POLYLINE"
+const val STARTING_POINT = "STARTING_POINT"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -29,6 +30,7 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
 //    private lateinit var startPlace: Place
 //    private var destinationPlace: Place = Place.builder().build()
 //    private var supportMapFragment: SupportMapFragment = SupportMapFragment()
+
 
     // include entire world
     private var mapBound: LatLngBounds = LatLngBounds.builder()
@@ -94,6 +96,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var markersAdded: ArrayList<Marker>
         get() = savedStateHandle.get<ArrayList<Marker>>(MARKERS_TO_ADD) ?: ArrayList()
         set(value) = savedStateHandle.set(MARKERS_TO_ADD, value)
+
+    var startingPoint: ArrayList<Any>
+        get() = savedStateHandle.get<ArrayList<Any>>(STARTING_POINT) ?: arrayListOf("655 Commonwealth Ave", LatLng(0.0, 0.0))
+        set(value) = savedStateHandle.set(STARTING_POINT, value)
 
 //    var polyline: Polyline
 //        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault

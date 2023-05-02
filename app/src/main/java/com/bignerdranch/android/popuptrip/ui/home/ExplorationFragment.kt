@@ -109,6 +109,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var placesToAdd: ArrayList<DetailedPlace> = ArrayList() // Places selected by user to add to route
     private var markersAdded: ArrayList<Marker> = ArrayList() // Markers for recommended places
     private lateinit var polyline: Polyline
+    private var startingPoint: ArrayList<Any> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -162,6 +163,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         startingPointId = explorationViewModel.startingPointId
         placesToAdd = explorationViewModel.placesToAddToRoute
         markersAdded = explorationViewModel.markersAdded
+        startingPoint = explorationViewModel.startingPoint
 
         // input arguments from navigation
         destinationId = if (args != null) {
@@ -336,6 +338,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPlace = response.place
                         startingPointName = startingPlace.name
                         currentLocationLatLng = startingPlace.latLng
+                        startingPoint.clear()
+                        startingPoint.add(startingPointName)
+                        startingPoint.add(currentLocationLatLng)
+                        Log.d(TAG, "Starting Point at specified location: $startingPoint")
                         startingPointAddressInputEditText.setText(startingPointName)
                         Log.d(TAG, "Starting Place: $startingPlace")
                         Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
@@ -708,6 +714,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
                             binding.startingTextInputTextfield.setText("Your Location")
+                            startingPoint.clear()
+                            startingPoint.add("Your Location")
+                            startingPoint.add(currentLocationLatLng)
+                            Log.d(TAG, "Starting Point at Current Location: $startingPoint")
                         }
                     }
                 }
@@ -1193,15 +1203,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun createPOSTRequestItinerary() {
         /** Params for POST request:
          * user_email
-         * starting_location
+         * starting_location: starting_point: 1st arg is name of location, 2nd arg is LatLng of location
          * destination
          * places
          */
 
         val jsonObject = JSONObject()
         jsonObject.put("user_email", "new_user@bu.edu")
-        jsonObject.put("starting_location", currentLocationLatLng)
-        jsonObject.put("destination", destinationPlace.latLng)
+        jsonObject.put("starting_location", startingPoint)
+        jsonObject.put("destination", destinationPlace)
         jsonObject.put("places", placesToAdd)
 
         val url = "http://54.147.60.104:80/add-itinerary/"
