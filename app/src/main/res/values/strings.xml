@@ -122,4 +122,8 @@
     <string name="category_title_culture">CULTURE</string>
     <string name="category_title_entertainment">ENTERTAINMENT</string>
     <string name="yourPasswordIsTooShort">Your password is too short!</string>
+    <string name="changeEmail">ChangeEmail:</string>
+    <string name="emailButton">change email</string>
+    <string name="changepassword">Change Password:</string>
+    <string name="passwordButton">change password</string>
 </resources>
