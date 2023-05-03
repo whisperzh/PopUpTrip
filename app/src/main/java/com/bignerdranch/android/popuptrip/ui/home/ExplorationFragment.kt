@@ -95,8 +95,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // FOLLOWING VARIABLES NEED TO BE STORED IN VIEW MODEL
     private var mMap: GoogleMap? = null
     private lateinit var mapBounds: LatLngBounds
-private lateinit var destinationPlace : DetailedPlace
-private lateinit var startingPlace: DetailedPlace
+    private lateinit var destinationPlace : DetailedPlace
+    private lateinit var startingPlace: DetailedPlace
     private var oldText: String? = null
     private lateinit var maxSWBounds: LatLng
     private lateinit var maxNEBounds: LatLng
@@ -247,7 +247,7 @@ private lateinit var startingPlace: DetailedPlace
                         oldText = newText.toString()
                     }
                     Log.d(TAG, "starting point onTextChanged is triggered")
-                    if (newText.toString() != startingPlace.placeName && newText.toString() != "Your Location") {
+                    if (newText.toString() != startingPlace.placeName && newText.toString() != getString(R.string.current_location_title)) {
                         if (newText.toString() != "") {
                             mMap?.clear()
                         }
@@ -271,35 +271,35 @@ private lateinit var startingPlace: DetailedPlace
                             }
                         }
                         oldText = newText.toString()
-                    } else if (newText.toString() == "Your Location" && startingPlace.placeName != "" && startingPlace.placeName != newText.toString()) {
+                    } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName != "" && startingPlace.placeName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
 //                        polyline.remove()
                         mMap?.clear()
                         startingPlace = DetailedPlace()
-                        startingPlace.placeName = "Your Location"
+                        startingPlace.placeName = getString(R.string.current_location_title)
                         startingPlace.placeLatLng = currentLocationLatLng
                         explorationViewModel.updateStartingPlace(startingPlace)
 
                         getLocation()
                         getDirections()
                         markDestination()
-                        markStartingLocation("Your Location")
+                        markStartingLocation(getString(R.string.current_location_title))
                         oldText = newText.toString()
                     } else if (newText.toString() != oldText) {
                         Log.d(TAG, "New Text not the same as Old Text")
 
-                    } else if (newText.toString() == "Your Location" && startingPlace.placeName == "") {
+                    } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName == "") {
                         Log.d(TAG, "Start point set to current location")
 //                        mMap.clear()
                         startingPlace = DetailedPlace()
-                        startingPlace.placeName = "Your Location"
+                        startingPlace.placeName = getString(R.string.current_location_title)
                         startingPlace.placeLatLng = currentLocationLatLng
                         explorationViewModel.updateStartingPlace(startingPlace)
 
                         getLocation()
                         getDirections()
                         markDestination()
-                        markStartingLocation("Your Location")
+                        markStartingLocation(getString(R.string.current_location_title))
                         oldText = newText.toString()
                     } else {
                         Log.d(TAG, "New start is same as current")
@@ -745,9 +745,9 @@ private lateinit var startingPlace: DetailedPlace
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
-                            binding.startingTextInputTextfield.setText("Your Location")
+                            binding.startingTextInputTextfield.setText(getString(R.string.current_location_title))
                             startingPoint.clear()
-                            startingPoint.add("Your Location")
+                            startingPoint.add(getString(R.string.current_location_title))
                             startingPoint.add(currentLocationLatLng)
                             Log.d(TAG, "Starting Point at Current Location: $startingPoint")
                         }
