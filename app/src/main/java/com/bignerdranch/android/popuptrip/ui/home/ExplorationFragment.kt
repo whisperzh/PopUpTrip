@@ -155,7 +155,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 //        destinationName = explorationViewModel.destinationName
         oldText = explorationViewModel.oldText
         startingPlace = explorationViewModel.startingPlace
-//        currentLocationLatLng = startingPlace.placeLatLng
+        currentLocationLatLng = startingPlace.placeLatLng
 
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
@@ -314,17 +314,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
-                startingPlace.placeId = placeId
-                explorationViewModel.updatePlaceId("s", placeId)
+                startingPlace = DetailedPlace(placeId)
                 Log.d(TAG, "Starting point ID: $startingPlace.placeId")
                 val startFetchPlaceRequest = FetchPlaceRequest.newInstance(startingPlace.placeId, placeFields)
 
                 context?.let { context ->
                     Places.createClient(context).fetchPlace(startFetchPlaceRequest).addOnSuccessListener { response ->
                         val tempPlace = response.place
-                        explorationViewModel.updatePlaceName("s", tempPlace.name)
-                        explorationViewModel.updatePlaceLatLng("s", tempPlace.latLng)
-                        startingPlace = explorationViewModel.startingPlace
+                        startingPlace.placeName = tempPlace.name
+                        startingPlace.placeLatLng = tempPlace.latLng
+
+                        currentLocationLatLng = startingPlace.placeLatLng
+
+                        explorationViewModel.updateStartingPlace(startingPlace)
 
                         startingPoint.clear()
                         startingPoint.add(startingPlace.placeName)
@@ -332,7 +334,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         Log.d(TAG, "Starting Point at specified location: $startingPoint")
 
                         startingPointAddressInputEditText.setText(startingPlace.placeName)
-                        Log.d(TAG, "Starting Place: $startingPlace.placeName")
+                        Log.d(TAG, "Starting Place searchbox set to: : $startingPlace.placeName")
                         markStartingLocation(startingPlace.placeName)
 
                         getDirections()
@@ -557,7 +559,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             // replotting destination and starting point after switching between tabs
             Log.d(TAG, "destination for replotting: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
             markDestination()
-            mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
+            Log.d(TAG, "starting place name to replot: ${startingPlace.placeName}")
+            if(startingPlace.placeName!=""){
+                markStartingLocation(startingPlace.placeName)
+                // TODO: set the map bounds
+            } else {
+                mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
+            }
+
         }
 
         setupMarkerClickListener(mMap!!)
@@ -781,10 +790,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // get route from startingPlace to destinationPlace
     private fun getDirections() {
         Log.d(TAG, "check startingPont.placeLatLng is null?")
-//        if (!this::currentLocationLatLng.isInitialized) {
-//            Log.d(TAG, "Current location is null")
-//            getLocation()
-//        }
+        if (!this::currentLocationLatLng.isInitialized) {
+            Log.d(TAG, "Current location is null")
+            getLocation()
+        }
         Log.d(TAG, "getDirections() is called")
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
@@ -796,8 +805,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         val path: MutableList<List<LatLng>> = ArrayList()
 
         val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                startingPlace.placeLatLng.latitude.toString() + "," +
-                startingPlace.placeLatLng.longitude.toString() +
+                currentLocationLatLng.latitude.toString() + "," +
+                currentLocationLatLng.longitude.toString() +
                 "&destination=" + destinationPlace.placeLatLng.latitude.toString() + "," +
                 destinationPlace.placeLatLng.longitude.toString() +
                 "&mode=" + travelMode.lowercase() +
@@ -1057,6 +1066,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun resizeMapView(){
         if (this::mapBounds.isInitialized){
+            Log.d(TAG, "Map bound initialized in resizeMapView()")
             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
         } else {
             mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))

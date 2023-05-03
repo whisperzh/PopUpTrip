@@ -54,7 +54,7 @@ class NearbyPlaceListAdapter (
             binding.placeVicinity.text = place.placeVicinity
             if(place.placeRating!=null){
                 binding.placeRating.visibility = View.VISIBLE
-                binding.placeRating.rating = place.placeRating
+                binding.placeRating.rating = place.placeRating!!
             } else {
                 binding.placeRating.visibility = View.GONE
             }
