@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
@@ -25,7 +26,7 @@ import java.util.*
 class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
     private var _binding: FragmentSettingBinding? = null
-    private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
+    private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private lateinit var overlayout: FrameLayout
     private var restart=false;
     private var done=false;
@@ -56,7 +57,9 @@ class SettingFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
+                val activity = requireActivity() as? AppCompatActivity
                 val selectedItem = parent.getItemAtPosition(position) as String
+                prefs.edit().putString("Language",selectedItem).apply()
                 if (lastSelectedItem != null) {
                     val toast = Toast.makeText(
                         requireContext(),
@@ -66,7 +69,7 @@ class SettingFragment : Fragment() {
                     toast.show()
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
-                if (selectedItem.equals("Simplified Chinese")) {
+                if (selectedItem.equals(dataList.get(4))) {
                     val locale = Locale("zh")
                     Locale.setDefault(locale)
                     val config = Configuration()
@@ -75,8 +78,54 @@ class SettingFragment : Fragment() {
                     val oldConfig = resources.configuration
                     val displayMetrics = resources.displayMetrics
                     resources.updateConfiguration(config, displayMetrics)
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+                    activity?.runOnUiThread {
+                        AppCompatDelegate.setApplicationLocales(appLocale)
+                    }
                 }
-                if (selectedItem.equals("English")) {
+                if (selectedItem.equals(dataList.get(3))) {
+                    val locale = Locale("es")
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(Locale.forLanguageTag("es"))
+                    val resources = requireContext().resources
+                    val oldConfig = resources.configuration
+                    val displayMetrics = resources.displayMetrics
+                    resources.updateConfiguration(config, displayMetrics)
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+                    activity?.runOnUiThread {
+                        AppCompatDelegate.setApplicationLocales(appLocale)
+                    }
+                }
+                if (selectedItem.equals(dataList.get(2))) {
+                    val locale = Locale("de")
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(Locale.GERMAN)
+                    val resources = requireContext().resources
+                    val oldConfig = resources.configuration
+                    val displayMetrics = resources.displayMetrics
+                    resources.updateConfiguration(config, displayMetrics)
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+                    activity?.runOnUiThread {
+                        AppCompatDelegate.setApplicationLocales(appLocale)
+                    }
+                }
+                if (selectedItem.equals(dataList.get(1))) {
+                    val locale = Locale("fr")
+                    Locale.setDefault(locale)
+                    val config = Configuration()
+                    config.setLocale(Locale.FRENCH)
+                    val resources = requireContext().resources
+                    val oldConfig = resources.configuration
+                    val displayMetrics = resources.displayMetrics
+                    resources.updateConfiguration(config, displayMetrics)
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+                    activity?.runOnUiThread {
+                        AppCompatDelegate.setApplicationLocales(appLocale)
+                    }
+                }
+                if (selectedItem.equals(dataList.get(0))) {
                     val locale = Locale("en")
                     Locale.setDefault(locale)
                     val config = Configuration()
@@ -85,6 +134,10 @@ class SettingFragment : Fragment() {
                     val oldConfig = resources.configuration
                     val displayMetrics = resources.displayMetrics
                     resources.updateConfiguration(config, displayMetrics)
+                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+                    activity?.runOnUiThread {
+                        AppCompatDelegate.setApplicationLocales(appLocale)
+                    }
                 }
 
                 lastSelectedItem = selectedItem
