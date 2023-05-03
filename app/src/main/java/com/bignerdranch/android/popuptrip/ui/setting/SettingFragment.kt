@@ -99,9 +99,11 @@ class SettingFragment : Fragment() {
         restart=false
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).apply()
                 showRestartDialog()
             } else {
+                prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
                 showRestartDialog()
             }
@@ -148,7 +150,6 @@ class SettingFragment : Fragment() {
     }
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
         prefs.edit().putInt("SpinnerPosition", binding.spinner.selectedItemPosition).apply()//save spinner position
         super.onDestroyView()
         _binding = null
