@@ -531,7 +531,7 @@ class HomeFragment : Fragment() {
                 placeRatingBar.visibility = GONE
             } else {
                 placeRatingBar.visibility = VISIBLE
-                placeRatingBar.rating = clickedPlace.placeRating
+                placeRatingBar.rating = clickedPlace.placeRating!!
             }
             placeVicinityTextView.text = clickedPlace.placeVicinity
 
