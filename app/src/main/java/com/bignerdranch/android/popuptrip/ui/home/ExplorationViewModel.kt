@@ -22,6 +22,7 @@ const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
 const val POLYLINE = "POLYLINE"
 const val STARTING_POINT = "STARTING_POINT"
+const val NEED_TO_FETCH = "NEED_TO_FETCH"
 //const val MAP_VIEW = "MAP_VIEW"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -34,6 +35,13 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     private var maxSWBound: LatLng = LatLng(0.0, 0.0)
     private var maxNEBound: LatLng = LatLng(0.0, 0.0)
 
+    var needToFetch: Boolean?
+        get() = savedStateHandle.get<Boolean>(NEED_TO_FETCH) ?: true
+        set(value) = savedStateHandle.set(NEED_TO_FETCH, value)
+
+    private var _destinationPlace = DetailedPlace()
+    val destinationPlace: DetailedPlace get() = _destinationPlace
+
     // 655 Commonwealth Avenue
     private var startingId: String = "ChIJ-dKkUfd544kR5cY9D2MncuM"
     // 575 Memorial Drive
@@ -44,9 +52,9 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<String>(STARTING_POINT_NAME) ?: ""
         set(value) = savedStateHandle.set(STARTING_POINT_NAME, value)
 
-    var destinationName: String
-        get() = savedStateHandle.get<String>(DESTINATION_NAME) ?: ""
-        set(value) = savedStateHandle.set(DESTINATION_NAME, value)
+//    var destinationName: String
+//        get() = savedStateHandle.get<String>(DESTINATION_NAME) ?: ""
+//        set(value) = savedStateHandle.set(DESTINATION_NAME, value)
 
     var oldText: String?
         get() = savedStateHandle.get<String>(OLD_TEXT_STRING)
@@ -56,9 +64,9 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<Place>(STARTING_PLACE) ?: initStartPlace()
         set(value) = savedStateHandle.set(STARTING_PLACE, value)
 
-    var destination: Place
-        get() = savedStateHandle.get<Place>(DESTINATION_PLACE) ?: initDestination()
-        set(value) = savedStateHandle.set(DESTINATION_PLACE, value)
+//    var destination: Place
+//        get() = savedStateHandle.get<Place>(DESTINATION_PLACE) ?: initDestination()
+//        set(value) = savedStateHandle.set(DESTINATION_PLACE, value)
 
     var mapBounds: LatLngBounds
         get() = savedStateHandle.get<LatLngBounds>(MAP_BOUNDS) ?: mapBound
@@ -76,9 +84,9 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<String>(STARTING_POINT_ID) ?: startingId
         set(value) = savedStateHandle.set(STARTING_POINT_ID, value)
 
-    var destinationPointId: String
-        get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
-        set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
+//    var destinationPointId: String
+//        get() = savedStateHandle.get<String>(DESTINATION_POINT_ID) ?: destinationId
+//        set(value) = savedStateHandle.set(DESTINATION_POINT_ID, value)
 
 //    var mapView: SupportMapFragment
 //        get() = savedStateHandle.get<SupportMapFragment>(MAP_VIEW) ?: supportMapFragment
@@ -114,14 +122,18 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         return placeBuilder.build()
     }
 
-    private fun initDestination(): Place {
-        val placeBuilder = Place.builder()
-            .setAddress("575 Memorial Dr, Cambridge, MA 02139, USA")
-            .setId("ChIJEU9Qpft544kRJ4DIMqb2VhA")
-            .setLatLng(LatLng(42.3544178,-71.1057659))
-            .setName("575 Memorial Dr")
+//    private fun initDestination(): Place {
+//        val placeBuilder = Place.builder()
+//            .setAddress("575 Memorial Dr, Cambridge, MA 02139, USA")
+//            .setId("ChIJEU9Qpft544kRJ4DIMqb2VhA")
+//            .setLatLng(LatLng(42.3544178,-71.1057659))
+//            .setName("575 Memorial Dr")
+//
+//        return placeBuilder.build()
+//    }
 
-        return placeBuilder.build()
+    fun updateDestinationPlace(place: DetailedPlace){
+        _destinationPlace = place
     }
 
 }
