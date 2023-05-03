@@ -142,7 +142,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private var mapFragment: SupportMapFragment? = null
 
-    private var needToFetchDesti = false
+    private var needToFetchDest = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -157,6 +157,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         startingPlace = explorationViewModel.startingPlace
         currentLocationLatLng = startingPlace.latLng
         destinationPlace = explorationViewModel.destination
+
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
         maxNEBounds = explorationViewModel.maxNEBounds
@@ -168,7 +169,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         // input arguments from navigation
         if (args != null) {
             destinationId = args.destinationPlaceId
-            needToFetchDesti = true
+            needToFetchDest = true
         } else {
             destinationId = explorationViewModel.destinationPointId
         }
@@ -536,7 +537,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        if(needToFetchDesti){
+        if(needToFetchDest){
             // create the fetch requests
             Log.d(TAG, "Navigated from homepage, need to fetch destination")
             val destFetchPlaceRequest = FetchPlaceRequest.newInstance(destinationId, placeFields)
@@ -1079,7 +1080,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     placeRatingBar.visibility = View.GONE
                 } else {
                     placeRatingBar.visibility = View.VISIBLE
-                    placeRatingBar.rating = place.placeRating
+                    placeRatingBar.rating = place.placeRating!!
                 }
                 placeVicinityTextView.text = place.placeVicinity
 
