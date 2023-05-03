@@ -126,6 +126,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
+    private val maxDistanceAllowed = 20000 // 20000m or 20km
 
     // place detail dialog setup
     private lateinit var detailedPlaceDialog: AlertDialog
@@ -814,71 +815,88 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         var coordinates = arrayListOf<LatLng>()
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
+        val distance = haversineDistance(currentLocationLatLng, destinationPlace.placeLatLng)
+        Log.d(TAG, "Distance is: $distance")
+        if (distance > maxDistanceAllowed) {
+            Toast.makeText(
+                context,
+                "Distance between start point and destination is more than 20km!",
+                Toast.LENGTH_LONG
+            ).show()
+            binding.startingTextInputTextfield.setText("")
+            explorationViewModel.resetStartingPlace()
+            startingPlace = explorationViewModel.startingPlace
+            mMap?.clear()
+            markDestination()
+        } else {
+            val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
+                    currentLocationLatLng.latitude.toString() + "," +
+                    currentLocationLatLng.longitude.toString() +
+                    "&destination=" + destinationPlace.placeLatLng.latitude.toString() + "," +
+                    destinationPlace.placeLatLng.longitude.toString() +
+                    "&mode=" + travelMode.lowercase() +
+                    "&key=" + MAPS_API_KEY
 
-        val urlDirections = "https://maps.googleapis.com/maps/api/directions/json?origin=" +
-                currentLocationLatLng.latitude.toString() + "," +
-                currentLocationLatLng.longitude.toString() +
-                "&destination=" + destinationPlace.placeLatLng.latitude.toString() + "," +
-                destinationPlace.placeLatLng.longitude.toString() +
-                "&mode=" + travelMode.lowercase() +
-                "&key=" + MAPS_API_KEY
+            // Adapted from https://lwgmnz.me/google-maps-and-directions-api-using-kotlin/
+            val directionsRequest =
+                object : StringRequest(Method.GET, urlDirections, Response.Listener { response ->
+                    val jsonResponse = JSONObject(response)
+                    Log.d(TAG, "Response: $jsonResponse")
+                    val status = jsonResponse.getString("status")
+                    if (status == "ZERO_RESULTS") {
+                        Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
+                    } else {
+                        // Get routes
+                        Log.d(TAG, "Plotting new directions")
+                        val routes = jsonResponse.getJSONArray("routes")
+                        val legs = routes.getJSONObject(0).getJSONArray("legs")
+                        val steps = legs.getJSONObject(0).getJSONArray("steps")
+                        for (i in 0 until steps.length()) {
+                            val points =
+                                steps.getJSONObject(i).getJSONObject("polyline").getString("points")
+                            //                Log.d(TAG, PolyUtil.decode(points).toString())
+                            path.add(PolyUtil.decode(points))
+                        }
+                        // get the max SW and NE bounds so the map is zoomed out to the point where
+                        // the route can be seen without having to manually move the map around
+                        maxSWBounds =
+                            getSWBound(currentLocationLatLng, destinationPlace.placeLatLng)
+                        maxNEBounds =
+                            getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
 
-        // Adapted from https://lwgmnz.me/google-maps-and-directions-api-using-kotlin/
-        val directionsRequest =
-            object : StringRequest(Method.GET, urlDirections, Response.Listener { response ->
-                val jsonResponse = JSONObject(response)
-                Log.d(TAG, "Response: $jsonResponse")
-                val status = jsonResponse.getString("status")
-                if (status == "ZERO_RESULTS") {
-                    Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
-                } else {
-                    // Get routes
-                    Log.d(TAG, "Plotting new directions")
-                    val routes = jsonResponse.getJSONArray("routes")
-                    val legs = routes.getJSONObject(0).getJSONArray("legs")
-                    val steps = legs.getJSONObject(0).getJSONArray("steps")
-                    for (i in 0 until steps.length()) {
-                        val points =
-                            steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-                        //                Log.d(TAG, PolyUtil.decode(points).toString())
-                        path.add(PolyUtil.decode(points))
-                    }
-                    // get the max SW and NE bounds so the map is zoomed out to the point where
-                    // the route can be seen without having to manually move the map around
-                    maxSWBounds = getSWBound(currentLocationLatLng, destinationPlace.placeLatLng)
-                    maxNEBounds = getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
-
-                    var point = path[0][0]
-                    coordinates.add(path[0][0])
-                    for (i in 0 until path.size) {
+                        var point = path[0][0]
+                        coordinates.add(path[0][0])
+                        for (i in 0 until path.size) {
 //                        Log.d(TAG, "Path $i: " + path[i].toString())
-                        polyline = mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-                        Log.d(TAG, "Polyline: $polyline" )
+                            polyline =
+                                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                            Log.d(TAG, "Polyline: $polyline")
 
-                        // modify map bounds to include the route
-                        for (j in 0 until path[i].size) {
+                            // modify map bounds to include the route
+                            for (j in 0 until path[i].size) {
 //                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
-                            maxSWBounds = getSWBound(maxSWBounds, path[i][j])
-                            maxNEBounds = getNEBound(maxNEBounds, path[i][j])
-                            val distance = haversineDistance(point, path[i][j])
-                            if (distance >= distanceRadius) {
-                                coordinates.add(path[i][j])
-                                point = path[i][j]
+                                maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                                maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                                val distance = haversineDistance(point, path[i][j])
+                                if (distance >= distanceRadius) {
+                                    coordinates.add(path[i][j])
+                                    point = path[i][j]
+                                }
                             }
                         }
+                        Log.d(TAG, "coordinates are: $coordinates")
+                        explorationViewModel.maxSWBounds = maxSWBounds
+                        explorationViewModel.maxNEBounds = maxNEBounds
+                        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                        explorationViewModel.mapBounds = mapBounds
+                        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                        getRecommendations(coordinates)
                     }
-                    Log.d(TAG, "coordinates are: $coordinates")
-                    explorationViewModel.maxSWBounds = maxSWBounds
-                    explorationViewModel.maxNEBounds = maxNEBounds
-                    mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                    explorationViewModel.mapBounds = mapBounds
-                    mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
-                    getRecommendations(coordinates)
-                }
-            }, Response.ErrorListener { _ ->
-            }) {}
-        val requestQueue = Volley.newRequestQueue(activity)
-        requestQueue.add(directionsRequest)
+                }, Response.ErrorListener { _ ->
+                }) {}
+            val requestQueue = Volley.newRequestQueue(activity)
+            requestQueue.add(directionsRequest)
+        }
     }
 
     // get recommended places based on user's preferences set in Personal Profile
@@ -1296,30 +1314,35 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
          * places
          */
 
-        val jsonObject = JSONObject()
-        jsonObject.put("user_email", "new_user@bu.edu")
-        jsonObject.put("starting_location", startingPoint)
-        jsonObject.put("destination", destinationPlace)
-        jsonObject.put("places", placesToAdd)
+        if (placesToAdd.size > 0) {
+            val jsonObject = JSONObject()
+            jsonObject.put("user_email", "new_user@bu.edu")
+            jsonObject.put("starting_location", startingPoint)
+            jsonObject.put("destination", destinationPlace)
+            jsonObject.put("places", placesToAdd)
 
-        val url = "http://54.147.60.104:80/add-itinerary/"
+            val url = "http://54.147.60.104:80/add-itinerary/"
 
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.POST,
-            url,
-            jsonObject,
-            { response ->
-                // Handle response
-                Log.d(TAG, "Response from Itinerary: $response")
-            },
-            { error ->
-                // Handle error
-                Log.d(TAG, "Error from Itinerary: $error")
-            }
-        )
+            val jsonObjectRequest = JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonObject,
+                { response ->
+                    // Handle response
+                    Log.d(TAG, "Response from Itinerary: $response")
+                },
+                { error ->
+                    // Handle error
+                    Log.d(TAG, "Error from Itinerary: $error")
+                }
+            )
 
-        val queue = Volley.newRequestQueue(context)
-        queue.add(jsonObjectRequest)
+            val queue = Volley.newRequestQueue(context)
+            queue.add(jsonObjectRequest)
+        } else {
+            Toast.makeText(activity, "Please add some places of interest to itinerary!", Toast.LENGTH_LONG).show()
+        }
+
     }
 
     private suspend fun fetchPlaceImage(photoReference: String, maxWidth: Int, apiKey: String): Bitmap? {
