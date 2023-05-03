@@ -349,6 +349,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPoint.clear()
                         startingPoint.add(startingPlace.placeName)
                         startingPoint.add(startingPlace.placeLatLng)
+                        explorationViewModel.startingPoint = startingPoint
                         Log.d(TAG, "Starting Point at specified location: $startingPoint")
                         startingPointAddressInputEditText.setText(startingPlace.placeName)
                         Log.d(TAG, "Starting Place selected in searchbox list: ${startingPlace.placeName}")
@@ -561,7 +562,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         } else {
-            // replotting destination and starting point after switching between tabs
+            // re-plotting destination and starting point after switching between tabs
             Log.d(TAG, "destination for replotting: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
             markDestination()
             Log.d(TAG, "starting place name to replot: ${startingPlace.placeName}")
@@ -578,31 +579,33 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         for (i in 0 until markersAdded.size) {
             Log.d(TAG, "Re-plotting markers in onMapReady")
             val marker: Marker = markersAdded[i]
+            var markerTag: DetailedPlace = marker.tag as DetailedPlace
             val position: LatLng = marker.position
             if (placesToAdd.size > 0) {
                 for (j in 0 until placesToAdd.size) {
                     val detailedPlace: DetailedPlace = placesToAdd[j]
-                    val markerColor = when (detailedPlace.placeCategory) {
-                        getString(R.string.category_title_entertainment) -> {
-                            BitmapDescriptorFactory.HUE_ROSE
-                        }
-                        getString(R.string.category_title_culture) -> {
-                            BitmapDescriptorFactory.HUE_BLUE
-                        }
-                        getString(R.string.category_title_food) -> {
-                            BitmapDescriptorFactory.HUE_ORANGE
-                        }
-                        getString(R.string.category_title_nature) -> {
-                            BitmapDescriptorFactory.HUE_GREEN
-                        }
-                        else -> { // Nightlife
-                            BitmapDescriptorFactory.HUE_VIOLET
-                        }
-                    }
 
                     if (detailedPlace.placeLatLng == position) {
+                        val markerColor = when (detailedPlace.placeCategory) {
+                            getString(R.string.category_title_entertainment) -> {
+                                BitmapDescriptorFactory.HUE_ROSE
+                            }
+                            getString(R.string.category_title_culture) -> {
+                                BitmapDescriptorFactory.HUE_BLUE
+                            }
+                            getString(R.string.category_title_food) -> {
+                                BitmapDescriptorFactory.HUE_ORANGE
+                            }
+                            getString(R.string.category_title_nature) -> {
+                                BitmapDescriptorFactory.HUE_GREEN
+                            }
+                            else -> { // Nightlife
+                                BitmapDescriptorFactory.HUE_VIOLET
+                            }
+                        }
                         markersAdded.removeAt(i)
 //                        marker.remove()
+                        Log.d(TAG, "Place Category: ${detailedPlace.placeCategory}")
                         val updatedMarker = mMap!!.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
@@ -619,8 +622,26 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                     // Not selected by user to be in the route
                     if (j == placesToAdd.size - 1) {
+                        val markerColor = when (markerTag.placeCategory) {
+                            getString(R.string.category_title_entertainment) -> {
+                                BitmapDescriptorFactory.HUE_ROSE
+                            }
+                            getString(R.string.category_title_culture) -> {
+                                BitmapDescriptorFactory.HUE_BLUE
+                            }
+                            getString(R.string.category_title_food) -> {
+                                BitmapDescriptorFactory.HUE_ORANGE
+                            }
+                            getString(R.string.category_title_nature) -> {
+                                BitmapDescriptorFactory.HUE_GREEN
+                            }
+                            else -> { // Nightlife
+                                BitmapDescriptorFactory.HUE_VIOLET
+                            }
+                        }
                         markersAdded.removeAt(i)
 //                        marker.remove()
+                        Log.d(TAG, "Place Category (not selected by user): ${detailedPlace.placeCategory}")
                         val updatedMarker = mMap!!.addMarker(MarkerOptions()
                             .position(position)
                             .title(detailedPlace.placeName)
@@ -629,14 +650,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         )
 
                         if (updatedMarker != null) {
-                            updatedMarker.tag = detailedPlace
+                            updatedMarker.tag = markerTag
                             markersAdded.add(i, updatedMarker)
                         }
                     }
                 }
             } else {
                 val markerTitle = marker.title
-                val markerTag: DetailedPlace = marker.tag as DetailedPlace
+                markerTag = marker.tag as DetailedPlace
                 val markerColor = when (markerTag.placeCategory) {
                     getString(R.string.category_title_entertainment) -> {
                         BitmapDescriptorFactory.HUE_ROSE
@@ -669,6 +690,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         }
+        explorationViewModel.markersAdded = markersAdded
     }
 
     // The following 5 functions pertaining to getting the user's current location is obtained from
@@ -749,6 +771,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             startingPoint.clear()
                             startingPoint.add(getString(R.string.current_location_title))
                             startingPoint.add(currentLocationLatLng)
+                            explorationViewModel.startingPoint = startingPoint
                             Log.d(TAG, "Starting Point at Current Location: $startingPoint")
                         }
                     }
@@ -845,7 +868,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         }
                     }
                     Log.d(TAG, "coordinates are: $coordinates")
+                    explorationViewModel.maxSWBounds = maxSWBounds
+                    explorationViewModel.maxNEBounds = maxNEBounds
                     mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                    explorationViewModel.mapBounds = mapBounds
                     mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
                     getRecommendations(coordinates)
                 }
@@ -976,7 +1002,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeOpenNow: Boolean? =
                                     placeOpeningHours?.getString("open_now")?.toBoolean()
 
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeOpenNow = placeOpenNow)
+                                val placeCategory = if (placeTypes[j] in entertainmentCategory) {
+                                    getString(R.string.category_title_entertainment)
+                                } else if (placeTypes[j] in foodCategories) {
+                                    getString(R.string.category_title_food)
+                                } else if (placeTypes[j] in cultureCategories) {
+                                    getString(R.string.category_title_culture)
+                                } else if (placeTypes[j] in natureCategories) {
+                                    getString(R.string.category_title_nature)
+                                } else {
+                                    getString(R.string.category_title_nightlife)
+                                }
+
+                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
                                 val markerColor: Float
 
                                 if (placeLatLng !in placesReturned) {
@@ -1015,7 +1053,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                     }
                                 }
                             }
+                            explorationViewModel.markersAdded = markersAdded
                             mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                            explorationViewModel.maxSWBounds = maxSWBounds
+                            explorationViewModel.maxNEBounds = maxNEBounds
+                            explorationViewModel.mapBounds = mapBounds
                             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
                         }
                     }, Response.ErrorListener { _ ->
@@ -1152,6 +1194,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
         Log.d(TAG, "At addPlaceToRoute()")
         placesToAdd.add(detailedPlace)
+        explorationViewModel.placesToAddToRoute = placesToAdd
 
         val markerColor = when (detailedPlace.placeCategory) {
             getString(R.string.category_title_entertainment) -> {
@@ -1193,12 +1236,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         }
+        explorationViewModel.markersAdded = markersAdded
     }
 
     // When a detailed place is removed from the route by the user
     private fun removePlaceFromRoute(detailedPlace: DetailedPlace) {
         Log.d(TAG, "At removePlaceFromRoute()")
         placesToAdd.remove(detailedPlace)
+        explorationViewModel.placesToAddToRoute = placesToAdd
 
         val markerColor = when (detailedPlace.placeCategory) {
             getString(R.string.category_title_entertainment) -> {
@@ -1239,6 +1284,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }
             }
         }
+        explorationViewModel.markersAdded = markersAdded
     }
 
     // To send data to Itinerary
