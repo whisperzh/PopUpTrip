@@ -17,6 +17,8 @@ const val PLACES_TO_ADD_TO_ROUTE = "PLACES_TO_ADD_TO_ROUTE"
 const val MARKERS_TO_ADD = "MARKERS_TO_ADD"
 const val POLYLINE = "POLYLINE"
 const val STARTING_POINT = "STARTING_POINT"
+const val DESTINATION_POINT = "DESTINATION_POINT"
+const val PLACES_TO_ADD_POINTS = "PLACES_TO_ADD_POINTS"
 const val NEED_TO_FETCH = "NEED_TO_FETCH"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
@@ -64,17 +66,20 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         set(value) = savedStateHandle.set(MARKERS_TO_ADD, value)
 
     var startingPoint: ArrayList<Any>
-        get() = savedStateHandle.get<ArrayList<Any>>(STARTING_POINT) ?: arrayListOf("655 Commonwealth Ave", LatLng(0.0, 0.0))
+        get() = savedStateHandle.get<ArrayList<Any>>(STARTING_POINT) ?: arrayListOf("655 Commonwealth Ave", 0.0, 0.0)
         set(value) = savedStateHandle.set(STARTING_POINT, value)
+
+    var destinationPoint: ArrayList<Any>
+        get() = savedStateHandle.get<ArrayList<Any>>(DESTINATION_POINT) ?: arrayListOf("575 Memorial Dr", 0.0, 0.0)
+        set(value) = savedStateHandle.set(DESTINATION_POINT, value)
+
+    var placesToAddPoints: ArrayList<Any>
+        get() = savedStateHandle.get<ArrayList<Any>>(PLACES_TO_ADD_POINTS) ?: ArrayList()
+        set(value) = savedStateHandle.set(PLACES_TO_ADD_POINTS, value)
 
     var polyline: ArrayList<String>
         get() = savedStateHandle.get<ArrayList<String>>(POLYLINE) ?: ArrayList()
         set(value) = savedStateHandle.set(POLYLINE, value)
-
-//    var polyline: Polyline
-//        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
-//        set(value) = savedStateHandle.set(POLYLINE, value)
-
 
     fun updateDestinationPlace(place: DetailedPlace){
         _destinationPlace = place

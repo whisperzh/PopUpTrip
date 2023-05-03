@@ -104,6 +104,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var markersAdded: ArrayList<Marker> = ArrayList() // Markers for recommended places
     private lateinit var polyline: Polyline
     private var startingPoint: ArrayList<Any> = ArrayList()
+    private var destinationPoint: ArrayList<Any> = ArrayList()
+    private var placesToAddArray: ArrayList<Any> = ArrayList()
     private var polylineArray: ArrayList<String> = ArrayList()
 
     // information fields we want to fetch from Google Map API
@@ -158,18 +160,22 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placesToAdd = explorationViewModel.placesToAddToRoute
         markersAdded = explorationViewModel.markersAdded
         startingPoint = explorationViewModel.startingPoint
+        destinationPoint = explorationViewModel.destinationPoint
+        placesToAddArray = explorationViewModel.placesToAddPoints
         polylineArray = explorationViewModel.polyline
 
         // input arguments from navigation
         if (args != null && explorationViewModel.needToFetch == true) {
             Log.d(TAG, "Given arguments from homepage")
             destinationPlace = DetailedPlace(args.destinationPlaceId)
+
             explorationViewModel.updateDestinationPlace(destinationPlace)
             Log.d(TAG, "OnCreateView called! Destination ID received in exploration: ${destinationPlace.placeId}")
 //            destinationId = args.destinationPlaceId
         } else {
             destinationPlace = explorationViewModel.destinationPlace
-            Log.d(TAG, "Given information from viewModel, placename: ${destinationPlace.placeName}")
+            Log.d(TAG, "Given information from viewModel, place name: ${destinationPlace.placeName}")
+            Log.d(TAG, "Destination Point from ViewModel: $destinationPoint")
         }
 
         _binding = FragmentExplorationBinding.inflate(inflater, container, false)
@@ -349,13 +355,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         currentLocationLatLng = startingPlace.placeLatLng
                         explorationViewModel.updateStartingPlace(startingPlace)
 
-                        startingPoint.clear()
-                        startingPoint.add(startingPlace.placeName)
-                        startingPoint.add(startingPlace.placeLatLng)
-                        explorationViewModel.startingPoint = startingPoint
                         Log.d(TAG, "Starting Point at specified location: $startingPoint")
                         startingPointAddressInputEditText.setText(startingPlace.placeName)
-                        Log.d(TAG, "Starting Place selected in searchbox list: ${startingPlace.placeName}")
+                        Log.d(TAG, "Starting Place selected in search box list: ${startingPlace.placeName}")
                         markStartingLocation(startingPlace.placeName)
 
                         getDirections()
@@ -380,12 +382,19 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 s?.let { newText ->
-                    Log.d(TAG, "text inside the destination searchbox: $newText")
+                    Log.d(TAG, "text inside the destination search box: $newText")
                     Log.d(TAG, "text from destinationName: ${destinationPlace.placeName}")
                     if (newText.toString() != destinationPlace.placeName){
                         Log.d(TAG, "destinationName: $destinationPlace.placeName")
                         Log.d(TAG, "new string entered: ${newText.toString()}")
                         Log.d(TAG, "destination onTextChanged is triggered")
+
+//                        destinationPoint.clear()
+//                        destinationPoint.add(destinationPlace.placeName)
+//                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
+//                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
+//                        explorationViewModel.destinationPoint = destinationPoint
+
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
                             .setTypeFilter(TypeFilter.ADDRESS)
@@ -442,6 +451,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             destinationPlace.placeName = tempPlace.name
                             destinationPlace.placeLatLng = tempPlace.latLng
 
+                            destinationPoint.clear()
+                            destinationPoint.add(destinationPlace.placeName)
+                            destinationPoint.add(destinationPlace.placeLatLng.latitude)
+                            destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                            explorationViewModel.destinationPoint = destinationPoint
+
+                            Log.d(TAG, "Destination Point selected: $destinationPoint")
+
                             destinationAddressInputEditText.setText(destinationPlace.placeName)
 
                             explorationViewModel.updateDestinationPlace(destinationPlace)
@@ -489,6 +506,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             // to clear any previously selected locations
 //            mMap.clear()
             getLocation()
+        }
+
+        binding.explorationNextButton.setOnClickListener {
+            Log.d(TAG, "Sending data to Itinerary")
+            createPOSTRequestItinerary()
+            // Re-direct to Itinerary page
         }
 
         binding.adjustMapBoundButton.setOnClickListener{
@@ -814,10 +837,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
                             binding.startingTextInputTextfield.setText(getString(R.string.current_location_title))
-                            startingPoint.clear()
-                            startingPoint.add(getString(R.string.current_location_title))
-                            startingPoint.add(currentLocationLatLng)
-                            explorationViewModel.startingPoint = startingPoint
                             Log.d(TAG, "Starting Point at Current Location: $startingPoint")
                         }
                     }
@@ -846,7 +865,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // get route from startingPlace to destinationPlace
     private fun getDirections() {
-        Log.d(TAG, "check currentLationLatLng is null?")
+        Log.d(TAG, "check currentLocationLatLng is null?")
         if (!this::currentLocationLatLng.isInitialized) {
             Log.d(TAG, "Current location is null")
             getLocation()
@@ -894,6 +913,25 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         // Get routes
                         Log.d(TAG, "Plotting new directions")
                         polylineArray.clear()
+                        placesToAdd.clear()
+                        placesToAddArray.clear()
+
+                        explorationViewModel.placesToAddToRoute = placesToAdd
+                        explorationViewModel.placesToAddPoints = placesToAddArray
+
+
+                        startingPoint.clear()
+                        startingPoint.add(startingPlace.placeName)
+                        startingPoint.add(startingPlace.placeLatLng.latitude)
+                        startingPoint.add(startingPlace.placeLatLng.longitude)
+                        explorationViewModel.startingPoint = startingPoint
+
+                        destinationPoint.clear()
+                        destinationPoint.add(destinationPlace.placeName)
+                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
+                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                        explorationViewModel.destinationPoint = destinationPoint
+
                         val routes = jsonResponse.getJSONArray("routes")
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
                         val steps = legs.getJSONObject(0).getJSONArray("steps")
@@ -1357,17 +1395,43 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun createPOSTRequestItinerary() {
         /** Params for POST request:
          * user_email
-         * starting_location: starting_point: 1st arg is name of location, 2nd arg is LatLng of location
-         * destination
-         * places
+         * starting_location:
+         *  startingPoint:
+         *      1st object is name of location,
+         *      2nd object is latitude of location
+         *      3rd object is longitude of location
+         * destination:
+         *  destinationPoint
+         *      1st object is name of location,
+         *      2nd object is latitude of location
+         *      3rd object is longitude of location
+         * places:
+         *  Every 3 objects is a new place:
+         *      For every new place:
+         *          1st object is name of location,
+         *          2nd object is latitude of location
+         *          3rd object is longitude of location
          */
 
         if (placesToAdd.size > 0) {
+            for (i in 0 until placesToAdd.size) {
+                placesToAddArray.add(placesToAdd[i].placeName)
+                placesToAddArray.add(placesToAdd[i].placeLatLng.latitude)
+                placesToAddArray.add(placesToAdd[i].placeLatLng.longitude)
+            }
+            explorationViewModel.placesToAddPoints = placesToAddArray
+
+            Log.d(TAG, "Starting Point To Send: $startingPoint")
+            Log.d(TAG, "Destination Point To Send: $destinationPoint")
+            Log.d(TAG, "PlacesToAddArray To Send: $placesToAddArray")
+
             val jsonObject = JSONObject()
             jsonObject.put("user_email", "new_user@bu.edu")
-            jsonObject.put("starting_location", startingPoint)
-            jsonObject.put("destination", destinationPlace)
-            jsonObject.put("places", placesToAdd)
+            jsonObject.put("starting_location", startingPoint.toString())
+            jsonObject.put("destination", destinationPoint.toString())
+            jsonObject.put("places", placesToAddArray.toString())
+
+            Log.d(TAG, "JSON Object to send to Itinerary: $jsonObject")
 
             val url = "http://54.147.60.104:80/add-itinerary/"
 
@@ -1388,7 +1452,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val queue = Volley.newRequestQueue(context)
             queue.add(jsonObjectRequest)
         } else {
-            Toast.makeText(activity, "Please add some places of interest to itinerary!", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, "Please add some places of interest to Itinerary!", Toast.LENGTH_LONG).show()
         }
 
     }
