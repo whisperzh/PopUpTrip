@@ -95,12 +95,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // FOLLOWING VARIABLES NEED TO BE STORED IN VIEW MODEL
     private var mMap: GoogleMap? = null
     private lateinit var mapBounds: LatLngBounds
-//    private lateinit var destinationId: String
 private lateinit var destinationPlace : DetailedPlace
-    private lateinit var startingPointId: String
-    private lateinit var startingPlace: Place
-    private var startingPointName = ""  // for making the autocomplete list disappear after click
-//    private var destinationName = ""
+private lateinit var startingPlace: DetailedPlace
     private var oldText: String? = null
     private lateinit var maxSWBounds: LatLng
     private lateinit var maxNEBounds: LatLng
@@ -150,16 +146,13 @@ private lateinit var destinationPlace : DetailedPlace
         explorationViewModel =
             ViewModelProvider(this).get(ExplorationViewModel::class.java)
 
-        startingPointName = explorationViewModel.startingPointName
-//        destinationName = explorationViewModel.destinationName
         oldText = explorationViewModel.oldText
         startingPlace = explorationViewModel.startingPlace
-        currentLocationLatLng = startingPlace.latLng
-//        destinationPlace = explorationViewModel.destination
+        currentLocationLatLng = startingPlace.placeLatLng
+
         mapBounds = explorationViewModel.mapBounds
         maxSWBounds = explorationViewModel.maxSWBounds
         maxNEBounds = explorationViewModel.maxNEBounds
-        startingPointId = explorationViewModel.startingPointId
         placesToAdd = explorationViewModel.placesToAddToRoute
         markersAdded = explorationViewModel.markersAdded
         startingPoint = explorationViewModel.startingPoint
@@ -254,7 +247,7 @@ private lateinit var destinationPlace : DetailedPlace
                         oldText = newText.toString()
                     }
                     Log.d(TAG, "starting point onTextChanged is triggered")
-                    if (newText.toString() != startingPointName && newText.toString() != "Your Location") {
+                    if (newText.toString() != startingPlace.placeName && newText.toString() != "Your Location") {
                         if (newText.toString() != "") {
                             mMap?.clear()
                         }
@@ -278,11 +271,15 @@ private lateinit var destinationPlace : DetailedPlace
                             }
                         }
                         oldText = newText.toString()
-                    } else if (newText.toString() == "Your Location" && startingPointName != "" && startingPointName != newText.toString()) {
+                    } else if (newText.toString() == "Your Location" && startingPlace.placeName != "" && startingPlace.placeName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
 //                        polyline.remove()
                         mMap?.clear()
-                        startingPointName = "Your Location"
+                        startingPlace = DetailedPlace()
+                        startingPlace.placeName = "Your Location"
+                        startingPlace.placeLatLng = currentLocationLatLng
+                        explorationViewModel.updateStartingPlace(startingPlace)
+
                         getLocation()
                         getDirections()
                         markDestination()
@@ -291,10 +288,14 @@ private lateinit var destinationPlace : DetailedPlace
                     } else if (newText.toString() != oldText) {
                         Log.d(TAG, "New Text not the same as Old Text")
 
-                    } else if (newText.toString() == "Your Location" && startingPointName == "") {
+                    } else if (newText.toString() == "Your Location" && startingPlace.placeName == "") {
                         Log.d(TAG, "Start point set to current location")
 //                        mMap.clear()
-                        startingPointName = "Your Location"
+                        startingPlace = DetailedPlace()
+                        startingPlace.placeName = "Your Location"
+                        startingPlace.placeLatLng = currentLocationLatLng
+                        explorationViewModel.updateStartingPlace(startingPlace)
+
                         getLocation()
                         getDirections()
                         markDestination()
@@ -332,24 +333,26 @@ private lateinit var destinationPlace : DetailedPlace
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
-                startingPointId = placeId
-                Log.d(TAG, "Starting point ID: $startingPointId")
-                val startFetchPlaceRequest = FetchPlaceRequest.newInstance(startingPointId, placeFields)
+                startingPlace = DetailedPlace(placeId)
+                Log.d(TAG, "Starting point ID: ${startingPlace.placeId}")
+                val startFetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
 
                 context?.let { context ->
                     Places.createClient(context).fetchPlace(startFetchPlaceRequest).addOnSuccessListener { response ->
-                        startingPlace = response.place
-                        startingPointName = startingPlace.name
-                        currentLocationLatLng = startingPlace.latLng
+                        val temp = response.place
+                        startingPlace.placeName = temp.name
+                        startingPlace.placeLatLng = temp.latLng
+
+                        currentLocationLatLng = startingPlace.placeLatLng
+                        explorationViewModel.updateStartingPlace(startingPlace)
+
                         startingPoint.clear()
-                        startingPoint.add(startingPointName)
-                        startingPoint.add(currentLocationLatLng)
+                        startingPoint.add(startingPlace.placeName)
+                        startingPoint.add(startingPlace.placeLatLng)
                         Log.d(TAG, "Starting Point at specified location: $startingPoint")
-                        startingPointAddressInputEditText.setText(startingPointName)
-                        Log.d(TAG, "Starting Place: $startingPlace")
-                        Log.i(TAG, "Starting Point Selected: ${startingPlace.name}, ${startingPlace.id}, ${startingPlace.latLng}")
-                        Log.d(TAG, "On starting point selected")
-                        markStartingLocation(startingPointName)
+                        startingPointAddressInputEditText.setText(startingPlace.placeName)
+                        Log.d(TAG, "Starting Place selected in searchbox list: ${startingPlace.placeName}")
+                        markStartingLocation(startingPlace.placeName)
 
                         getDirections()
 
@@ -437,16 +440,6 @@ private lateinit var destinationPlace : DetailedPlace
 
                             destinationAddressInputEditText.setText(destinationPlace.placeName)
 
-                            // Update the destinationPlaceId if user changes the destination in Exploration page
-                            // Adapted from
-                            // https://medium.com/@helmersebastian/why-to-use-fragment-arguments-in-android-fbaa375d08c3
-                            // https://stackoverflow.com/questions/46551228/how-to-pass-and-get-value-from-fragment-and-activity
-
-//                            val updatedArgs = Bundle().apply {
-//                                putString("destinationPlaceId", placeId)
-//                            }
-//                            arguments = updatedArgs
-
                             explorationViewModel.updateDestinationPlace(destinationPlace)
                             Log.d(TAG, "new destination place in viewModel: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
 
@@ -456,12 +449,14 @@ private lateinit var destinationPlace : DetailedPlace
 
                             markDestination()
 
-                            Log.d(TAG, "starting place name: ${startingPlace.name}")
-                            if (startingPlace.name!="655 Commonwealth Ave"){
+                            Log.d(TAG, "starting place name: ${startingPlace.placeName}")
+                            // if starting place is initialized
+                            if (startingPlace.placeName!=""){
                                 Log.d(TAG, "currentLocationLatLng initialized to $currentLocationLatLng")
-                                markStartingLocation(startingPointName)
+                                markStartingLocation(startingPlace.placeName)
                                 // resize map bounds and draw the route
                                 getDirections()
+                            // starting place is not initialized, only plot destination
                             } else {
                                 mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
                             }
@@ -484,28 +479,21 @@ private lateinit var destinationPlace : DetailedPlace
             // Hide the keyboard
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
-            if (this::mapBounds.isInitialized){
-                resizeMapView()
-            }
+//            if (this::mapBounds.isInitialized){
+//                resizeMapView()
+//            }
             // to clear any previously selected locations
 //            mMap.clear()
             getLocation()
-            markStartingLocation("Your Location")
         }
-
-//        // if LatLng refers to init start place -> placeholder used, need to get current location
-//        if (currentLocationLatLng == LatLng(0.0, 0.0)) {
-//            getLocation()
-//            markDestination()
-//            markCurrentLocation("Your Location")
-//            getDirections()
-//        }
 
         binding.adjustMapBoundButton.setOnClickListener{
             resizeMapView()
         }
 
         binding.explorationBackButton.setOnClickListener {
+            // empty out the starting point
+            explorationViewModel.resetStartingPlace()
             val home = ExplorationFragmentDirections.explorationToHomeAction()
                 .setDestinationPlaceName(destinationPlace.placeName)
 //            // Launch navigation to home page
@@ -576,7 +564,11 @@ private lateinit var destinationPlace : DetailedPlace
             // replotting destination and starting point after switching between tabs
             Log.d(TAG, "destination for replotting: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
             markDestination()
-            Log.d(TAG, "starting place name to replot: ${startingPlace.name}")
+            Log.d(TAG, "starting place name to replot: ${startingPlace.placeName}")
+            if(startingPlace.placeName!=""){
+                Log.d(TAG, "starting place is replotted")
+                markStartingLocation(startingPlace.placeName)
+            }
         }
 
         setupMarkerClickListener(mMap!!)
@@ -752,6 +744,7 @@ private lateinit var destinationPlace : DetailedPlace
                             Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
                             currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
+
                             binding.startingTextInputTextfield.setText("Your Location")
                             startingPoint.clear()
                             startingPoint.add("Your Location")
