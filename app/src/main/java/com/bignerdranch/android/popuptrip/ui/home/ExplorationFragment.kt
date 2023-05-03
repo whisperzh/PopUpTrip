@@ -104,6 +104,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var markersAdded: ArrayList<Marker> = ArrayList() // Markers for recommended places
     private lateinit var polyline: Polyline
     private var startingPoint: ArrayList<Any> = ArrayList()
+    private var polylineArray: ArrayList<String> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -157,6 +158,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placesToAdd = explorationViewModel.placesToAddToRoute
         markersAdded = explorationViewModel.markersAdded
         startingPoint = explorationViewModel.startingPoint
+        polylineArray = explorationViewModel.polyline
 
         // input arguments from navigation
         if (args != null && explorationViewModel.needToFetch == true) {
@@ -692,6 +694,49 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
         explorationViewModel.markersAdded = markersAdded
+
+        // Re-plot polyline here
+        // get the max SW and NE bounds so the map is zoomed out to the point where
+        // the route can be seen without having to manually move the map around
+        maxSWBounds =
+            getSWBound(currentLocationLatLng, destinationPlace.placeLatLng)
+        maxNEBounds =
+            getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
+
+        if (polylineArray.size > 0) {
+            val path: MutableList<List<LatLng>> = ArrayList()
+            for (i in 0 until polylineArray.size) {
+                path.add(PolyUtil.decode(polylineArray[i]))
+            }
+
+            var point = path[0][0]
+            var coordinates = arrayListOf<LatLng>()
+            coordinates.add(path[0][0])
+            for (i in 0 until path.size) {
+//                        Log.d(TAG, "Path $i: " + path[i].toString())
+                polyline =
+                    mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+                Log.d(TAG, "Polyline re-plotted: $polyline")
+
+                // modify map bounds to include the route
+                for (j in 0 until path[i].size) {
+//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
+                    maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                    maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+                    val distance = haversineDistance(point, path[i][j])
+                    if (distance >= distanceRadius) {
+                        coordinates.add(path[i][j])
+                        point = path[i][j]
+                    }
+                }
+            }
+            Log.d(TAG, "coordinates in re-plot are: $coordinates")
+            explorationViewModel.maxSWBounds = maxSWBounds
+            explorationViewModel.maxNEBounds = maxNEBounds
+            mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+            explorationViewModel.mapBounds = mapBounds
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+        }
     }
 
     // The following 5 functions pertaining to getting the user's current location is obtained from
@@ -848,6 +893,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     } else {
                         // Get routes
                         Log.d(TAG, "Plotting new directions")
+                        polylineArray.clear()
                         val routes = jsonResponse.getJSONArray("routes")
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
                         val steps = legs.getJSONObject(0).getJSONArray("steps")
@@ -855,8 +901,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             val points =
                                 steps.getJSONObject(i).getJSONObject("polyline").getString("points")
                             //                Log.d(TAG, PolyUtil.decode(points).toString())
+                            polylineArray.add(points)
                             path.add(PolyUtil.decode(points))
                         }
+                        explorationViewModel.polyline = polylineArray
                         // get the max SW and NE bounds so the map is zoomed out to the point where
                         // the route can be seen without having to manually move the map around
                         maxSWBounds =

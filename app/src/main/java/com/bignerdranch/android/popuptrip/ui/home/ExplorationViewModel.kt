@@ -55,10 +55,6 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
         get() = savedStateHandle.get<LatLng>(MAX_NE_BOUNDS) ?: maxNEBound
         set(value) = savedStateHandle.set(MAX_NE_BOUNDS, value)
 
-//    var mapView: SupportMapFragment
-//        get() = savedStateHandle.get<SupportMapFragment>(MAP_VIEW) ?: supportMapFragment
-//        set(value) = savedStateHandle.set(MAP_VIEW, value)
-
     var placesToAddToRoute: ArrayList<DetailedPlace>
         get() = savedStateHandle.get<ArrayList<DetailedPlace>>(PLACES_TO_ADD_TO_ROUTE) ?: ArrayList()
         set(value) = savedStateHandle.set(PLACES_TO_ADD_TO_ROUTE, value)
@@ -70,6 +66,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var startingPoint: ArrayList<Any>
         get() = savedStateHandle.get<ArrayList<Any>>(STARTING_POINT) ?: arrayListOf("655 Commonwealth Ave", LatLng(0.0, 0.0))
         set(value) = savedStateHandle.set(STARTING_POINT, value)
+
+    var polyline: ArrayList<String>
+        get() = savedStateHandle.get<ArrayList<String>>(POLYLINE) ?: ArrayList()
+        set(value) = savedStateHandle.set(POLYLINE, value)
 
 //    var polyline: Polyline
 //        get() = savedStateHandle.get<Polyline>(POLYLINE) ?: polylineDefault
