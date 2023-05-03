@@ -137,5 +137,10 @@
     <string name="hello_blank_fragment">欢迎碎片</string>
     <string name="submit">提交</string>
     <string name="resetYourPassword">重设你的密码</string>
+    <!-- -->
+    <string name="restart_question">您想要现在重启应用来启用模式吗？还是等到下一次打开应用？</string>
+    <string name="title_restart">需要重启来应用设置吗？</string>
+    <string name="restart">重启</string>
+
 
 </resources>

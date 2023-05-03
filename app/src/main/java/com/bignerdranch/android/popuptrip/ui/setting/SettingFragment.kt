@@ -8,10 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.FrameLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
@@ -20,6 +17,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import java.util.*
@@ -29,6 +27,8 @@ class SettingFragment : Fragment() {
     private var _binding: FragmentSettingBinding? = null
     private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
     private lateinit var overlayout: FrameLayout
+    private var restart=false;
+    private var done=false;
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -96,14 +96,14 @@ class SettingFragment : Fragment() {
             }
         }
         val switch = binding.themeSwitch
-
+        restart=false
         switch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).apply()
+                showRestartDialog()
             } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
+                showRestartDialog()
             }
         }
 //        val logoutButton=binding.logoutButton
@@ -132,10 +132,23 @@ class SettingFragment : Fragment() {
         return binding.root
     }
 
+    private fun showRestartDialog() {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val dialogView =
+            LayoutInflater.from(requireContext()).inflate(com.bignerdranch.android.popuptrip.R.layout.dialog_restart, null)
+        val dialog = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView)
+            .setTitle(popR.string.title_restart)
+            .setPositiveButton(popR.string.restart) { _, _ ->
+                AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
+            }.setNegativeButton(popR.string.cancel,null)
+            .create()
+        dialog.show()
+    }
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
-        prefs.edit().putInt("mode", AppCompatDelegate.getDefaultNightMode()).apply()//save the mode
         prefs.edit().putInt("SpinnerPosition", binding.spinner.selectedItemPosition).apply()//save spinner position
         super.onDestroyView()
         _binding = null
