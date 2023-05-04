@@ -142,6 +142,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var mapFragment: SupportMapFragment? = null
     private lateinit var explorationViewModel: ExplorationViewModel
 
+    // initial mapBound value, includes entire world
+    private var initMapBound: LatLngBounds = LatLngBounds.builder()
+        .include(LatLng(-90.0, -180.0))
+        .include(LatLng(90.0, 180.0))
+        .build()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -1204,7 +1210,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun resizeMapView(){
-        if (this::mapBounds.isInitialized){
+        if (mapBounds!=initMapBound){
             Log.d(TAG, "Map Bounds is initialized")
             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
         } else {
