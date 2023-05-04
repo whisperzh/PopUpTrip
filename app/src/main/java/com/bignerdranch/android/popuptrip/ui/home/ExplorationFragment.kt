@@ -148,6 +148,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var mapFragment: SupportMapFragment? = null
     private lateinit var explorationViewModel: ExplorationViewModel
 
+    // initial mapBound value, includes entire world
+    private var initMapBound: LatLngBounds = LatLngBounds.builder()
+        .include(LatLng(-90.0, -180.0))
+        .include(LatLng(90.0, 180.0))
+        .build()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -585,7 +591,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
-        setupMarkerClickListener(mMap!!)
+        setupMarkerClickListener()
 
         // get the max SW and NE bounds so the map is zoomed out to the point where
         // the route can be seen without having to manually move the map around
@@ -1056,7 +1062,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mMap?.addMarker(MarkerOptions()
             .position(destinationPlace.placeLatLng)
             .title(destinationPlace.placeName)
-            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination))
+        )
     }
 
     private fun markStartingLocation(name: String){
@@ -1064,11 +1071,13 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mMap?.addMarker(MarkerOptions()
             .position(currentLocationLatLng)
             .title(name)
-            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point))
+        )
+
     }
 
     private fun resizeMapView(){
-        if (this::mapBounds.isInitialized){
+        if (mapBounds!=initMapBound){
             Log.d(TAG, "Map Bounds is initialized")
             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
         } else {
@@ -1095,7 +1104,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         return x * Math.PI / 180 // 180 degrees in radians is PI
     }
 
-    private fun setupMarkerClickListener(googleMap: GoogleMap) {
+    private fun setupMarkerClickListener() {
         mMap?.setOnMarkerClickListener { marker ->
             val place = marker.tag as? DetailedPlace
 
@@ -1135,9 +1144,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 } else {
                     placeImageView.setImageResource(R.drawable.no_available_img)
                 }
-
-                // setup the button according to whether the place has been added or not
-                val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 
                 detailedPlaceDialog.show()
             }
