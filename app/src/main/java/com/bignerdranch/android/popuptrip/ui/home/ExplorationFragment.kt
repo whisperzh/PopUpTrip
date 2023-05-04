@@ -919,7 +919,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         explorationViewModel.placesToAddToRoute = placesToAdd
                         explorationViewModel.placesToAddPoints = placesToAddArray
 
-
                         startingPoint.clear()
                         startingPoint.add(startingPlace.placeName)
                         startingPoint.add(startingPlace.placeLatLng.latitude)
@@ -1121,7 +1120,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
                                 val markerColor: Float
 
-                                if (placeLatLng !in placesReturned) {
+                                if (placeLatLng !in placesReturned &&
+                                    placeLatLng != currentLocationLatLng &&
+                                    placeLatLng != destinationPlace.placeLatLng) {
                                     maxSWBounds = getSWBound(maxSWBounds, placeLatLng)
                                     maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                     placesReturned.add(placeLatLng)
