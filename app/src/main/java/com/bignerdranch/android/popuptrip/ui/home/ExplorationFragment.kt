@@ -860,190 +860,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // get recommended places based on user's preferences set in Personal Profile
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
-        val placeTypes = arrayListOf<String>()
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val userChoiceFood = prefs.getString("food_selection", "")
-        val userChoiceEntertainment = prefs.getString("enter_selection", "")
-        val userChoiceCulture = prefs.getString("culture_selection", "")
-        val userChoiceNature = prefs.getString("nature_selection", "")
-        val userChoiceNightlife = prefs.getString("nightlife_selection", "")
-
-        if (userChoiceFood != "" && userChoiceFood != null) {
-            val array = userChoiceFood.split(",")
-
-            for (element in array) {
-                val value = element.lowercase().replace(" ", "_")
-                placeTypes.add(value)
-            }
-        }
-
-        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
-            val array = userChoiceEntertainment.split(",")
-
-            for (element in array) {
-                val value = element.lowercase().replace(" ", "_")
-                placeTypes.add(value)
-            }
-        }
-
-        if (userChoiceCulture != "" && userChoiceCulture != null) {
-            val array = userChoiceCulture.split(",")
-
-            for (element in array) {
-                val value = element.lowercase().replace(" ", "_")
-                placeTypes.add(value)
-            }
-        }
-
-        if (userChoiceNature != "" && userChoiceNature != null) {
-            val array = userChoiceNature.split(",")
-
-            for (element in array) {
-                val value = element.lowercase().replace(" ", "_")
-                placeTypes.add(value)
-            }
-        }
-
-        if (userChoiceNightlife != "" && userChoiceNightlife != null) {
-            val array = userChoiceNightlife.split(",")
-
-            for (element in array) {
-                val value = element.lowercase().replace(" ", "_")
-                placeTypes.add(value)
-            }
-        }
-
-        if (placeTypes == null || placeTypes.size == 0) {
-            placeTypes.addAll(entertainmentCategory)
-            placeTypes.addAll(cultureCategories)
-            placeTypes.addAll(foodCategories)
-            placeTypes.addAll(natureCategories)
-            placeTypes.addAll(nightLifeCategories)
-        }
-
-        Log.d(TAG, "Place Types: $placeTypes")
+        val placeTypes = getPlaceTypes()
         markersAdded.clear()
 
         for (i in 0 until coordinates.size) {
-            for (j in 0 until placeTypes.size) {
-                var inputText = placeTypes[j]
-                if (inputText.contains("_")) {
-                    inputText = inputText.replace("_", " ")
-                }
-
-                val urlRecommendation = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json" +
-                        "?fields=formatted_address%2Cname%2Cphoto%2Cplace_id%2Cgeometry%2Crating%2Copening_hours" +
-                        "&input=" + inputText + "&inputtype=textquery" +
-                        "&type=" + placeTypes[j] +
-                        "&locationbias=circle%3A" + locationBias + "%40" +
-                        coordinates[i].latitude.toString() + "%2C" + coordinates[i].longitude.toString() +
-                        "&key=" + MAPS_API_KEY
-
-                val recommendationsRequest =
-                    object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
-                        val jsonResponse = JSONObject(response)
-                        val placesReturned = arrayListOf<LatLng>()
-//                        Log.d(TAG, "Places Response: $jsonResponse")
-                        val status = jsonResponse.getString("status")
-                        if (status == "ZERO_RESULTS") {
-                            Log.d(TAG, "No recommendations for " + placeTypes[j] + " found at " + coordinates[i])
-                        } else {
-                            // Get places
-                            Log.d(TAG, "Get " + placeTypes[j] + " places")
-//                            Log.d(TAG, placeTypes[j] + " Response at " + coordinates[i] + ": $jsonResponse")
-                            val results: JSONArray = jsonResponse.getJSONArray("candidates")
-                            Log.d(TAG, "There is/are ${results.length()} results(s)")
-                            Log.d(TAG, placeTypes[j] + " Results at " + coordinates[i] + ": $results")
-
-                            for (k in 0 until results.length()) {
-                                Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
-                                val resultObject: JSONObject = results[k] as JSONObject
-                                Log.d(TAG, "returned JSON object: $resultObject")
-
-                                val placeId = resultObject.getString("place_id")
-                                val placeName = resultObject.getString("name")
-                                val geometry = resultObject.getJSONObject("geometry")
-                                val location = geometry.getJSONObject("location")
-                                val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
-                                val placeRating = resultObject.getString("rating").toFloat()
-                                val placeAddress = resultObject.getString("formatted_address")
-
-                                val photo = resultObject.optJSONArray("photos")
-                                val photoReference: String? = if (photo != null && photo.length() > 0) {
-                                    val photoObject = photo.getJSONObject(0)
-                                    photoObject.optString("photo_reference", null)
-                                } else {
-                                    null
-                                }
-                                val placeOpeningHours = resultObject.optJSONObject("opening_hours")
-                                val placeOpenNow: Boolean? =
-                                    placeOpeningHours?.getString("open_now")?.toBoolean()
-
-                                val placeCategory = if (placeTypes[j] in entertainmentCategory) {
-                                    getString(R.string.category_title_entertainment)
-                                } else if (placeTypes[j] in foodCategories) {
-                                    getString(R.string.category_title_food)
-                                } else if (placeTypes[j] in cultureCategories) {
-                                    getString(R.string.category_title_culture)
-                                } else if (placeTypes[j] in natureCategories) {
-                                    getString(R.string.category_title_nature)
-                                } else {
-                                    getString(R.string.category_title_nightlife)
-                                }
-
-                                val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
-                                val markerColor: Float
-
-                                if (placeLatLng !in placesReturned &&
-                                    placeLatLng != currentLocationLatLng &&
-                                    placeLatLng != destinationPlace.placeLatLng) {
-                                    maxSWBounds = getSWBound(maxSWBounds, placeLatLng)
-                                    maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
-                                    placesReturned.add(placeLatLng)
-
-                                    if (placeTypes[j] in entertainmentCategory) {
-                                        markerColor = BitmapDescriptorFactory.HUE_ROSE
-                                        placeToMark.placeCategory = getString(R.string.category_title_entertainment)
-                                    } else if (placeTypes[j] in cultureCategories) {
-                                        markerColor = BitmapDescriptorFactory.HUE_BLUE
-                                        placeToMark.placeCategory = getString(R.string.category_title_culture)
-                                    } else if (placeTypes[j] in foodCategories) {
-                                        markerColor = BitmapDescriptorFactory.HUE_ORANGE
-                                        placeToMark.placeCategory = getString(R.string.category_title_food)
-                                    } else if (placeTypes[j] in natureCategories) {
-                                        markerColor = BitmapDescriptorFactory.HUE_GREEN
-                                        placeToMark.placeCategory = getString(R.string.category_title_nature)
-                                    } else { // Nightlife
-                                        markerColor = BitmapDescriptorFactory.HUE_VIOLET
-                                        placeToMark.placeCategory = getString(R.string.category_title_nightlife)
-                                    }
-
-                                    val marker = mMap?.addMarker(MarkerOptions()
-                                        .position(placeLatLng)
-                                        .title(placeName)
-                                        .alpha(0.6f)
-                                        .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                                    )
-                                    marker!!.tag = placeToMark
-
-                                    if (marker != null) {
-                                        Log.d(TAG, "Add Marker to markersAdded")
-                                        markersAdded.add(marker)
-                                    }
-                                }
-                            }
-                            explorationViewModel.markersAdded = markersAdded
-                            mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                            explorationViewModel.maxSWBounds = maxSWBounds
-                            explorationViewModel.maxNEBounds = maxNEBounds
-                            explorationViewModel.mapBounds = mapBounds
-                            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
-                        }
-                    }, Response.ErrorListener { _ ->
-                    }) {}
-                val requestQueue = Volley.newRequestQueue(activity)
-                requestQueue.add(recommendationsRequest)
-            }
+            getRecommendedPlaces(coordinates[i], placeTypes)
         }
     }
 
@@ -1348,5 +1169,192 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         Log.d(TAG, "coordinates in re-plot are: $coordinates")
 
         return coordinates
+    }
+
+    private fun getPlaceTypes(): ArrayList<String> {
+        val placeTypes = arrayListOf<String>()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val userChoiceFood = prefs.getString("food_selection", "")
+        val userChoiceEntertainment = prefs.getString("enter_selection", "")
+        val userChoiceCulture = prefs.getString("culture_selection", "")
+        val userChoiceNature = prefs.getString("nature_selection", "")
+        val userChoiceNightlife = prefs.getString("nightlife_selection", "")
+
+        if (userChoiceFood != "" && userChoiceFood != null) {
+            val array = userChoiceFood.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceEntertainment != "" && userChoiceEntertainment != null) {
+            val array = userChoiceEntertainment.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceCulture != "" && userChoiceCulture != null) {
+            val array = userChoiceCulture.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceNature != "" && userChoiceNature != null) {
+            val array = userChoiceNature.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (userChoiceNightlife != "" && userChoiceNightlife != null) {
+            val array = userChoiceNightlife.split(",")
+
+            for (element in array) {
+                val value = element.lowercase().replace(" ", "_")
+                placeTypes.add(value)
+            }
+        }
+
+        if (placeTypes == null || placeTypes.size == 0) {
+            placeTypes.addAll(entertainmentCategory)
+            placeTypes.addAll(cultureCategories)
+            placeTypes.addAll(foodCategories)
+            placeTypes.addAll(natureCategories)
+            placeTypes.addAll(nightLifeCategories)
+        }
+
+        Log.d(TAG, "Place Types: $placeTypes")
+
+        return placeTypes
+    }
+
+    private fun getRecommendedPlaces(coordinates: LatLng, placeTypes: ArrayList<String>) {
+        for (j in 0 until placeTypes.size) {
+            var inputText = placeTypes[j]
+            if (inputText.contains("_")) {
+                inputText = inputText.replace("_", " ")
+            }
+
+            val urlRecommendation = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json" +
+                    "?fields=formatted_address%2Cname%2Cphoto%2Cplace_id%2Cgeometry%2Crating%2Copening_hours" +
+                    "&input=" + inputText + "&inputtype=textquery" +
+                    "&type=" + placeTypes[j] +
+                    "&locationbias=circle%3A" + locationBias + "%40" +
+                    coordinates.latitude.toString() + "%2C" + coordinates.longitude.toString() +
+                    "&key=" + MAPS_API_KEY
+
+            val recommendationsRequest =
+                object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
+                    val jsonResponse = JSONObject(response)
+                    val placesReturned = arrayListOf<LatLng>()
+                    val status = jsonResponse.getString("status")
+                    if (status == "ZERO_RESULTS") {
+                        Log.d(TAG, "No recommendations for " + placeTypes[j] + " found at " + coordinates)
+                    } else {
+                        // Get places
+                        Log.d(TAG, "Get " + placeTypes[j] + " places")
+                        val results: JSONArray = jsonResponse.getJSONArray("candidates")
+                        Log.d(TAG, "There is/are ${results.length()} results(s)")
+                        Log.d(TAG, placeTypes[j] + " Results at " + coordinates + ": $results")
+
+                        for (k in 0 until results.length()) {
+                            Log.d(TAG,  "$k: ${results[k]::class.java.typeName}" + results[k])
+                            val resultObject: JSONObject = results[k] as JSONObject
+                            Log.d(TAG, "returned JSON object: $resultObject")
+
+                            val placeId = resultObject.getString("place_id")
+                            val placeName = resultObject.getString("name")
+                            val geometry = resultObject.getJSONObject("geometry")
+                            val location = geometry.getJSONObject("location")
+                            val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                            val placeRating = resultObject.getString("rating").toFloat()
+                            val placeAddress = resultObject.getString("formatted_address")
+
+                            val photo = resultObject.optJSONArray("photos")
+                            val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                val photoObject = photo.getJSONObject(0)
+                                photoObject.optString("photo_reference", null)
+                            } else {
+                                null
+                            }
+                            val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                            val placeOpenNow: Boolean? =
+                                placeOpeningHours?.getString("open_now")?.toBoolean()
+
+                            val placeCategory = if (placeTypes[j] in entertainmentCategory) {
+                                getString(R.string.category_title_entertainment)
+                            } else if (placeTypes[j] in foodCategories) {
+                                getString(R.string.category_title_food)
+                            } else if (placeTypes[j] in cultureCategories) {
+                                getString(R.string.category_title_culture)
+                            } else if (placeTypes[j] in natureCategories) {
+                                getString(R.string.category_title_nature)
+                            } else {
+                                getString(R.string.category_title_nightlife)
+                            }
+
+                            val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
+                            val markerColor: Float
+
+                            if (placeLatLng !in placesReturned &&
+                                placeLatLng != currentLocationLatLng &&
+                                placeLatLng != destinationPlace.placeLatLng) {
+                                maxSWBounds = getSWBound(maxSWBounds, placeLatLng)
+                                maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
+                                placesReturned.add(placeLatLng)
+
+                                if (placeTypes[j] in entertainmentCategory) {
+                                    markerColor = BitmapDescriptorFactory.HUE_ROSE
+                                    placeToMark.placeCategory = getString(R.string.category_title_entertainment)
+                                } else if (placeTypes[j] in cultureCategories) {
+                                    markerColor = BitmapDescriptorFactory.HUE_BLUE
+                                    placeToMark.placeCategory = getString(R.string.category_title_culture)
+                                } else if (placeTypes[j] in foodCategories) {
+                                    markerColor = BitmapDescriptorFactory.HUE_ORANGE
+                                    placeToMark.placeCategory = getString(R.string.category_title_food)
+                                } else if (placeTypes[j] in natureCategories) {
+                                    markerColor = BitmapDescriptorFactory.HUE_GREEN
+                                    placeToMark.placeCategory = getString(R.string.category_title_nature)
+                                } else { // Nightlife
+                                    markerColor = BitmapDescriptorFactory.HUE_VIOLET
+                                    placeToMark.placeCategory = getString(R.string.category_title_nightlife)
+                                }
+
+                                val marker = mMap?.addMarker(MarkerOptions()
+                                    .position(placeLatLng)
+                                    .title(placeName)
+                                    .alpha(0.6f)
+                                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                                )
+                                marker!!.tag = placeToMark
+
+                                if (marker != null) {
+                                    Log.d(TAG, "Add Marker to markersAdded")
+                                    markersAdded.add(marker)
+                                }
+                            }
+                        }
+                        explorationViewModel.markersAdded = markersAdded
+                        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+                        explorationViewModel.maxSWBounds = maxSWBounds
+                        explorationViewModel.maxNEBounds = maxNEBounds
+                        explorationViewModel.mapBounds = mapBounds
+                        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
+                    }
+                }, Response.ErrorListener { _ ->
+                }) {}
+            val requestQueue = Volley.newRequestQueue(activity)
+            requestQueue.add(recommendationsRequest)
+        }
     }
 }
