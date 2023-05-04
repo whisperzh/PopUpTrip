@@ -188,6 +188,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placeImageView = detailedPlaceDialogLayout.findViewById<ImageView>(R.id.detailed_place_dialog_img)
         placeTypesTextView = detailedPlaceDialogLayout.findViewById(R.id.detailed_place_dialog_types)
 
+
         detailedPlaceDialog = MaterialAlertDialogBuilder(requireContext())
             .setView(detailedPlaceDialogLayout)
             .setPositiveButton(R.string.detailed_place_dialog_add_button, null)
@@ -598,7 +599,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         }
 
-        setupMarkerClickListener(mMap!!)
+        setupMarkerClickListener()
 
         // Re-plot the markers (used when toggling away then coming back to Exploration page)
         Log.d(TAG, "Checking if anything to re-plot onMapReady")
@@ -1188,7 +1189,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mMap?.addMarker(MarkerOptions()
             .position(destinationPlace.placeLatLng)
             .title(destinationPlace.placeName)
-            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination)))
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_destination))
+        )
     }
 
     private fun markStartingLocation(name: String){
@@ -1196,7 +1198,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         mMap?.addMarker(MarkerOptions()
             .position(currentLocationLatLng)
             .title(name)
-            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point)))
+            .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point))
+        )
+
     }
 
     private fun resizeMapView(){
@@ -1226,7 +1230,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         return x * Math.PI / 180
     }
 
-    private fun setupMarkerClickListener(googleMap: GoogleMap) {
+    private fun setupMarkerClickListener() {
         mMap?.setOnMarkerClickListener { marker ->
             val place = marker.tag as? DetailedPlace
 
@@ -1267,28 +1271,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     placeImageView.setImageResource(R.drawable.no_available_img)
                 }
 
-                // setup the button according to whether the place has been added or not
-                val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-
                 detailedPlaceDialog.show()
 
-    //                if(!place.addedToPlan){
-    //                    positiveButton.setText(R.string.detailed_place_dialog_add_button)
-    //                    positiveButton.setOnClickListener {
-    //                        // Add the place to list of places to visit
-    //                        place.addedToPlan = true
-    //                        addPlaceToRoute(place)
-    //                        detailedPlaceDialog.dismiss()
-    //                    }
-    //                } else {
-    //                    positiveButton.setText(R.string.detailed_place_dialog_remove_button)
-    //                    positiveButton.setOnClickListener {
-    //                        // Add the place to list of places to visit
-    //                        place.addedToPlan = false
-    //                        removePlaceFromRoute(place)
-    //                        detailedPlaceDialog.dismiss()
-    //                    }
-    //                }
+//                val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+//
+//                // do not show the button when it is starting point/destination
+//                if (place.placeName==destinationPlace.placeName || place.placeName==startingPlace.placeName){
+//                    positiveButton.visibility = View.GONE
+//                } else {
+//                    positiveButton.visibility = View.VISIBLE
+//                }
 
             }
 
