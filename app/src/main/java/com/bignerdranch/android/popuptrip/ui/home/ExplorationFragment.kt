@@ -107,6 +107,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var destinationPoint: ArrayList<Any> = ArrayList()
     private var placesToAddArray: ArrayList<Any> = ArrayList()
     private var polylineArray: ArrayList<String> = ArrayList()
+    private var placeTypesFromPreference: ArrayList<String> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -175,6 +176,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         destinationPoint = explorationViewModel.destinationPoint
         placesToAddArray = explorationViewModel.placesToAddPoints
         polylineArray = explorationViewModel.polyline
+        placeTypesFromPreference = explorationViewModel.placeTypes
 
         // input arguments from navigation
         if (args != null && explorationViewModel.needToFetch == true) {
@@ -600,6 +602,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         maxNEBounds =
             getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
 
+        var coordinates = arrayListOf<LatLng>()
+        // Re-plot polyline here
+        if (polylineArray.size > 0) {
+            val path: MutableList<List<LatLng>> = ArrayList()
+            for (i in 0 until polylineArray.size) {
+                path.add(PolyUtil.decode(polylineArray[i]))
+            }
+
+            coordinates = plotPolyline(path)
+        }
+
         // Re-plot the markers (used when toggling away then coming back to Exploration page)
         Log.d(TAG, "Checking if anything to re-plot onMapReady")
         for (i in 0 until markersAdded.size) {
@@ -635,23 +648,49 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 updateMarker(i, markerTag, translucent)
             }
         }
-        explorationViewModel.markersAdded = markersAdded
 
-        // Re-plot polyline here
-        if (polylineArray.size > 0) {
-            val path: MutableList<List<LatLng>> = ArrayList()
-            for (i in 0 until polylineArray.size) {
-                path.add(PolyUtil.decode(polylineArray[i]))
+        val placeTypes = getPlaceTypes()
+        Log.d(TAG, "Old place types selected by user: $placeTypesFromPreference")
+        Log.d(TAG, "New place types selected by user: $placeTypes")
+
+        if (!placeTypesFromPreference.containsAll(placeTypes)) {
+            val placeTypesToSearch: ArrayList<String> = arrayListOf()
+
+            for (i in 0 until placeTypes.size) {
+                // Additional place types added
+                if (placeTypes[i] !in placeTypesFromPreference) {
+                    placeTypesToSearch.add(placeTypes[i])
+                }
             }
 
-            plotPolyline(path)
+            if (placeTypesToSearch.size > 0) {
+                for (i in 0 until coordinates.size) {
+                    getRecommendedPlaces(coordinates[i], placeTypesToSearch)
+                }
+            }
 
-            explorationViewModel.maxSWBounds = maxSWBounds
-            explorationViewModel.maxNEBounds = maxNEBounds
-            mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-            explorationViewModel.mapBounds = mapBounds
-            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
+            // Place type removed
+            for (i in 0 until placeTypesFromPreference.size) {
+                if (placeTypesFromPreference[i] !in placeTypes) {
+                    // remove markers for that place type
+                    for (j in 0 until markersAdded.size) {
+                        val marker: Marker = markersAdded[j]
+                        val detailedPlace: DetailedPlace = marker.tag as DetailedPlace
+
+                        // TODO remove markers for that place type
+                    }
+                }
+            }
+
+            explorationViewModel.placeTypes = placeTypes
+            explorationViewModel.markersAdded = markersAdded
         }
+
+        explorationViewModel.maxSWBounds = maxSWBounds
+        explorationViewModel.maxNEBounds = maxNEBounds
+        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+        explorationViewModel.mapBounds = mapBounds
+        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
     }
 
     // The following 5 functions pertaining to getting the user's current location is obtained from
@@ -861,6 +900,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // get recommended places based on user's preferences set in Personal Profile
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
         val placeTypes = getPlaceTypes()
+        explorationViewModel.placeTypes = placeTypes
         markersAdded.clear()
 
         for (i in 0 until coordinates.size) {
@@ -1291,17 +1331,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             val placeOpenNow: Boolean? =
                                 placeOpeningHours?.getString("open_now")?.toBoolean()
 
-                            val placeCategory = if (placeTypes[j] in entertainmentCategory) {
-                                getString(R.string.category_title_entertainment)
-                            } else if (placeTypes[j] in foodCategories) {
-                                getString(R.string.category_title_food)
-                            } else if (placeTypes[j] in cultureCategories) {
-                                getString(R.string.category_title_culture)
-                            } else if (placeTypes[j] in natureCategories) {
-                                getString(R.string.category_title_nature)
-                            } else {
-                                getString(R.string.category_title_nightlife)
-                            }
+                            val placeCategory = getPlaceCategory(placeTypes[j])
 
                             val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
                             val markerColor: Float
@@ -1313,21 +1343,21 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                 placesReturned.add(placeLatLng)
 
-                                if (placeTypes[j] in entertainmentCategory) {
+                                if (placeCategory == getString(R.string.category_title_entertainment)) {
                                     markerColor = BitmapDescriptorFactory.HUE_ROSE
-                                    placeToMark.placeCategory = getString(R.string.category_title_entertainment)
-                                } else if (placeTypes[j] in cultureCategories) {
+                                    placeToMark.placeCategory = placeCategory
+                                } else if (placeCategory == getString(R.string.category_title_culture)) {
                                     markerColor = BitmapDescriptorFactory.HUE_BLUE
-                                    placeToMark.placeCategory = getString(R.string.category_title_culture)
-                                } else if (placeTypes[j] in foodCategories) {
+                                    placeToMark.placeCategory = placeCategory
+                                } else if (placeCategory == getString(R.string.category_title_food)) {
                                     markerColor = BitmapDescriptorFactory.HUE_ORANGE
-                                    placeToMark.placeCategory = getString(R.string.category_title_food)
-                                } else if (placeTypes[j] in natureCategories) {
+                                    placeToMark.placeCategory = placeCategory
+                                } else if (placeCategory == getString(R.string.category_title_nature)) {
                                     markerColor = BitmapDescriptorFactory.HUE_GREEN
-                                    placeToMark.placeCategory = getString(R.string.category_title_nature)
+                                    placeToMark.placeCategory = placeCategory
                                 } else { // Nightlife
                                     markerColor = BitmapDescriptorFactory.HUE_VIOLET
-                                    placeToMark.placeCategory = getString(R.string.category_title_nightlife)
+                                    placeToMark.placeCategory = placeCategory
                                 }
 
                                 val marker = mMap?.addMarker(MarkerOptions()
@@ -1355,6 +1385,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 }) {}
             val requestQueue = Volley.newRequestQueue(activity)
             requestQueue.add(recommendationsRequest)
+        }
+    }
+
+    private fun getPlaceCategory(placeType: String): String {
+        return if (placeType in entertainmentCategory) {
+            getString(R.string.category_title_entertainment)
+        } else if (placeType in foodCategories) {
+            getString(R.string.category_title_food)
+        } else if (placeType in cultureCategories) {
+            getString(R.string.category_title_culture)
+        } else if (placeType in natureCategories) {
+            getString(R.string.category_title_nature)
+        } else {
+            getString(R.string.category_title_nightlife)
         }
     }
 }
