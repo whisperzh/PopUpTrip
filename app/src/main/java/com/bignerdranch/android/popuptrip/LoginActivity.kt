@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -13,17 +14,20 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import com.bignerdranch.android.popuptrip.databinding.ActivityLoginBinding
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     // See: https://developer.android.com/training/basics/intents/result
     private lateinit var auth: FirebaseAuth
+    private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     override fun onStart() {
         super.onStart()
         auth = Firebase.auth
@@ -37,9 +41,79 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding= ActivityLoginBinding.inflate(layoutInflater)
         val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val selectedItem=prefs.getString("Language","")
+        if (selectedItem.equals(dataList.get(4))) {
+            val locale = Locale("zh")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.SIMPLIFIED_CHINESE)
+            val resources = this.resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            this.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(3))) {
+            val locale = Locale("es")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.forLanguageTag("es"))
+            val resources = this.resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            this.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(2))) {
+            val locale = Locale("de")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.GERMAN)
+            val resources = this.resources
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            this.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(1))) {
+            val locale = Locale("fr")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.FRENCH)
+            val resources = this.resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            this.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(0))) {
+            val locale = Locale("en")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.ENGLISH)
+            val resources = this.resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            this.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
         setContentView(binding.root)

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.databinding.FragmentLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -82,7 +83,7 @@ class LoginFragment : Fragment() {
             var password = binding.password.editText?.text.toString()
             if(email.equals("")||password.equals(""))
             {
-                Toast.makeText(context,"Please fill in all the blanks",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,popR.string.fill_blank_toast,Toast.LENGTH_SHORT).show()
             }else {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(activity as Activity) { task ->
@@ -92,7 +93,7 @@ class LoginFragment : Fragment() {
                             val user = auth.currentUser
                             Toast.makeText(
                                 context,
-                                "Authentication succeed.",
+                                popR.string.authen_succeed,
                                 Toast.LENGTH_SHORT,
                             ).show()
                             val intent = Intent(context, MainActivity::class.java)
@@ -102,7 +103,7 @@ class LoginFragment : Fragment() {
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
                             Toast.makeText(
                                 context,
-                                "Authentication failed.",
+                                popR.string.authen_fail,
                                 Toast.LENGTH_SHORT,
                             ).show()
                         }

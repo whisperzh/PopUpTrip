@@ -90,7 +90,7 @@ class RegisterFragment : Fragment() {
                         val user = auth.currentUser!!
                         Toast.makeText(
                             context,
-                            "Authentication succeed.",
+                            R.string.authen_succeed,
                             Toast.LENGTH_SHORT,
                         ).show()
                         dbReference.child("User_Table").child(user.uid).child("username").setValue(userName)
@@ -101,7 +101,7 @@ class RegisterFragment : Fragment() {
                         Log.w(ContentValues.TAG, "createUserWithEmail:failure", task.exception)
                         Toast.makeText(
                             context,
-                            "Authentication failed.",
+                            R.string.authen_fail,
                             Toast.LENGTH_SHORT,
                         ).show()
                     }

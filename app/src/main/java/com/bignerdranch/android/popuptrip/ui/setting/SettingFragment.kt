@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
@@ -25,10 +26,9 @@ import java.util.*
 class SettingFragment : Fragment() {
     private var lastSelectedItem: String? = null
     private var _binding: FragmentSettingBinding? = null
-    private val dataList =  listOf("English","French","German","Spanish","Simplified Chinese")
+    private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private lateinit var overlayout: FrameLayout
     private var restart=false;
-    private var done=false;
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,6 +43,7 @@ class SettingFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val position = prefs.getInt("SpinnerPosition", 0)
         val switchState = prefs.getBoolean("switchState", false)
+        lastSelectedItem=prefs.getString("Language",null)
         binding.themeSwitch.isChecked = switchState
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
@@ -56,7 +57,9 @@ class SettingFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
+                val activity = requireActivity() as? AppCompatActivity
                 val selectedItem = parent.getItemAtPosition(position) as String
+                prefs.edit().putString("Language",selectedItem).apply()
                 if (lastSelectedItem != null) {
                     val toast = Toast.makeText(
                         requireContext(),
@@ -66,27 +69,9 @@ class SettingFragment : Fragment() {
                     toast.show()
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
-                if (selectedItem.equals("Simplified Chinese")) {
-                    val locale = Locale("zh")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.SIMPLIFIED_CHINESE)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
+                if (lastSelectedItem!=selectedItem){
+                    activity?.finish()
                 }
-                if (selectedItem.equals("English")) {
-                    val locale = Locale("en")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.ENGLISH)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                }
-
                 lastSelectedItem = selectedItem
 
             }
@@ -119,9 +104,6 @@ class SettingFragment : Fragment() {
             Firebase.auth.signOut()
             Toast.makeText(context,"You have been logged out",Toast.LENGTH_SHORT).show()
             activity?.finish()
-        }
-        binding.themeText.apply {
-            setText(popR.string.title_mode)
         }
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
