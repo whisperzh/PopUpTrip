@@ -122,14 +122,20 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var fusedLocationClient: FusedLocationProviderClient? = null
     private lateinit var currentLocationLatLng: LatLng
     private val permissionId = 2
+    // The following are place types accepted by Google Find Places API
     private val cultureCategories = arrayListOf<String>("art_gallery", "book_store", "library", "museum")
     private val foodCategories = arrayListOf<String>("bakery", "cafe", "restaurant")
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
+
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
     private val maxDistanceAllowed = 20000 // 20000m or 20km
+    private val opaque = 1.0f // for markers added to places to visit
+    private val translucent = 0.6f // for markers not added to places to visit
+    private val mapPadding = 260 // how much to pad map by
+    private val mapZoom = 15f
 
     // place detail dialog setup
     private lateinit var detailedPlaceDialog: AlertDialog
@@ -201,10 +207,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         Log.d(TAG, "Recreating map in onCreateView")
 
-        // launch the support map fragment
-//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-//        mapFragment.getMapAsync(this)
-
         // Re-create the map e.g. if user switches from exploration to another tab
         // e.g. Personal Profile, and back to exploration by clicking the Home tab
         Log.d(TAG, "Launch support map fragment")
@@ -231,7 +233,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         super.onDestroy()
         val mapFragmentNull = (mapFragment == null)
         Log.d(TAG, "mapFragment is null? $mapFragmentNull")
-//        mapFragment?.onDestroyView()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -336,9 +337,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
 
-            // Remove cursor
-//            binding.startingTextInputTextfield.isCursorVisible = false
-
             selectedPrediction?.placeId?.let { placeId ->
 
                 // once a starting address is selected in the list
@@ -388,12 +386,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         Log.d(TAG, "destinationName: $destinationPlace.placeName")
                         Log.d(TAG, "new string entered: ${newText.toString()}")
                         Log.d(TAG, "destination onTextChanged is triggered")
-
-//                        destinationPoint.clear()
-//                        destinationPoint.add(destinationPlace.placeName)
-//                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
-//                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
-//                        explorationViewModel.destinationPoint = destinationPoint
 
                         // Create a request for place predictions
                         val request = FindAutocompletePredictionsRequest.builder()
@@ -479,7 +471,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 getDirections()
                             // starting place is not initialized, only plot destination
                             } else {
-                                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
+                                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, mapZoom))
                             }
 
                         }.addOnFailureListener { exception ->
@@ -500,11 +492,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             // Hide the keyboard
             val imm = requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(view.windowToken, 0)
-//            if (this::mapBounds.isInitialized){
-//                resizeMapView()
-//            }
-            // to clear any previously selected locations
-//            mMap.clear()
             getLocation()
         }
 
@@ -523,7 +510,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             explorationViewModel.resetStartingPlace()
             val home = ExplorationFragmentDirections.explorationToHomeAction()
                 .setDestinationPlaceName(destinationPlace.placeName)
-//            // Launch navigation to home page
+            // Launch navigation to home page
             viewLifecycleOwner.lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     findNavController().navigate(home)
@@ -580,7 +567,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 binding.destTextInputTextfield.setText(destinationPlace.placeName)
 
                 markDestination()
-                mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
+                mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, mapZoom))
 
             }.addOnFailureListener { exception ->
                 if (exception is ApiException) {
@@ -589,9 +576,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
         } else {
             // re-plotting destination and starting point after switching between tabs
-            Log.d(TAG, "destination for replotting: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
+            Log.d(TAG, "destination for re-plotting: ${destinationPlace.placeName}, ${destinationPlace.placeId}, ${destinationPlace.placeLatLng}")
             markDestination()
-            Log.d(TAG, "starting place name to replot: ${startingPlace.placeName}")
+            Log.d(TAG, "starting place name to re-plot: ${startingPlace.placeName}")
             if(startingPlace.placeName!=""){
                 Log.d(TAG, "starting place is replotted")
                 markStartingLocation(startingPlace.placeName)
@@ -600,125 +587,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         setupMarkerClickListener(mMap!!)
 
-        // Re-plot the markers (used when toggling away then coming back to Exploration page)
-        Log.d(TAG, "Checking if anything to re-plot onMapReady")
-        for (i in 0 until markersAdded.size) {
-            Log.d(TAG, "Re-plotting markers in onMapReady")
-            val marker: Marker = markersAdded[i]
-            var markerTag: DetailedPlace = marker.tag as DetailedPlace
-            val position: LatLng = marker.position
-            if (placesToAdd.size > 0) {
-                for (j in 0 until placesToAdd.size) {
-                    val detailedPlace: DetailedPlace = placesToAdd[j]
-
-                    if (detailedPlace.placeLatLng == position) {
-                        val markerColor = when (detailedPlace.placeCategory) {
-                            getString(R.string.category_title_entertainment) -> {
-                                BitmapDescriptorFactory.HUE_ROSE
-                            }
-                            getString(R.string.category_title_culture) -> {
-                                BitmapDescriptorFactory.HUE_BLUE
-                            }
-                            getString(R.string.category_title_food) -> {
-                                BitmapDescriptorFactory.HUE_ORANGE
-                            }
-                            getString(R.string.category_title_nature) -> {
-                                BitmapDescriptorFactory.HUE_GREEN
-                            }
-                            else -> { // Nightlife
-                                BitmapDescriptorFactory.HUE_VIOLET
-                            }
-                        }
-                        markersAdded.removeAt(i)
-//                        marker.remove()
-                        Log.d(TAG, "Place Category: ${detailedPlace.placeCategory}")
-                        val updatedMarker = mMap!!.addMarker(MarkerOptions()
-                            .position(position)
-                            .title(detailedPlace.placeName)
-                            .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                        )
-
-                        if (updatedMarker != null) {
-                            updatedMarker.tag = detailedPlace
-                            markersAdded.add(i, updatedMarker)
-                        }
-
-                        break
-                    }
-
-                    // Not selected by user to be in the route
-                    if (j == placesToAdd.size - 1) {
-                        val markerColor = when (markerTag.placeCategory) {
-                            getString(R.string.category_title_entertainment) -> {
-                                BitmapDescriptorFactory.HUE_ROSE
-                            }
-                            getString(R.string.category_title_culture) -> {
-                                BitmapDescriptorFactory.HUE_BLUE
-                            }
-                            getString(R.string.category_title_food) -> {
-                                BitmapDescriptorFactory.HUE_ORANGE
-                            }
-                            getString(R.string.category_title_nature) -> {
-                                BitmapDescriptorFactory.HUE_GREEN
-                            }
-                            else -> { // Nightlife
-                                BitmapDescriptorFactory.HUE_VIOLET
-                            }
-                        }
-                        markersAdded.removeAt(i)
-//                        marker.remove()
-                        Log.d(TAG, "Place Category (not selected by user): ${detailedPlace.placeCategory}")
-                        val updatedMarker = mMap!!.addMarker(MarkerOptions()
-                            .position(position)
-                            .title(detailedPlace.placeName)
-                            .alpha(0.6f)
-                            .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                        )
-
-                        if (updatedMarker != null) {
-                            updatedMarker.tag = markerTag
-                            markersAdded.add(i, updatedMarker)
-                        }
-                    }
-                }
-            } else {
-                val markerTitle = marker.title
-                markerTag = marker.tag as DetailedPlace
-                val markerColor = when (markerTag.placeCategory) {
-                    getString(R.string.category_title_entertainment) -> {
-                        BitmapDescriptorFactory.HUE_ROSE
-                    }
-                    getString(R.string.category_title_culture) -> {
-                        BitmapDescriptorFactory.HUE_BLUE
-                    }
-                    getString(R.string.category_title_food) -> {
-                        BitmapDescriptorFactory.HUE_ORANGE
-                    }
-                    getString(R.string.category_title_nature) -> {
-                        BitmapDescriptorFactory.HUE_GREEN
-                    }
-                    else -> { // Nightlife
-                        BitmapDescriptorFactory.HUE_VIOLET
-                    }
-                }
-                markersAdded.removeAt(i)
-//                marker.remove()
-                val updatedMarker = mMap!!.addMarker(MarkerOptions()
-                    .position(position)
-                    .title(markerTitle)
-                    .alpha(0.6f)
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                )
-
-                if (updatedMarker != null) {
-                    updatedMarker.tag = markerTag
-                    markersAdded.add(i, updatedMarker)
-                }
-            }
-        }
-        explorationViewModel.markersAdded = markersAdded
-
-        // Re-plot polyline here
         // get the max SW and NE bounds so the map is zoomed out to the point where
         // the route can be seen without having to manually move the map around
         maxSWBounds =
@@ -726,39 +594,57 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         maxNEBounds =
             getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
 
+        // Re-plot the markers (used when toggling away then coming back to Exploration page)
+        Log.d(TAG, "Checking if anything to re-plot onMapReady")
+        for (i in 0 until markersAdded.size) {
+            Log.d(TAG, "Re-plotting markers in onMapReady")
+            val marker: Marker = markersAdded[i]
+            var markerTag: DetailedPlace = marker.tag as DetailedPlace
+            val position: LatLng = marker.position
+
+            maxSWBounds = getSWBound(maxSWBounds, position)
+            maxNEBounds = getNEBound(maxNEBounds, position)
+
+            if (placesToAdd.size > 0) {
+                for (j in 0 until placesToAdd.size) {
+                    val detailedPlace: DetailedPlace = placesToAdd[j]
+
+                    if (detailedPlace.placeLatLng == position) {
+                        markersAdded.removeAt(i)
+                        Log.d(TAG, "Place Category: ${detailedPlace.placeCategory}")
+                        updateMarker(i, detailedPlace, opaque)
+                        break
+                    }
+
+                    // Not selected by user to be in the route
+                    if (j == placesToAdd.size - 1) {
+                        markersAdded.removeAt(i)
+                        Log.d(TAG, "Place Category (not selected by user): ${markerTag.placeCategory}")
+                        updateMarker(i, markerTag, translucent)
+                    }
+                }
+            } else {
+                markerTag = marker.tag as DetailedPlace
+                markersAdded.removeAt(i)
+                updateMarker(i, markerTag, translucent)
+            }
+        }
+        explorationViewModel.markersAdded = markersAdded
+
+        // Re-plot polyline here
         if (polylineArray.size > 0) {
             val path: MutableList<List<LatLng>> = ArrayList()
             for (i in 0 until polylineArray.size) {
                 path.add(PolyUtil.decode(polylineArray[i]))
             }
 
-            var point = path[0][0]
-            var coordinates = arrayListOf<LatLng>()
-            coordinates.add(path[0][0])
-            for (i in 0 until path.size) {
-//                        Log.d(TAG, "Path $i: " + path[i].toString())
-                polyline =
-                    mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-                Log.d(TAG, "Polyline re-plotted: $polyline")
+            plotPolyline(path)
 
-                // modify map bounds to include the route
-                for (j in 0 until path[i].size) {
-//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
-                    maxSWBounds = getSWBound(maxSWBounds, path[i][j])
-                    maxNEBounds = getNEBound(maxNEBounds, path[i][j])
-                    val distance = haversineDistance(point, path[i][j])
-                    if (distance >= distanceRadius) {
-                        coordinates.add(path[i][j])
-                        point = path[i][j]
-                    }
-                }
-            }
-            Log.d(TAG, "coordinates in re-plot are: $coordinates")
             explorationViewModel.maxSWBounds = maxSWBounds
             explorationViewModel.maxNEBounds = maxNEBounds
             mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
             explorationViewModel.mapBounds = mapBounds
-            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
         }
     }
 
@@ -949,32 +835,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         maxNEBounds =
                             getNEBound(currentLocationLatLng, destinationPlace.placeLatLng)
 
-                        var point = path[0][0]
-                        coordinates.add(path[0][0])
-                        for (i in 0 until path.size) {
-//                        Log.d(TAG, "Path $i: " + path[i].toString())
-                            polyline =
-                                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
-                            Log.d(TAG, "Polyline: $polyline")
+                        // plot the polyline (route)
+                        coordinates = plotPolyline(path)
 
-                            // modify map bounds to include the route
-                            for (j in 0 until path[i].size) {
-//                            Log.d(TAG, "Path $i $j: " + path[i][j].toString())
-                                maxSWBounds = getSWBound(maxSWBounds, path[i][j])
-                                maxNEBounds = getNEBound(maxNEBounds, path[i][j])
-                                val distance = haversineDistance(point, path[i][j])
-                                if (distance >= distanceRadius) {
-                                    coordinates.add(path[i][j])
-                                    point = path[i][j]
-                                }
-                            }
-                        }
-                        Log.d(TAG, "coordinates are: $coordinates")
                         explorationViewModel.maxSWBounds = maxSWBounds
                         explorationViewModel.maxNEBounds = maxNEBounds
                         mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
                         explorationViewModel.mapBounds = mapBounds
-                        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+                        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
                         getRecommendations(coordinates)
                     }
                 }, Response.ErrorListener { _ ->
@@ -1202,16 +1070,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun resizeMapView(){
         if (this::mapBounds.isInitialized){
             Log.d(TAG, "Map Bounds is initialized")
-            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
         } else {
-            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
+            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, mapZoom))
         }
     }
 
     // Obtained from
     // https://cloud.google.com/blog/products/maps-platform/how-calculate-distances-map-maps-javascript-api
     private fun haversineDistance(p1: LatLng, p2: LatLng): Double {
-        val r = 6378137; // Earth’s mean radius in meter
+        val r = 6378137 // Earth’s mean radius in meter
         val distanceLatitude = rad(p2.latitude - p1.latitude)
         val distanceLongitude = rad(p2.longitude - p1.longitude)
         val a = sin(distanceLatitude / 2) * sin(distanceLatitude / 2) +
@@ -1222,8 +1090,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         return d // returns the distance in meter
     }
 
+    // convert degree to radian
     private fun rad(x: Double): Double {
-        return x * Math.PI / 180
+        return x * Math.PI / 180 // 180 degrees in radians is PI
     }
 
     private fun setupMarkerClickListener(googleMap: GoogleMap) {
@@ -1271,25 +1140,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 val positiveButton = detailedPlaceDialog.getButton(AlertDialog.BUTTON_POSITIVE)
 
                 detailedPlaceDialog.show()
-
-    //                if(!place.addedToPlan){
-    //                    positiveButton.setText(R.string.detailed_place_dialog_add_button)
-    //                    positiveButton.setOnClickListener {
-    //                        // Add the place to list of places to visit
-    //                        place.addedToPlan = true
-    //                        addPlaceToRoute(place)
-    //                        detailedPlaceDialog.dismiss()
-    //                    }
-    //                } else {
-    //                    positiveButton.setText(R.string.detailed_place_dialog_remove_button)
-    //                    positiveButton.setOnClickListener {
-    //                        // Add the place to list of places to visit
-    //                        place.addedToPlan = false
-    //                        removePlaceFromRoute(place)
-    //                        detailedPlaceDialog.dismiss()
-    //                    }
-    //                }
-
             }
 
             false
@@ -1302,45 +1152,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placesToAdd.add(detailedPlace)
         explorationViewModel.placesToAddToRoute = placesToAdd
 
-        val markerColor = when (detailedPlace.placeCategory) {
-            getString(R.string.category_title_entertainment) -> {
-                BitmapDescriptorFactory.HUE_ROSE
-            }
-            getString(R.string.category_title_culture) -> {
-                BitmapDescriptorFactory.HUE_BLUE
-            }
-            getString(R.string.category_title_food) -> {
-                BitmapDescriptorFactory.HUE_ORANGE
-            }
-            getString(R.string.category_title_nature) -> {
-                BitmapDescriptorFactory.HUE_GREEN
-            }
-            else -> { // Nightlife
-                BitmapDescriptorFactory.HUE_VIOLET
-            }
-        }
-
         Log.d(TAG, "markersAdded size: ${markersAdded.size}")
         for (i in 0 until markersAdded.size) {
             Log.d(TAG, "In for-loop in atPlacesToAdd")
             val marker: Marker = markersAdded[i]
-            val position: LatLng = marker.position
+
             if (marker.position == detailedPlace.placeLatLng) {
                 Log.d(TAG, "Adding $marker to placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
-                val updatedMarker = mMap?.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title(detailedPlace.placeName)
-                        .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                )
-
-                if (updatedMarker != null) {
-                    updatedMarker.tag = detailedPlace
-                    markersAdded.add(i, updatedMarker)
-                }
+                updateMarker(i, detailedPlace, opaque)
             }
         }
         explorationViewModel.markersAdded = markersAdded
@@ -1352,43 +1174,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placesToAdd.remove(detailedPlace)
         explorationViewModel.placesToAddToRoute = placesToAdd
 
-        val markerColor = when (detailedPlace.placeCategory) {
-            getString(R.string.category_title_entertainment) -> {
-                BitmapDescriptorFactory.HUE_ROSE
-            }
-            getString(R.string.category_title_culture) -> {
-                BitmapDescriptorFactory.HUE_BLUE
-            }
-            getString(R.string.category_title_food) -> {
-                BitmapDescriptorFactory.HUE_ORANGE
-            }
-            getString(R.string.category_title_nature) -> {
-                BitmapDescriptorFactory.HUE_GREEN
-            }
-            else -> { // Nightlife
-                BitmapDescriptorFactory.HUE_VIOLET
-            }
-        }
-
         for (i in 0 until markersAdded.size) {
             val marker: Marker = markersAdded[i]
-            val position: LatLng = marker.position
+
             if (marker.position == detailedPlace.placeLatLng) {
                 Log.d(TAG, "Removing $marker from placesToAdd")
                 markersAdded.removeAt(i)
                 marker.remove()
                 // Re-plot the marker
-                val updatedMarker = mMap?.addMarker(MarkerOptions()
-                    .position(position)
-                    .title(detailedPlace.placeName)
-                    .alpha(0.6f)
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                )
-
-                if (updatedMarker != null) {
-                    updatedMarker.tag = detailedPlace
-                    markersAdded.add(i, updatedMarker)
-                }
+                updateMarker(i, detailedPlace, translucent)
             }
         }
         explorationViewModel.markersAdded = markersAdded
@@ -1489,5 +1283,64 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
+    private fun getMarkerColour(category: String?): Float {
+        Log.d(TAG, "Category of place: $category")
+        return when (category) {
+            getString(R.string.category_title_entertainment) -> {
+                BitmapDescriptorFactory.HUE_ROSE
+            }
+            getString(R.string.category_title_culture) -> {
+                BitmapDescriptorFactory.HUE_BLUE
+            }
+            getString(R.string.category_title_food) -> {
+                BitmapDescriptorFactory.HUE_ORANGE
+            }
+            getString(R.string.category_title_nature) -> {
+                BitmapDescriptorFactory.HUE_GREEN
+            }
+            else -> { // Nightlife
+                BitmapDescriptorFactory.HUE_VIOLET
+            }
+        }
+    }
 
+    private fun updateMarker(i: Int, detailedPlace: DetailedPlace, transparency: Float) {
+        val updatedMarker = mMap!!.addMarker(MarkerOptions()
+            .position(detailedPlace.placeLatLng)
+            .title(detailedPlace.placeName)
+            .alpha(transparency)
+            .icon(BitmapDescriptorFactory.defaultMarker(getMarkerColour(detailedPlace.placeCategory)))
+        )
+
+        if (updatedMarker != null) {
+            updatedMarker.tag = detailedPlace
+            markersAdded.add(i, updatedMarker)
+        }
+    }
+
+    private fun plotPolyline(path: MutableList<List<LatLng>>): ArrayList<LatLng> {
+        var point = path[0][0]
+        var coordinates = arrayListOf<LatLng>()
+        coordinates.add(path[0][0])
+        for (i in 0 until path.size) {
+            polyline =
+                mMap!!.addPolyline(PolylineOptions().addAll(path[i]).color(BLUE))
+            Log.d(TAG, "Polyline re-plotted: $polyline")
+
+            // modify map bounds to include the route
+            for (j in 0 until path[i].size) {
+                maxSWBounds = getSWBound(maxSWBounds, path[i][j])
+                maxNEBounds = getNEBound(maxNEBounds, path[i][j])
+
+                val distance = haversineDistance(point, path[i][j])
+                if (distance >= distanceRadius) {
+                    coordinates.add(path[i][j])
+                    point = path[i][j]
+                }
+            }
+        }
+        Log.d(TAG, "coordinates in re-plot are: $coordinates")
+
+        return coordinates
+    }
 }
