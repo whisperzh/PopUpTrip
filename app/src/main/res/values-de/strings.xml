@@ -141,4 +141,11 @@
     <string name="fill_blank_toast">Bitte füllen Sie alle Lücken aus</string>
     <string name="authen_succeed">Authentifizierung erfolgreich.</string>
     <string name="authen_fail">Authentifizierung fehlgeschlagen</string>
+    <string name="login_success">Sie wurden eingeloggt.</string>
+    <string name="logout_success">Sie wurden abgemeldet</string>
+    <string name="walk_list">Gehend</string>
+    <string name="transit_list">Transit</string>
+    <string name="driving_list">Autofahren</string>
+    <string name="bicycling_list">Fahrradfahren</string>
+    <string name="choice">Sie haben gewählt</string>
 </resources>

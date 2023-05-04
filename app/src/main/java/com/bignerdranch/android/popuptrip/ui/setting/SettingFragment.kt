@@ -63,7 +63,7 @@ class SettingFragment : Fragment() {
                 if (lastSelectedItem != null) {
                     val toast = Toast.makeText(
                         requireContext(),
-                        "You choose $selectedItem",
+                        "${getString(popR.string.choice)} $selectedItem",
                         Toast.LENGTH_SHORT
                     )
                     toast.show()

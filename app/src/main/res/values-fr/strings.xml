@@ -143,4 +143,11 @@
     <string name="fill_blank_toast">Veuillez remplir tous les blancs</string>
     <string name="authen_succeed">L\'authentification a réussi.</string>
     <string name="authen_fail">L\'authentification a échoué</string>
+    <string name="login_success">Vous avez été connecté.</string>
+    <string name="logout_success">Vous avez été déconnecté</string>
+    <string name="walk_list">Marche</string>
+    <string name="transit_list">Transit</string>
+    <string name="driving_list">Conduite</string>
+    <string name="bicycling_list">Vélo</string>
+    <string name="choice">Vous avez choisi</string>
 </resources>
