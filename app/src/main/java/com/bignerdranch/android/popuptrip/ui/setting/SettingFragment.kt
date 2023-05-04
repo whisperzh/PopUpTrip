@@ -29,7 +29,6 @@ class SettingFragment : Fragment() {
     private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private lateinit var overlayout: FrameLayout
     private var restart=false;
-    private var done=false;
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -44,6 +43,7 @@ class SettingFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val position = prefs.getInt("SpinnerPosition", 0)
         val switchState = prefs.getBoolean("switchState", false)
+        lastSelectedItem=prefs.getString("Language",null)
         binding.themeSwitch.isChecked = switchState
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
@@ -69,77 +69,9 @@ class SettingFragment : Fragment() {
                     toast.show()
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
-                if (selectedItem.equals(dataList.get(4))) {
-                    val locale = Locale("zh")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.SIMPLIFIED_CHINESE)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-                    activity?.runOnUiThread {
-                        AppCompatDelegate.setApplicationLocales(appLocale)
-                    }
+                if (lastSelectedItem!=selectedItem){
+                    activity?.finish()
                 }
-                if (selectedItem.equals(dataList.get(3))) {
-                    val locale = Locale("es")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.forLanguageTag("es"))
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-                    activity?.runOnUiThread {
-                        AppCompatDelegate.setApplicationLocales(appLocale)
-                    }
-                }
-                if (selectedItem.equals(dataList.get(2))) {
-                    val locale = Locale("de")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.GERMAN)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-                    activity?.runOnUiThread {
-                        AppCompatDelegate.setApplicationLocales(appLocale)
-                    }
-                }
-                if (selectedItem.equals(dataList.get(1))) {
-                    val locale = Locale("fr")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.FRENCH)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-                    activity?.runOnUiThread {
-                        AppCompatDelegate.setApplicationLocales(appLocale)
-                    }
-                }
-                if (selectedItem.equals(dataList.get(0))) {
-                    val locale = Locale("en")
-                    Locale.setDefault(locale)
-                    val config = Configuration()
-                    config.setLocale(Locale.ENGLISH)
-                    val resources = requireContext().resources
-                    val oldConfig = resources.configuration
-                    val displayMetrics = resources.displayMetrics
-                    resources.updateConfiguration(config, displayMetrics)
-                    val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-                    activity?.runOnUiThread {
-                        AppCompatDelegate.setApplicationLocales(appLocale)
-                    }
-                }
-
                 lastSelectedItem = selectedItem
 
             }
@@ -172,9 +104,6 @@ class SettingFragment : Fragment() {
             Firebase.auth.signOut()
             Toast.makeText(context,"You have been logged out",Toast.LENGTH_SHORT).show()
             activity?.finish()
-        }
-        binding.themeText.apply {
-            setText(popR.string.title_mode)
         }
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)

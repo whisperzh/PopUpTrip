@@ -141,5 +141,8 @@
     <string name="restart_question">¿Quieres reiniciar ahora para aplicar el modo\? O espera a que vuelva a abrir la aplicación.</string>
     <string name="title_restart">¿Reiniciar o no\?</string>
     <string name="restart">Reanudar</string>
+    <string name="fill_blank_toast">Por favor, rellena todos los espacios en blanco</string>
+    <string name="authen_succeed">Autenticación correcta.</string>
+    <string name="authen_fail">Falló la autenticación</string>
 
 </resources>

@@ -140,5 +140,7 @@
     <string name="restart_question">Voulez-vous redémarrer maintenant pour appliquer le mode ? Ou attendre de rouvrir l\'application ?</string>
     <string name="title_restart">Redémarrer ou non?</string>
     <string name="restart">redémarrer</string>
-
+    <string name="fill_blank_toast">Veuillez remplir tous les blancs</string>
+    <string name="authen_succeed">L\'authentification a réussi.</string>
+    <string name="authen_fail">L\'authentification a échoué</string>
 </resources>

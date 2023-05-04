@@ -112,7 +112,7 @@
     <string name="enter_your_username">输入用户名</string>
     <string name="confirm_password">确认密码</string>
     <string name="enter_your_Email">用户名</string>
-    <string name="pleaseFillAllTheBlanks">请填上所有的空</string>
+    <string name="pleaseFillAllTheBlanks">请填上所有空格</string>
     <string name="pleaseDoubleCheckYourPassword">再次确认您的密码</string>
     <string name="detailed_place_dialog_select_button">选做终点</string>
     <string name="detailed_place_dialog_add_button">加入计划</string>
@@ -141,6 +141,8 @@
     <string name="restart_question">您想要现在重启应用来启用模式吗？还是等到下一次打开应用？</string>
     <string name="title_restart">需要重启来应用设置吗？</string>
     <string name="restart">重启</string>
-
+    <string name="fill_blank_toast">请填好所有的空格</string>
+    <string name="authen_succeed">认证成功</string>
+    <string name="authen_fail">认证失败</string>
 
 </resources>

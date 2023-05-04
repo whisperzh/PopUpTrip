@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -23,7 +24,9 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -58,6 +61,8 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 private const val TAG = "HomeFragment"
@@ -75,7 +80,7 @@ class HomeFragment : Fragment() {
     private lateinit var placeTypesTextView: TextView
     private lateinit var placeImageView: ImageView
     private lateinit var placeIdToSend: String
-
+    private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
 
@@ -109,7 +114,78 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i(TAG, "onCreateView called")
-
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val selectedItem = prefs.getString("Language","")
+        if (selectedItem.equals(dataList.get(4))) {
+            val locale = Locale("zh")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.SIMPLIFIED_CHINESE)
+            val resources = requireContext().resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            activity?.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(3))) {
+            val locale = Locale("es")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.forLanguageTag("es"))
+            val resources = requireContext().resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            activity?.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(2))) {
+            val locale = Locale("de")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.GERMAN)
+            val resources = requireContext().resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            activity?.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(1))) {
+            val locale = Locale("fr")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.FRENCH)
+            val resources = requireContext().resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            activity?.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
+        if (selectedItem.equals(dataList.get(0))) {
+            val locale = Locale("en")
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.setLocale(Locale.ENGLISH)
+            val resources = requireContext().resources
+            val oldConfig = resources.configuration
+            val displayMetrics = resources.displayMetrics
+            resources.updateConfiguration(config, displayMetrics)
+            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+            activity?.runOnUiThread {
+                AppCompatDelegate.setApplicationLocales(appLocale)
+            }
+        }
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
         Log.d(TAG, "OnCreateView called! Destination Place Name received in home: $receivedName")

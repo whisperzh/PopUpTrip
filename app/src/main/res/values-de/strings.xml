@@ -138,5 +138,7 @@
     <string name="restart_question">Do you wanna restart now to apply the mode? Or wait for reopen the app</string>
     <string name="title_restart">Restart or Not?</string>
     <string name="restart">restart</string>
-
+    <string name="fill_blank_toast">Bitte füllen Sie alle Lücken aus</string>
+    <string name="authen_succeed">Authentifizierung erfolgreich.</string>
+    <string name="authen_fail">Authentifizierung fehlgeschlagen</string>
 </resources>
