@@ -1327,7 +1327,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                             val placeCategory = getPlaceCategory(placeTypes[j])
 
-                            val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
+                            val placeToMark = DetailedPlace(placeId, placeLatLng, placeName, placeTypes[j], placeRating, placeAddress, photoReference.toString(), placeCategory = placeCategory, placeOpenNow = placeOpenNow)
                             val markerColor: Float
 
                             if (placeLatLng !in placesReturned &&

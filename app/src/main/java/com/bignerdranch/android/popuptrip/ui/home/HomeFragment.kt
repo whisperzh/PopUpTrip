@@ -177,6 +177,7 @@ class HomeFragment : Fragment() {
                     getCurrentLocationAndFetchPlaces{
                         hideProgressIndicator()
                     }
+
                 } else {
                     Log.d(TAG, "Current user preferences are: $userPreferenceList")
                     val tempUserPreferenceList = getPlaceTypePreference()
@@ -389,6 +390,7 @@ class HomeFragment : Fragment() {
                                         val placeToAdd = DetailedPlace(placeId,
                                             placeLatLng,
                                             placeName,
+                                            "",
                                             placeRating,
                                             placeAddress,
                                             photoReference,
@@ -527,7 +529,6 @@ class HomeFragment : Fragment() {
             placeTypes.addAll(natureCategories)
             placeTypes.addAll(nightLifeCategories)
         }
-
         return placeTypes
     }
 

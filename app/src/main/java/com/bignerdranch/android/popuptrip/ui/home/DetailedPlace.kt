@@ -11,6 +11,7 @@ data class DetailedPlace(
     @PrimaryKey var placeId: String,
     var placeLatLng: LatLng,
     var placeName: String,
+    var placeType: String,
     var placeRating: Float? = null,
     var placeVicinity: String,
     var photoReference: String? = null,
@@ -24,14 +25,16 @@ data class DetailedPlace(
     constructor() : this(
         "dummy id",
         LatLng(0.0, 0.0),
-        "",
+        placeName = "",
+        placeType = "",
         placeVicinity = "",)
 
     // Basic constructor
     constructor(placeId: String) : this (
         placeId = placeId,
         LatLng(0.0, 0.0),
-        "",
+        placeName = "",
+        placeType = "",
         placeVicinity = "",)
 
 }
