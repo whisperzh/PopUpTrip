@@ -54,7 +54,6 @@
         android:id="@+id/nearby_place_loading_progress_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Loading Nearby Places"
         android:indeterminate="true"
         android:visibility="gone"
         app:trackThickness="25dp"
