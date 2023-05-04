@@ -78,11 +78,6 @@ class ProfileFragment : Fragment() {
             startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
         }
 
-        val saveButton=binding.save
-        text = binding.profileName.text.toString()
-        saveButton.setOnClickListener{
-            save=true
-        }
         val backButton = binding.GoPrefButton
         backButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_preference,null))
         val profileViewmodel =
