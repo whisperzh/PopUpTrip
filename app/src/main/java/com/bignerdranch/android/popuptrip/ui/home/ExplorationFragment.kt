@@ -1441,24 +1441,24 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             Log.d(TAG, "JSON Object to send to Itinerary: $jsonObject")
 
-//            val url = "http://54.147.60.104:80/add-itinerary/"
-//
-//            val jsonObjectRequest = JsonObjectRequest(
-//                Request.Method.POST,
-//                url,
-//                jsonObject,
-//                { response ->
-//                    // Handle response
-//                    Log.d(TAG, "Response from Itinerary: $response")
-//                },
-//                { error ->
-//                    // Handle error
-//                    Log.d(TAG, "Error from Itinerary: $error")
-//                }
-//            )
-//
-//            val queue = Volley.newRequestQueue(context)
-//            queue.add(jsonObjectRequest)
+            val url = "http://54.147.60.104:80/add-itinerary/"
+
+            val jsonObjectRequest = JsonObjectRequest(
+                Request.Method.POST,
+                url,
+                jsonObject,
+                { response ->
+                    // Handle response
+                    Log.d(TAG, "Response from Itinerary: $response")
+                },
+                { error ->
+                    // Handle error
+                    Log.d(TAG, "Error from Itinerary: $error")
+                }
+            )
+
+            val queue = Volley.newRequestQueue(context)
+            queue.add(jsonObjectRequest)
         } else {
             Toast.makeText(activity, "Please add some places of interest to Itinerary!", Toast.LENGTH_LONG).show()
         }
