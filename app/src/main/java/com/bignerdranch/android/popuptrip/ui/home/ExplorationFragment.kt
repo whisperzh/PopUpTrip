@@ -686,8 +686,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             explorationViewModel.markersAdded = markersAdded
         }
 
-        updateMapBounds()
-        mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
+        if (polylineArray.size > 0) {
+            updateMapBounds()
+            resizeMapView()
+        }
+
+
     }
 
     // The following 5 functions pertaining to getting the user's current location is obtained from
@@ -934,8 +938,10 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun resizeMapView(){
         if (mapBounds!=initMapBound){
             Log.d(TAG, "Map Bounds is initialized")
+
             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
         } else {
+            Log.d(TAG, "Focus on destination")
             mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, mapZoom))
         }
     }
