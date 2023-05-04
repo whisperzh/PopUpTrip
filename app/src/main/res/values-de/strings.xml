@@ -1,0 +1,151 @@
+<resources>
+    <string name="app_name">PopUpTrip</string>
+    <string name="title_home">Heim</string>
+    <string name="title_exploration">Erkundung</string>
+    <string name="title_nearby_places">Ausflugsziele in der Nähe</string>
+    <string name="title_dashboard">Armaturenbrett</string>
+    <string name="title_setting">Einstellungen</string>
+    <string name="title_switch">Dunkler Modus</string>
+    <string name="title_language">Sprache</string>
+    <string name="title_mode">Thema</string>
+    <string name="title_profile">Persönliches Profil</string>
+    <string name="title_logout">Ausloggen</string>
+    <string name="description_profile">Gehen Sie zur Profilseite</string>
+    <string name="change_name">Nutzername:</string>
+    <string name="title_password">Sicherheitsoption:</string>
+    <string name="change_password">Sicherheit</string>
+    <string name="title_photo">Foto:</string>
+    <string name="description_photo">Klicken Sie hier, um das Foto zu ändern</string>
+    <string name="title_save">Speichern</string>
+    <string name="title_quit">Aufhören</string>
+    <string name="title_food">Essen:</string>
+    <string name="title_pref">Präferenz</string>
+    <string name="title_place">Ihre bevorzugten Orte:</string>
+    <string name="title_star">Sternplätze:</string>
+    <string name="star_button">Stern</string>
+    <string name="title_method">Reisemethode:</string>
+    <string name="title_notifications">Benachrichtigungen</string>
+    <string name="searchbar_hint">Ziel eingeben</string>
+    <string name="home_search_box_content">Suchleiste Ziel eingeben</string>
+    <string name="enter_starting_point">Startpunkt eingeben</string>
+    <string name="enter_destination">Ziel eingeben</string>
+    <string name="use_current_location">Aktuellen Standort verwenden</string>
+    <string name="search">Suchen</string>
+    <string name="clear_search">Saubere Suche</string>
+    <string name="email_username">E-Mail-Addresse</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">Erstes Fragment</string>
+    <string name="second_fragment_label">Zweites Fragment</string>
+    <string name="next">Nächste</string>
+    <string name="previous">Vorherige</string>
+
+    <string name="lorem_ipsum">Der Kunde ist sehr wichtig, dem Kunden folgt der Kunde. Für den Schokosalat. Moritz
+        Leben, der Schmerz ist manchmal überwältigend, der Lachschmerz muss gelesen werden, lass es eine Menge Immobilien sein
+        Ich lache nicht einmal. Maecenas war kein Mitglied außer, so hieß es. Die Klasse ist eher schweigsam und freundlich
+        sie verdrehen die Küsten durch unsere Ehen, durch unsere hymenäischen Projekte. Es ist schmeichelhaft für Teenager
+        diam oder rutrum tellus vulputate quis Manche Leute brauchen kostenlose Busse, um die Spieler zu finanzieren
+        aus dekorieren Aber CNN ist wie eine kostenlose Portalrichtlinie. Bleiben Sie in dem besagten Land.\n\n
+        Manchmal wird die Massage vorher durchgeführt. Einige haben nicht einmal einen Kurs. Das ist ein großartiges Rezept für Krankheiten. Wir leben
+        die müssen, es ist eine Frage der Not, der hässliche Spieler zielte auf ihn ab, aber in der besagten Region Schmerzen
+        noch Es war eine Krankheit der Erde, das Protein war wie ein Salat, und die Ziele waren zielgerichtet. Manchmal wird es erwartet
+        Hunger und vor ihm der erste in der Kehle. Curabitur et eros porttitor, ultricies urna vitae,
+        Gehalt Das Boot ist zu Ihrem Vorteil und nicht der LKW. Aber die größten Fans sind nicht die Schmerzen
+        er braucht einen Drink oder Hausaufgaben.\n\n
+        Aber manchmal der Tortor Nibh, in den Pfeilen, der leise lacht. Chat meinen Hass, lass es eine Geschichte sein
+        aber der Autor ist weich, nicht hässlich. Keine kostenlose Testversion, für klinische Zwecke oder
+        Angestellter als Fusce schmeichelt keinem Tincidunt, der sich frei und leicht kümmert. Vollständig
+        ab und zu das Gesetz und die Angst vor der Gärung des Amtes. Das Bett des Bettes, sagte er
+        Lacinia wird Spaß machen, wie traurig es ist. Morgen gebe ich Ihnen ein Ergebnis. Abonniere jetzt
+        legte es in die Kiste, aber Das ist ein tolles Basketballspiel, in Trauer. Sondern von den Kindern
+        ist.\n\n
+        Aenean will jetzt, aber Lacinia ist traurig, aber es gibt keinen Basketball-Cartoon. Sogar aus einem vergifteten Buch.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nula, id elementum leo dui
+        nicht das Internet. Tatsächlich ist der Autor des Casinos sehr weich. Jedes Element des kostenlosen Fußballs ist bequem. In
+        eros nisl, investition oder investition und, schokolade von mauris. Kinder sind von nun an anders,
+        wer investiert das Geld in die Wirtschaft und Es hat zwei klinische Zwecke und ist für die Entwicklung verantwortlich. Aber keine Karikaturen
+        sehr Nun, wer will werben, einen Kurs machen und Angestellter werden. Die Krankheit wird ihm folgen, a
+        Platz Durchm. Sogar vulputate dignissim convallis. Es ist eine lustige Sache, mit den Enden zu tun
+        Tal.\n\n
+        Boot auf meinen Lastwagen. Kinder leben im Alter und Enkelkinder
+        erwarteter Hunger und schlechte Bedürfnisse. In der Laufbahn des Bogens als Abzug von Pfeilen, in den Enden der Masse
+        schwanger Die Kinder dieser Region des Krankenhauses. Es wurde vollständig gesagt, aber der Computer ist gemacht,
+        Er wird ebenso freizügig verfolgt, in sanften Nisls von But Nislis. Bis zum größten Korporal
+        Mitglieder Es ist Zeit, das Land und nicht das Land zu trinken. In einem Deck gibt es keine Bis CNN
+        frei oder jetzt das ergebnis, wer ist der nisl eleifend Morgen müssen wir von einer gerechten Trauer trinken
+        Vestibül Fusce sagte zu dem Libero, der der Größte sei, der Dignistis der Karriere seines Lebens.</string>
+    <string name="password">Passwort eingeben</string>
+    <string name="login_txt">Anmeldung</string>
+    <string name="createAccountTxt">Ein Konto erstellen</string>
+    <string name="resetPasswordTxt">Passwort zurücksetzen</string>
+    <string name="signInTxt">Anmelden</string>
+    <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
+    <string name="title_exploration_page">Erkundungsseite</string>
+    <string name="Restaurant">Restaurant</string>
+    <string name="Cafe">Cafe</string>
+    <string name="Bakery">Bäckerei</string>
+    <string name="title_NightLife">Nachtleben:</string>
+    <string name="Bar">Bar</string>
+    <string name="Night_club">Nachtclub</string>
+    <string name="title_Nature">Natur:</string>
+    <string name="Aquarium">Aquarium</string>
+    <string name="Zoo">Zoo</string>
+    <string name="Park">Park</string>
+    <string name="Campground">Campingplatz</string>
+    <string name="title_Culture">Kultur:</string>
+    <string name="Library">Bibliothek</string>
+    <string name="Museum">Museum</string>
+    <string name="Art_Gallery">Kunstgalerie</string>
+    <string name="BookStore">Buchhandlung</string>
+    <string name="description_pref_back">Back_to_profilePage</string>
+    <string name="go_preference">Präferenz:</string>
+    <string name="title_Entertainment">HNO:</string>
+    <string name="AmusementPark">Freizeitpark</string>
+    <string name="MovieTheater">Kino</string>
+    <string name="current_location_title">Ihr Standort</string>
+    <string name="adjust_map_bound_title">Ansichtsgrenzen anpassen</string>
+    <string name="next_button">NÄCHSTE</string>
+    <string name="back_button">ZURÜCK</string>
+    <string name="signUp_txt">Anmeldung</string>
+    <string name="enter_your_username">Geben Sie den Benutzernamen ein</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_your_Email">Enter Email</string>
+    <string name="pleaseFillAllTheBlanks">Please fill all the blanks</string>
+    <string name="pleaseDoubleCheckYourPassword">Please Double Check Your Password</string>
+    <string name="detailed_place_dialog_select_button">Select as Destination</string>
+    <string name="detailed_place_dialog_add_button">Add to Plan</string>
+    <string name="detailed_place_dialog_remove_button">Remove from Plan</string>
+    <string name="category_title_food">FOOD</string>
+    <string name="category_title_nightlife">NIGHTLIFE</string>
+    <string name="category_title_nature">NATURE</string>
+    <string name="category_title_culture">CULTURE</string>
+    <string name="category_title_entertainment">ENTERTAINMENT</string>
+    <string name="yourPasswordIsTooShort">Your password is too short!</string>
+    <string name="emailIsRequired">Email is required</string>
+    <string name="invalidEmail">Invalid email!</string>
+    <string name="somethingWentWrong">Something went wrong</string>
+    <string name="pleaseCheckYourEmailToResetPassword">Please check your email to reset password</string>
+    <string name="changeEmail">ChangeEmail:</string>
+    <string name="emailButton">change email</string>
+    <string name="changepassword">Change Password:</string>
+    <string name="passwordButton">change password</string>
+    <string name="sendEmail">send email</string>
+    <string name="cancel">cancel</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="submit">Submit</string>
+    <string name="resetYourPassword">Reset Your Password</string>
+    <!-- -->
+    <string name="restart_question">Do you wanna restart now to apply the mode? Or wait for reopen the app</string>
+    <string name="title_restart">Restart or Not?</string>
+    <string name="restart">restart</string>
+    <string name="fill_blank_toast">Bitte füllen Sie alle Lücken aus</string>
+    <string name="authen_succeed">Authentifizierung erfolgreich.</string>
+    <string name="authen_fail">Authentifizierung fehlgeschlagen</string>
+    <string name="login_success">Sie wurden eingeloggt.</string>
+    <string name="logout_success">Sie wurden abgemeldet</string>
+    <string name="walk_list">Gehend</string>
+    <string name="transit_list">Transit</string>
+    <string name="driving_list">Autofahren</string>
+    <string name="bicycling_list">Fahrradfahren</string>
+    <string name="choice">Sie haben gewählt</string>
+</resources>

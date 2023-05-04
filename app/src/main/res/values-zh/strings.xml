@@ -112,7 +112,7 @@
     <string name="enter_your_username">输入用户名</string>
     <string name="confirm_password">确认密码</string>
     <string name="enter_your_Email">用户名</string>
-    <string name="pleaseFillAllTheBlanks">请填上所有的空</string>
+    <string name="pleaseFillAllTheBlanks">请填上所有空格</string>
     <string name="pleaseDoubleCheckYourPassword">再次确认您的密码</string>
     <string name="detailed_place_dialog_select_button">选做终点</string>
     <string name="detailed_place_dialog_add_button">加入计划</string>
@@ -137,5 +137,18 @@
     <string name="hello_blank_fragment">欢迎碎片</string>
     <string name="submit">提交</string>
     <string name="resetYourPassword">重设你的密码</string>
-
+    <!-- -->
+    <string name="restart_question">您想要现在重启应用来启用模式吗？还是等到下一次打开应用？</string>
+    <string name="title_restart">需要重启来应用设置吗？</string>
+    <string name="restart">重启</string>
+    <string name="fill_blank_toast">请填好所有的空格</string>
+    <string name="authen_succeed">认证成功</string>
+    <string name="authen_fail">认证失败</string>
+    <string name="login_success">成功登录</string>
+    <string name="logout_success">成功登出</string>
+    <string name="walk_list">步行</string>
+    <string name="transit_list">公共交通</string>
+    <string name="driving_list">开车</string>
+    <string name="bicycling_list">骑车</string>
+    <string name="choice">你选择了</string>
 </resources>

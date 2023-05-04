@@ -136,4 +136,19 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="submit">Submit</string>
     <string name="resetYourPassword">Reset Your Password</string>
+    <!-- -->
+    <string name="restart_question">Do you wanna restart now to apply the mode? Or wait for reopen the app</string>
+    <string name="title_restart">Restart or Not?</string>
+    <string name="restart">restart</string>
+    <string name="fill_blank_toast">Please fill in all the blanks</string>
+    <string name="authen_succeed">Authentication succeed.</string>
+    <string name="authen_fail">Authentication failed</string>
+    <string name="login_success">You\'ve been logged in.</string>
+    <string name="logout_success">You have been logged out</string>
+    <string name="walk_list">WALKING</string>
+    <string name="transit_list">TRANSIT</string>
+    <string name="driving_list">DRIVING</string>
+    <string name="bicycling_list">BICYCLING</string>
+    <string name="choice">You have chosen</string>
+
 </resources>

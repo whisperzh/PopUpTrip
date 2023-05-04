@@ -1,0 +1,153 @@
+<resources>
+    <string name="app_name">PopUpTrip</string>
+    <string name="title_home">Accueil</string>
+    <string name="title_exploration">Exploration</string>
+    <string name="title_nearby_places">Destinations proches</string>
+    <string name="title_dashboard">Tableau de bord</string>
+    <string name="title_setting">Paramètres</string>
+    <string name="title_switch">Mode nuit noire</string>
+    <string name="title_language">Langue</string>
+    <string name="title_mode">Thème</string>
+    <string name="title_profile">Profil personnel</string>
+    <string name="title_logout">Déconnexion</string>
+    <string name="description_profile">Accéder à la page de profil</string>
+    <string name="change_name">Nom d\'utilisateur: </string>
+    <string name="title_password">Option de sécurité: </string>
+    <string name="change_password">Sécurité</string>
+    <string name="title_photo">Photo: </string>
+    <string name="description_photo">Cliquez ici pour changer de photo</string>
+    <string name="title_save">sauver</string>
+    <string name="title_quit">Démissionner</string>
+    <string name="title_food">Nourriture:</string>
+    <string name="title_pref">Préférence</string>
+    <string name="title_place">Vos lieux de prédilection:</string>
+    <string name="title_star">Des lieux étoilés:</string>
+    <string name="star_button">Étoile</string>
+    <string name="title_method">Méthode de voyage: </string>
+    <string name="title_notifications">Notifications</string>
+    <string name="searchbar_hint">Saisir la destination</string>
+    <string name="home_search_box_content">Barre de recherche Entrer la destination</string>
+    <string name="enter_starting_point">Saisir le point de départ</string>
+    <string name="enter_destination">Entrer la destination</string>
+    <string name="use_current_location">Utiliser l\'emplacement actuel</string>
+    <string name="search">Recherche</string>
+    <string name="clear_search">Recherche claire</string>
+    <string name="email_username">Adresse électronique</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">Premier fragment</string>
+    <string name="second_fragment_label">Deuxième fragment</string>
+    <string name="next">Suivant</string>
+    <string name="previous">Précédent</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="password">Saisir le mot de passe</string>
+    <string name="login_txt">Connexion</string>
+    <string name="createAccountTxt">Créer un compte</string>
+    <string name="resetPasswordTxt">Réinitialiser le mot de passe</string>
+    <string name="signInTxt">S\'inscrire</string>
+    <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
+    <string name="title_exploration_page">Page d\'exploration</string>
+    <string name="Restaurant">Restaurant</string>
+    <string name="Cafe">Café</string>
+    <string name="Bakery">Boulangerie</string>
+    <string name="title_NightLife">Vie nocturne: </string>
+    <string name="Bar">Barre</string>
+    <string name="Night_club">Boîte de nuit</string>
+    <string name="title_Nature">Nature:</string>
+    <string name="Aquarium">Aquarium</string>
+    <string name="Zoo">Zoo</string>
+    <string name="Park">Parc</string>
+    <string name="Campground">Terrain de camping</string>
+    <string name="title_Culture">Culture:</string>
+    <string name="Library">Bibliothèque</string>
+    <string name="Museum">Musée</string>
+    <string name="Art_Gallery">Galerie d\'art</string>
+    <string name="BookStore">Boutique de livres</string>
+    <string name="description_pref_back">Retour au profilPage</string>
+    <string name="go_preference">Préférence: </string>
+    <string name="title_Entertainment">divertissement: </string>
+    <string name="AmusementPark">Parc d\'attractions</string>
+    <string name="MovieTheater">Cinéma</string>
+    <string name="current_location_title">Votre emplacement</string>
+    <string name="adjust_map_bound_title">Ajuster les limites de la vue</string>
+    <string name="next_button">SUIVANT</string>
+    <string name="back_button">RETOUR</string>
+    <string name="signUp_txt">S\'inscrire</string>
+    <string name="enter_your_username">Saisir le nom de l\'utilisateur</string>
+    <string name="confirm_password">Confirmer le mot de passe</string>
+    <string name="enter_your_Email">Saisir l\'adresse électronique </string>
+    <string name="pleaseFillAllTheBlanks">Veuillez remplir tous les champs</string>
+    <string name="pleaseDoubleCheckYourPassword">Veuillez vérifier votre mot de passe</string>
+    <string name="detailed_place_dialog_select_button">Sélectionner comme destination</string>
+    <string name="detailed_place_dialog_add_button">Ajouter au plan</string>
+    <string name="detailed_place_dialog_remove_button">Supprimer du plan</string>
+    <string name="category_title_food">Nourriture</string>
+    <string name="category_title_nightlife">Vie nocturne</string>
+    <string name="category_title_nature">NATURE</string>
+    <string name="category_title_culture">CULTURE</string>
+    <string name="category_title_entertainment">Divertissement</string>
+    <string name="yourPasswordIsTooShort">Votre mot de passe est trop court!</string>
+    <string name="emailIsRequired">L\'adresse électronique est requise</string>
+    <string name="invalidEmail">Courriel non valide!</string>
+    <string name="somethingWentWrong">Quelque chose n\'a pas fonctionné</string>
+    <string name="pleaseCheckYourEmailToResetPassword">Veuillez vérifier votre e-mail pour réinitialiser votre mot de passe</string>
+    <string name="changeEmail">Changer d\'adresse électronique:</string>
+    <string name="emailButton">Changer</string>
+    <string name="changepassword">Modifier le mot de passe:</string>
+    <string name="passwordButton">Changer</string>
+    <string name="sendEmail">envoyer un courriel</string>
+    <string name="cancel">annuler</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Bonjour fragment vierge</string>
+    <string name="submit">Soumettre</string>
+    <string name="resetYourPassword">Réinitialiser votre mot de passe</string>
+    <!-- -->
+    <string name="restart_question">Voulez-vous redémarrer maintenant pour appliquer le mode ? Ou attendre de rouvrir l\'application ?</string>
+    <string name="title_restart">Redémarrer ou non?</string>
+    <string name="restart">redémarrer</string>
+    <string name="fill_blank_toast">Veuillez remplir tous les blancs</string>
+    <string name="authen_succeed">L\'authentification a réussi.</string>
+    <string name="authen_fail">L\'authentification a échoué</string>
+    <string name="login_success">Vous avez été connecté.</string>
+    <string name="logout_success">Vous avez été déconnecté</string>
+    <string name="walk_list">Marche</string>
+    <string name="transit_list">Transit</string>
+    <string name="driving_list">Conduite</string>
+    <string name="bicycling_list">Vélo</string>
+    <string name="choice">Vous avez choisi</string>
+</resources>
