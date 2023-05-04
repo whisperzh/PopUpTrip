@@ -1201,6 +1201,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     private fun resizeMapView(){
         if (this::mapBounds.isInitialized){
+            Log.d(TAG, "Map Bounds is initialized")
             mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 240))
         } else {
             mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(destinationPlace.placeLatLng, 15f))
@@ -1298,50 +1299,53 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     // When a detailed place is added to the route by the user
     private fun addPlaceToRoute(detailedPlace: DetailedPlace) {
         Log.d(TAG, "At addPlaceToRoute()")
-        placesToAdd.add(detailedPlace)
-        explorationViewModel.placesToAddToRoute = placesToAdd
+        if (detailedPlace !in placesToAdd) {
+            placesToAdd.add(detailedPlace)
+            explorationViewModel.placesToAddToRoute = placesToAdd
 
-        val markerColor = when (detailedPlace.placeCategory) {
-            getString(R.string.category_title_entertainment) -> {
-                BitmapDescriptorFactory.HUE_ROSE
-            }
-            getString(R.string.category_title_culture) -> {
-                BitmapDescriptorFactory.HUE_BLUE
-            }
-            getString(R.string.category_title_food) -> {
-                BitmapDescriptorFactory.HUE_ORANGE
-            }
-            getString(R.string.category_title_nature) -> {
-                BitmapDescriptorFactory.HUE_GREEN
-            }
-            else -> { // Nightlife
-                BitmapDescriptorFactory.HUE_VIOLET
-            }
-        }
-
-        Log.d(TAG, "markersAdded size: ${markersAdded.size}")
-        for (i in 0 until markersAdded.size) {
-            Log.d(TAG, "In for-loop in atPlacesToAdd")
-            val marker: Marker = markersAdded[i]
-            val position: LatLng = marker.position
-            if (marker.position == detailedPlace.placeLatLng) {
-                Log.d(TAG, "Adding $marker to placesToAdd")
-                markersAdded.removeAt(i)
-                marker.remove()
-                // Re-plot the marker
-                val updatedMarker = mMap?.addMarker(MarkerOptions()
-                    .position(position)
-                    .title(detailedPlace.placeName)
-                    .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
-                )
-
-                if (updatedMarker != null) {
-                    updatedMarker.tag = detailedPlace
-                    markersAdded.add(i, updatedMarker)
+            val markerColor = when (detailedPlace.placeCategory) {
+                getString(R.string.category_title_entertainment) -> {
+                    BitmapDescriptorFactory.HUE_ROSE
+                }
+                getString(R.string.category_title_culture) -> {
+                    BitmapDescriptorFactory.HUE_BLUE
+                }
+                getString(R.string.category_title_food) -> {
+                    BitmapDescriptorFactory.HUE_ORANGE
+                }
+                getString(R.string.category_title_nature) -> {
+                    BitmapDescriptorFactory.HUE_GREEN
+                }
+                else -> { // Nightlife
+                    BitmapDescriptorFactory.HUE_VIOLET
                 }
             }
+
+            Log.d(TAG, "markersAdded size: ${markersAdded.size}")
+            for (i in 0 until markersAdded.size) {
+                Log.d(TAG, "In for-loop in atPlacesToAdd")
+                val marker: Marker = markersAdded[i]
+                val position: LatLng = marker.position
+                if (marker.position == detailedPlace.placeLatLng) {
+                    Log.d(TAG, "Adding $marker to placesToAdd")
+                    markersAdded.removeAt(i)
+                    marker.remove()
+                    // Re-plot the marker
+                    val updatedMarker = mMap?.addMarker(
+                        MarkerOptions()
+                            .position(position)
+                            .title(detailedPlace.placeName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(markerColor))
+                    )
+
+                    if (updatedMarker != null) {
+                        updatedMarker.tag = detailedPlace
+                        markersAdded.add(i, updatedMarker)
+                    }
+                }
+            }
+            explorationViewModel.markersAdded = markersAdded
         }
-        explorationViewModel.markersAdded = markersAdded
     }
 
     // When a detailed place is removed from the route by the user
@@ -1416,9 +1420,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         if (placesToAdd.size > 0) {
             for (i in 0 until placesToAdd.size) {
-                placesToAddArray.add(placesToAdd[i].placeName)
-                placesToAddArray.add(placesToAdd[i].placeLatLng.latitude)
-                placesToAddArray.add(placesToAdd[i].placeLatLng.longitude)
+                if (placesToAdd[i].placeLatLng.latitude !in placesToAddArray &&
+                    placesToAdd[i].placeLatLng.longitude !in placesToAddArray) {
+                    placesToAddArray.add(placesToAdd[i].placeName)
+                    placesToAddArray.add(placesToAdd[i].placeLatLng.latitude)
+                    placesToAddArray.add(placesToAdd[i].placeLatLng.longitude)
+                }
             }
             explorationViewModel.placesToAddPoints = placesToAddArray
 
@@ -1434,24 +1441,24 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             Log.d(TAG, "JSON Object to send to Itinerary: $jsonObject")
 
-            val url = "http://54.147.60.104:80/add-itinerary/"
-
-            val jsonObjectRequest = JsonObjectRequest(
-                Request.Method.POST,
-                url,
-                jsonObject,
-                { response ->
-                    // Handle response
-                    Log.d(TAG, "Response from Itinerary: $response")
-                },
-                { error ->
-                    // Handle error
-                    Log.d(TAG, "Error from Itinerary: $error")
-                }
-            )
-
-            val queue = Volley.newRequestQueue(context)
-            queue.add(jsonObjectRequest)
+//            val url = "http://54.147.60.104:80/add-itinerary/"
+//
+//            val jsonObjectRequest = JsonObjectRequest(
+//                Request.Method.POST,
+//                url,
+//                jsonObject,
+//                { response ->
+//                    // Handle response
+//                    Log.d(TAG, "Response from Itinerary: $response")
+//                },
+//                { error ->
+//                    // Handle error
+//                    Log.d(TAG, "Error from Itinerary: $error")
+//                }
+//            )
+//
+//            val queue = Volley.newRequestQueue(context)
+//            queue.add(jsonObjectRequest)
         } else {
             Toast.makeText(activity, "Please add some places of interest to Itinerary!", Toast.LENGTH_LONG).show()
         }
