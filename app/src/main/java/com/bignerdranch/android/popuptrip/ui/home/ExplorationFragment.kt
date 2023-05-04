@@ -686,10 +686,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             explorationViewModel.markersAdded = markersAdded
         }
 
-        explorationViewModel.maxSWBounds = maxSWBounds
-        explorationViewModel.maxNEBounds = maxNEBounds
-        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-        explorationViewModel.mapBounds = mapBounds
+        updateMapBounds()
         mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
     }
 
@@ -883,10 +880,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         // plot the polyline (route)
                         coordinates = plotPolyline(path)
 
-                        explorationViewModel.maxSWBounds = maxSWBounds
-                        explorationViewModel.maxNEBounds = maxNEBounds
-                        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                        explorationViewModel.mapBounds = mapBounds
+                        updateMapBounds()
                         mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, mapPadding))
                         getRecommendations(coordinates)
                     }
@@ -1375,10 +1369,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             }
                         }
                         explorationViewModel.markersAdded = markersAdded
-                        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
-                        explorationViewModel.maxSWBounds = maxSWBounds
-                        explorationViewModel.maxNEBounds = maxNEBounds
-                        explorationViewModel.mapBounds = mapBounds
+                        updateMapBounds()
                         mMap?.moveCamera(CameraUpdateFactory.newLatLngBounds(mapBounds, 180))
                     }
                 }, Response.ErrorListener { _ ->
@@ -1400,5 +1391,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         } else {
             getString(R.string.category_title_nightlife)
         }
+    }
+
+    private fun updateMapBounds() {
+        explorationViewModel.maxSWBounds = maxSWBounds
+        explorationViewModel.maxNEBounds = maxNEBounds
+        mapBounds = LatLngBounds(maxSWBounds, maxNEBounds)
+        explorationViewModel.mapBounds = mapBounds
     }
 }
