@@ -234,6 +234,13 @@ class PreferenceFragment : Fragment() {
             if(enter!=null){
                 prefs.edit().putString("enter_selection",enter).apply()
             }
+            val toast = Toast.makeText(
+                requireContext(),
+                "${getString(popR.string.saved)}",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+            Navigation.createNavigateOnClickListener(com.bignerdranch.android.popuptrip.R.id.navigation_profile,null)
         }
 //        val textView: TextView = binding.textSetting
 //        settingViewModel.text.observe(viewLifecycleOwner) {

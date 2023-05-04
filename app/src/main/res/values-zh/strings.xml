@@ -151,4 +151,5 @@
     <string name="driving_list">开车</string>
     <string name="bicycling_list">骑车</string>
     <string name="choice">你选择了</string>
+    <string name="saved">成功保存</string>
 </resources>

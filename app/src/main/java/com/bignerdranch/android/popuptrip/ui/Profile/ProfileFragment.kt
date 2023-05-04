@@ -164,6 +164,7 @@ class ProfileFragment : Fragment() {
                 resetPassword(email.text.toString())
             }.setNegativeButton(popR.string.cancel,null)
             .create()
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
     private fun resetPassword(email:String){
@@ -251,6 +252,7 @@ class ProfileFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+        dialog.setCanceledOnTouchOutside(false)
     }
 
     override fun onDestroyView() {
