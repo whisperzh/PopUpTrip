@@ -808,7 +808,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         override fun isCancellationRequested() = false
                     })?.addOnSuccessListener { currentLocation: Location? ->
                         if (currentLocation == null)
-                            Toast.makeText(activity, "Cannot get current location.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity, getString(R.string.cannot_get_current_location), Toast.LENGTH_LONG).show()
                         else {
                             Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
                             Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
@@ -820,7 +820,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     }
                 }
             } else {
-                Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
+                Toast.makeText(activity, getString(R.string.turn_on_location), Toast.LENGTH_LONG).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }
@@ -862,7 +862,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         if (distance > maxDistanceAllowed) {
             Toast.makeText(
                 context,
-                "Distance between start point and destination is more than 20km!",
+                getString(R.string.distance_more),
                 Toast.LENGTH_LONG
             ).show()
             binding.startingTextInputTextfield.setText("")
@@ -886,7 +886,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     Log.d(TAG, "Response: $jsonResponse")
                     val status = jsonResponse.getString("status")
                     if (status == "ZERO_RESULTS") {
-                        Toast.makeText(context, "No directions found!", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, getString(R.string.no_directions_found), Toast.LENGTH_LONG).show()
                     } else {
                         // Get routes
                         Log.d(TAG, "Plotting new directions")
@@ -1165,7 +1165,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val queue = Volley.newRequestQueue(context)
             queue.add(jsonObjectRequest)
         } else {
-            Toast.makeText(activity, "Please add some places of interest to Itinerary!", Toast.LENGTH_LONG).show()
+            Toast.makeText(activity, getString(R.string.add_places_to_itinerary), Toast.LENGTH_LONG).show()
         }
 
     }
