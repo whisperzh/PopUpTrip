@@ -89,11 +89,19 @@ class MainActivity : AppCompatActivity() {
 //        }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if(doNotLogout)
+        {
+            doNotLogout=false
+            return
+        }
+        Firebase.auth.signOut()
+        Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
+    }
+
     override fun onStop() {
         super.onStop()
-        Firebase.auth.signOut()
-        Toast.makeText(this,R.string.logout_success, Toast.LENGTH_SHORT).show()
-        finish()
     }
 
     public fun updateSettingUI() {
