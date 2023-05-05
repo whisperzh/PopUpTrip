@@ -1,8 +1,6 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
-import android.os.Bundle
 import androidx.core.os.bundleOf
-import androidx.fragment.app.testing.FragmentScenario
 import com.bignerdranch.android.popuptrip.R
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -54,6 +52,5 @@ class HomeFragmentTest {
 
     @After
     fun tearDown() {
-//        scenario.moveToState(Lifecycle.State.DESTROYED)
     }
 }
