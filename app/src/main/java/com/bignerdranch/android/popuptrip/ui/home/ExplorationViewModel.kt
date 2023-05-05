@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.google.android.libraries.places.api.model.Place
 
 private const val TAG = "ExplorationViewModel"
 
