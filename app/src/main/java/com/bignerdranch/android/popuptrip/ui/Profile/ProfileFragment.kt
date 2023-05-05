@@ -78,11 +78,6 @@ class ProfileFragment : Fragment() {
             startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
         }
 
-        val saveButton=binding.save
-        text = binding.profileName.text.toString()
-        saveButton.setOnClickListener{
-            save=true
-        }
         val backButton = binding.GoPrefButton
         backButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_preference,null))
         val profileViewmodel =
@@ -164,6 +159,7 @@ class ProfileFragment : Fragment() {
                 resetPassword(email.text.toString())
             }.setNegativeButton(popR.string.cancel,null)
             .create()
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
     private fun resetPassword(email:String){
@@ -251,6 +247,7 @@ class ProfileFragment : Fragment() {
             }
             .setNegativeButton("Cancel", null)
             .show()
+        dialog.setCanceledOnTouchOutside(false)
     }
 
     override fun onDestroyView() {

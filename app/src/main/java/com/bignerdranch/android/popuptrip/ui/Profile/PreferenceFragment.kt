@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.text.TextUtils
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +13,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.databinding.FragmentPreferenceBinding
+import com.bignerdranch.android.popuptrip.ui.home.ExplorationFragmentDirections
 import com.bignerdranch.android.popuptrip.ui.setting.SettingViewModel
+import kotlinx.coroutines.launch
 import com.bignerdranch.android.popuptrip.R as popR
 
 class PreferenceFragment : Fragment() {
@@ -25,7 +32,6 @@ class PreferenceFragment : Fragment() {
     private val nllist= listOf(popR.string.Bar,popR.string.Night_club)
     private val naturelist= listOf(popR.string.Park,popR.string.Campground)
     private val culturelist= listOf(popR.string.Library,popR.string.Museum,popR.string.Art_Gallery,popR.string.BookStore)
-    private val dataList =  listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
     private val enterlist= listOf(popR.string.Aquarium,popR.string.Zoo,popR.string.AmusementPark,popR.string.MovieTheater)
     val foodarray = ArrayList<String>()
     val nlarray = ArrayList<String>()
@@ -42,6 +48,8 @@ class PreferenceFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentPreferenceBinding.inflate(inflater,container,false)
+        val dataList =  listOf(resources.getString(popR.string.walk_list), resources.getString(popR.string.transit_list), resources.getString(popR.string.driving_list),
+            resources.getString(popR.string.bicycling_list))
         val foodchips = listOf(binding.BakeryChip, binding.CafeChip, binding.RestaurantChip)
         val nlchips= listOf(binding.BarChip,binding.NightClubChip)
         val naturechips= listOf(binding.ParkChip,binding.CampgroundChip)
@@ -174,7 +182,7 @@ class PreferenceFragment : Fragment() {
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         val position = prefs.getInt("MethodSpinnerPosition", 0)
-        lastSelectedItem = dataList.get(position)
+        lastSelectedItem = dataList.get(0)
         binding.methodSpinner.adapter = adapter//bind the adapter
         binding.methodSpinner.setSelection(position)
         binding.methodSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -188,7 +196,7 @@ class PreferenceFragment : Fragment() {
                 if (lastSelectedItem != null) {
                     val toast = Toast.makeText(
                         requireContext(),
-                        "You choose $selectedItem",
+                        "${getString(popR.string.choice)} ${selectedItem}",
                         Toast.LENGTH_SHORT
                     )
                     toast.show()
@@ -202,13 +210,47 @@ class PreferenceFragment : Fragment() {
             }
         }
 
-        val backButton=binding.PrefBackButton
-        backButton.setOnClickListener(Navigation.createNavigateOnClickListener(com.bignerdranch.android.popuptrip.R.id.navigation_profile,null))
-
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
+        val savebutton=binding.savePreferenceButton
+        savebutton.setOnClickListener{
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val food = foodarray.sorted().joinToString(separator = ",")
+            val nl=nlarray.sorted().joinToString(separator = ",")
+            val nature=naturearray.sorted().joinToString(separator = ",")
+            val culture=culturearray.sorted().joinToString(separator = ",")
+            val enter=enterarray.sorted().joinToString(separator = ",")
+            Log.d("Prefernce",enter)
+            if (food!=null) {
+                prefs.edit().putString("food_selection", food).apply()
+            }
+            if (nl!=null){
+                prefs.edit().putString("nightlife_selection",nl).apply()}
+            if(nature!=null) {
+                prefs.edit().putString("nature_selection", nature).apply()
+            }
+            if(culture!=null){
+                prefs.edit().putString("culture_selection",culture).apply()
+            }
+            if(enter!=null){
+                prefs.edit().putString("enter_selection",enter).apply()
+            }
+            val toast = Toast.makeText(
+                requireContext(),
+                "${getString(popR.string.saved)}",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+//            Navigation.createNavigateOnClickListener(com.bignerdranch.android.popuptrip.R.id.navigation_profile,null)
+            val profile = PreferenceFragmentDirections.preferenceToProfileAction()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    findNavController().navigate(profile)
+                }
+            }
 
+        }
 //        val textView: TextView = binding.textSetting
 //        settingViewModel.text.observe(viewLifecycleOwner) {
 //            textView.text = it
@@ -217,26 +259,6 @@ class PreferenceFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val food = foodarray.joinToString(separator = ",")
-        val nl=nlarray.joinToString(separator = ",")
-        val nature=naturearray.joinToString(separator = ",")
-        val culture=culturearray.joinToString(separator = ",")
-        val enter=enterarray.joinToString(separator = ",")
-        if (food!=null) {
-            prefs.edit().putString("food_selection", food).apply()
-        }
-        if (nl!=null){
-            prefs.edit().putString("nightlife_selection",nl).apply()}
-        if(nature!=null) {
-            prefs.edit().putString("nature_selection", nature).apply()
-        }
-        if(culture!=null){
-            prefs.edit().putString("culture_selection",culture).apply()
-        }
-        if(enter!=null){
-            prefs.edit().putString("enter_selection",enter).apply()
-        }
         super.onDestroyView()
         _binding = null
     }
