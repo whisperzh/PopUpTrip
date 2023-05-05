@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R as popR
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -49,6 +50,7 @@ class SettingFragment : Fragment() {
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter//bind the adapter
+        var applyChangeOnLanguage=false
         binding.spinner.setSelection(position)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -57,7 +59,10 @@ class SettingFragment : Fragment() {
                 position: Int,
                 id: Long
             ) {
-                val activity = requireActivity() as? AppCompatActivity
+                if(!applyChangeOnLanguage) {
+                    applyChangeOnLanguage=true
+                    return
+                }
                 val selectedItem = parent.getItemAtPosition(position) as String
                 prefs.edit().putString("Language",selectedItem).apply()
                 if (lastSelectedItem != null) {
@@ -70,6 +75,8 @@ class SettingFragment : Fragment() {
                     Log.d("MyFragment", "Selected item: $selectedItem")
                 }
                 if (lastSelectedItem!=selectedItem){
+                    var p=activity as MainActivity
+                    p.doNotLogout=true
                     activity?.finish()
                 }
                 lastSelectedItem = selectedItem

@@ -16,6 +16,7 @@ import com.google.firebase.ktx.Firebase
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    var doNotLogout:Boolean=false
 
     override fun onStart() {
         super.onStart()
@@ -48,12 +49,42 @@ class MainActivity : AppCompatActivity() {
         )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+//        navView.setOnItemSelectedListener {
+//            when (it.itemId) {
+//                R.id.navigation_settings -> {
+//                    navController
+//                        .navigate(R.id.navigation_settings)
+//                }
+//                R.id.navigation_profile -> {
+//                    navController
+//                        .navigate(R.id.navigation_profile)
+//                }
+//                R.id.navigation_home -> {
+//                    navController
+//                        .navigate(R.id.navigation_home)
+//                }
+//                R.id.navigation_dashboard -> {
+//                    navController
+//                        .navigate(R.id.navigation_dashboard)
+//                }
+//            }
+//            true
+//        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if(doNotLogout)
+        {
+            doNotLogout=false
+            return
+        }
+        Firebase.auth.signOut()
+        Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
     }
 
     override fun onStop() {
         super.onStop()
-        Firebase.auth.signOut()
-        Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
-        finish()
+
     }
 }
