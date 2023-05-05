@@ -109,6 +109,7 @@
         app:backgroundTint="@color/brown_theme"
         app:tint="@color/brown_theme_dark"
         app:srcCompat="@drawable/ic_map_back_arrow"/>
+<!--        app:srcCompat = "@drawable/ic_home_outline" />-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/exploration_next_button"
@@ -122,5 +123,6 @@
         app:tint="@color/brown_theme_dark"
         android:text="@string/next_button"
         app:srcCompat="@drawable/ic_map_next_arrow"/>
+<!--        app:srcCompat="@drawable/ic_view_list_outline"/>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

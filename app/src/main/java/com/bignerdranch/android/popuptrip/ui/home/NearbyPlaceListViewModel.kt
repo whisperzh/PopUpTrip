@@ -2,13 +2,19 @@ package com.bignerdranch.android.popuptrip.ui.home
 
 import android.util.Log
 import android.widget.ImageView
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import java.util.*
 
 private const val TAG = "NearbyPlaceListViewModel"
-class NearbyPlaceListViewModel: ViewModel() {
+const val USER_PREFERENCE = "USER_PREFERENCE"
+class NearbyPlaceListViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
 
     val nearbyPlaces = mutableListOf<DetailedPlace>()
+
+    var userPreferenceList: ArrayList<String>
+        get() = savedStateHandle.get<ArrayList<String>>(USER_PREFERENCE) ?: ArrayList()
+        set(value) = savedStateHandle.set(USER_PREFERENCE, value)
 
     init {
         nearbyPlaces.clear()

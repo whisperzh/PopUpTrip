@@ -7,16 +7,16 @@
     tools:context=".ui.Profile.ProfileFragment">
     <TextView
         android:id="@+id/title_profile"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:textAlignment="gravity"
-        android:textSize="25sp"
+        android:textStyle="bold"
+        android:textSize="25dp"
         android:text="@string/title_profile"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         ></TextView>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +42,7 @@
             android:layout_marginEnd="16dp"
 
             android:textAlignment="gravity"
-            android:textSize="25sp"
+            android:textSize="25dp"
             android:text="@string/change_name"
             android:id="@+id/title_name"
             app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +55,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:textAlignment="gravity"
-            android:textSize="25sp"
+            android:textSize="25dp"
             android:text="aaa"
             android:id="@+id/profile_name"
             app:layout_constraintStart_toEndOf="@id/title_name"
@@ -84,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/changeEmail"
-            android:textSize="20sp"
+            android:textSize="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></TextView>
 
@@ -92,10 +92,10 @@
             android:id="@+id/changeEmailButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="8dp"
             android:text="@string/emailButton"
-            app:layout_constraintStart_toEndOf="@id/change_email"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -119,18 +119,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/changepassword"
-            android:textSize="20sp"
+            android:textSize="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></TextView>
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="4dp"
             android:text="@string/passwordButton"
             android:id="@+id/changePasswordButton"
-            app:layout_constraintStart_toEndOf="@id/changePassword"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -157,7 +157,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:textAlignment="gravity"
-            android:textSize="25sp"
+            android:textSize="25dp"
             android:id="@+id/title_photo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -204,18 +204,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/go_preference"
-            android:textSize="20sp"
+            android:textSize="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></TextView>
 
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="4dp"
             android:text="@string/title_pref"
             android:id="@+id/Go_Pref_Button"
-            app:layout_constraintStart_toEndOf="@id/Go_pref"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -228,6 +228,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         >
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
