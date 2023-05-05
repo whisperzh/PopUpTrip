@@ -56,7 +56,18 @@
 <!--            android:exported="true"-->
 <!--            android:icon="@mipmap/ic_launcher"-->
 <!--            android:label="Testing"-->
-<!--            android:launchMode="standard" />-->
+<!--            android:launchMode="standard">-->
+<!--        </activity>-->
+
+        <activity tools:replace="android:exported"
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+            android:exported="false" />
+        <activity tools:replace="android:exported"
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+            android:exported="false" />
+        <activity tools:replace="android:exported"
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
