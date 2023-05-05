@@ -79,6 +79,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun login() {
+
             var email = binding.username.editText?.text.toString()
             var password = binding.password.editText?.text.toString()
             if(email.equals("")||password.equals(""))

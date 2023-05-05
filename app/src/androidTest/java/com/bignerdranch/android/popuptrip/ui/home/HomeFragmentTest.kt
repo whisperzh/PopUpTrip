@@ -1,11 +1,9 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
 import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.FragmentScenario.Companion.launch
 import com.bignerdranch.android.popuptrip.R
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bignerdranch.android.popuptrip.MainActivity
 import org.junit.Assert.*
 
 import androidx.fragment.app.testing.launchFragmentInContainer
