@@ -10,7 +10,7 @@ private const val TAG = "NearbyPlaceListViewModel"
 const val USER_PREFERENCE = "USER_PREFERENCE"
 class NearbyPlaceListViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
 
-    val nearbyPlaces = mutableListOf<DetailedPlace>()
+    var nearbyPlaces = mutableListOf<DetailedPlace>()
 
     var userPreferenceList: ArrayList<String>
         get() = savedStateHandle.get<ArrayList<String>>(USER_PREFERENCE) ?: ArrayList()
