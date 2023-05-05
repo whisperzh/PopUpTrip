@@ -148,4 +148,5 @@
     <string name="driving_list">Autofahren</string>
     <string name="bicycling_list">Fahrradfahren</string>
     <string name="choice">Sie haben gewählt</string>
+    <string name="saved">Einstellung speichern erfolgreich!</string>
 </resources>

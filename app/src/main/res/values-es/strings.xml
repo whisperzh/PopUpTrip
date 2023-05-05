@@ -151,4 +151,5 @@
     <string name="driving_list">Conducción</string>
     <string name="bicycling_list">Bicicleta</string>
     <string name="choice">Has elegido</string>
+    <string name="saved">¡Guardar preferencias con éxito!</string>
 </resources>

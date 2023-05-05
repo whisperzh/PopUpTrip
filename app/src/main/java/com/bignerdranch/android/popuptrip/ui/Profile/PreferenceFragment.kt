@@ -13,10 +13,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.databinding.FragmentPreferenceBinding
+import com.bignerdranch.android.popuptrip.ui.home.ExplorationFragmentDirections
 import com.bignerdranch.android.popuptrip.ui.setting.SettingViewModel
+import kotlinx.coroutines.launch
 import com.bignerdranch.android.popuptrip.R as popR
 
 class PreferenceFragment : Fragment() {
@@ -204,12 +210,8 @@ class PreferenceFragment : Fragment() {
             }
         }
 
-        val backButton=binding.PrefBackButton
-        backButton.setOnClickListener(Navigation.createNavigateOnClickListener(com.bignerdranch.android.popuptrip.R.id.navigation_profile,null))
-
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
-
 
         val savebutton=binding.savePreferenceButton
         savebutton.setOnClickListener{
@@ -234,6 +236,20 @@ class PreferenceFragment : Fragment() {
             if(enter!=null){
                 prefs.edit().putString("enter_selection",enter).apply()
             }
+            val toast = Toast.makeText(
+                requireContext(),
+                "${getString(popR.string.saved)}",
+                Toast.LENGTH_SHORT
+            )
+            toast.show()
+//            Navigation.createNavigateOnClickListener(com.bignerdranch.android.popuptrip.R.id.navigation_profile,null)
+            val profile = PreferenceFragmentDirections.preferenceToProfileAction()
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    findNavController().navigate(profile)
+                }
+            }
+
         }
 //        val textView: TextView = binding.textSetting
 //        settingViewModel.text.observe(viewLifecycleOwner) {
