@@ -59,13 +59,13 @@
 <!--            android:launchMode="standard">-->
 <!--        </activity>-->
 
-        <activity
+        <activity tools:replace="android:exported"
             android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
             android:exported="false" />
-        <activity
+        <activity tools:replace="android:exported"
             android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
             android:exported="false" />
-        <activity
+        <activity tools:replace="android:exported"
             android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
             android:exported="false" />
 
