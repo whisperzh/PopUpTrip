@@ -92,10 +92,10 @@
             android:id="@+id/changeEmailButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="8dp"
             android:text="@string/emailButton"
-            app:layout_constraintStart_toEndOf="@id/change_email"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -126,11 +126,11 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="4dp"
             android:text="@string/passwordButton"
             android:id="@+id/changePasswordButton"
-            app:layout_constraintStart_toEndOf="@id/changePassword"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -211,11 +211,11 @@
         <com.google.android.material.button.MaterialButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginTop="4dp"
             android:text="@string/title_pref"
             android:id="@+id/Go_Pref_Button"
-            app:layout_constraintStart_toEndOf="@id/Go_pref"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"></com.google.android.material.button.MaterialButton>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
