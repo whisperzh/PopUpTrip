@@ -68,7 +68,7 @@ class SettingFragment : Fragment() {
                 if (lastSelectedItem != null) {
                     val toast = Toast.makeText(
                         requireContext(),
-                        "You choose $selectedItem",
+                        "${getString(popR.string.choice)} $selectedItem",
                         Toast.LENGTH_SHORT
                     )
                     toast.show()
@@ -135,6 +135,7 @@ class SettingFragment : Fragment() {
                 AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
             }.setNegativeButton(popR.string.cancel,null)
             .create()
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
     override fun onDestroyView() {

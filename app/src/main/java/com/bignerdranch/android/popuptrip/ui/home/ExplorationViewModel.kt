@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
-import com.google.android.libraries.places.api.model.Place
 
 private const val TAG = "ExplorationViewModel"
 
@@ -20,6 +19,7 @@ const val STARTING_POINT = "STARTING_POINT"
 const val DESTINATION_POINT = "DESTINATION_POINT"
 const val PLACES_TO_ADD_POINTS = "PLACES_TO_ADD_POINTS"
 const val NEED_TO_FETCH = "NEED_TO_FETCH"
+const val PLACE_TYPES = "PLACE_TYPES"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
     // include entire world
@@ -80,6 +80,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var polyline: ArrayList<String>
         get() = savedStateHandle.get<ArrayList<String>>(POLYLINE) ?: ArrayList()
         set(value) = savedStateHandle.set(POLYLINE, value)
+
+    var placeTypes: ArrayList<String>
+        get() = savedStateHandle.get<ArrayList<String>>(PLACE_TYPES) ?: ArrayList()
+        set(value) = savedStateHandle.set(PLACE_TYPES, value)
 
     fun updateDestinationPlace(place: DetailedPlace){
         _destinationPlace = place

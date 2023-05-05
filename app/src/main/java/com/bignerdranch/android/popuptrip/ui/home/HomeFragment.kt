@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
@@ -24,13 +23,10 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.core.os.LocaleListCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -54,15 +50,12 @@ import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.bignerdranch.android.popuptrip.BuildConfig
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
-import com.google.android.libraries.places.api.model.Place
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 private const val TAG = "HomeFragment"
@@ -80,6 +73,7 @@ class HomeFragment : Fragment() {
     private lateinit var placeTypesTextView: TextView
     private lateinit var placeImageView: ImageView
     private lateinit var placeIdToSend: String
+
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
 
@@ -95,7 +89,7 @@ class HomeFragment : Fragment() {
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
-    private var userPreferenceList: ArrayList<String>? = null
+    private lateinit var userPreferenceList: ArrayList<String>
 
     private var destinationName = ""
 
@@ -113,7 +107,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i(TAG, "onCreateView called")
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        userPreferenceList = nearbyPlaceListViewModel.userPreferenceList
 
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
@@ -158,10 +152,6 @@ class HomeFragment : Fragment() {
         // to inflate nearby places list
         binding.nearbyPlacesRecyclerView.layoutManager = LinearLayoutManager(context)
 
-//        val places = nearbyPlaceListViewModel.nearbyPlaces
-//        val adapter = NearbyPlaceListAdapter(places)
-//        binding.nearbyPlacesRecyclerView.adapter = adapter
-
         fusedLocationClient = activity?.let {
             LocationServices
                 .getFusedLocationProviderClient(
@@ -180,20 +170,31 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                //TODO: check if preferences are changed, if so, fetch. If not, use view model
-                if (userPreferenceList==null){
+                if (userPreferenceList.isEmpty()){
                     // list of nearby places in viewModel is updated with fetch response
-                    getCurrentLocationAndFetchPlaces()
+                    Log.d(TAG, "need to fetch nearby places")
+                    showProgressIndicator()
+                    getCurrentLocationAndFetchPlaces{
+                        hideProgressIndicator()
+                    }
+
                 } else {
+                    Log.d(TAG, "Current user preferences are: $userPreferenceList")
                     val tempUserPreferenceList = getPlaceTypePreference()
+                    Log.d(TAG, "TEMP user preferences are: $tempUserPreferenceList")
                     val sortedUserPreferenceList = userPreferenceList!!.sorted()
                     val sortedTempList = tempUserPreferenceList.sorted()
                     // no change in user preference, therefore no need to fetch
                     if(sortedUserPreferenceList==sortedTempList){
-                        val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
+                        Log.d(TAG, "No change in preference, display viewModel contents for nearby places")
                         recyclerViewItemClickSetup()
                     } else {
-                        getCurrentLocationAndFetchPlaces()
+                        Log.d(TAG, "Change of preference, need to fetch nearby places")
+                        binding.nearbyPlacesRecyclerView.layoutManager?.scrollToPosition(0)
+                        showProgressIndicator()
+                        getCurrentLocationAndFetchPlaces{
+                            hideProgressIndicator()
+                        }
                     }
                 }
             }
@@ -312,7 +313,7 @@ class HomeFragment : Fragment() {
     }
 
     @SuppressLint("MissingPermission", "SetTextI18n")
-    private fun getCurrentLocationAndFetchPlaces() {
+    private fun getCurrentLocationAndFetchPlaces(onComplete: (() -> Unit)? = null) {
         Log.d(TAG, "getLocation() is called")
         if (checkPermissions()) {
             Log.d(TAG, "Check Permission success")
@@ -338,7 +339,7 @@ class HomeFragment : Fragment() {
 
                             // to store placeId of added places
                             val placesReturned = arrayListOf<String>()
-                            fetchNearbyPlaces(
+                            fetchNearbyPlaces( onComplete,
                             requireContext(),
                             currentLocationLatLng.latitude,
                             currentLocationLatLng.longitude,
@@ -389,6 +390,7 @@ class HomeFragment : Fragment() {
                                         val placeToAdd = DetailedPlace(placeId,
                                             placeLatLng,
                                             placeName,
+                                            "",
                                             placeRating,
                                             placeAddress,
                                             photoReference,
@@ -400,7 +402,7 @@ class HomeFragment : Fragment() {
                                         Log.d(TAG, "DUPLICATE PLACE")
                                     }
                                 }
-                                recyclerViewItemClickSetup()
+//                                recyclerViewItemClickSetup()
                             },
                             onError = { error ->
                                 Log.i(TAG, "Failed to fetch nearby places $error")
@@ -421,6 +423,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchNearbyPlaces(
+        onComplete: (() -> Unit)? = null,
         context: Context,
         latitude: Double,
         longitude: Double,
@@ -429,11 +432,12 @@ class HomeFragment : Fragment() {
         onSuccess: (response: String) -> Unit,
         onError: (error: String) -> Unit
     ) {
+        Log.d(TAG, "fetchNearbyPlaces() is called")
         userPreferenceList = getPlaceTypePreference()
+        nearbyPlaceListViewModel.userPreferenceList = userPreferenceList
 
         Log.d(TAG, "Place Types: $userPreferenceList")
         for (i in 0 until userPreferenceList!!.size) {
-            //TODO: fetch requests based on user preferred place type
             Log.d(TAG, "fetchNearbyPlaces() is called on place type: ${userPreferenceList!![i]}")
             val requestUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=$radius&type=${userPreferenceList!![i]}&key=$apiKey"
 
@@ -443,11 +447,14 @@ class HomeFragment : Fragment() {
                 Request.Method.GET, requestUrl,
                 Response.Listener { response ->
                     onSuccess(response)
+                    if(i == userPreferenceList!!.size-1){
+                        onComplete?.invoke()
+                        recyclerViewItemClickSetup()
+                    }
                 },
                 Response.ErrorListener { error ->
                     onError(error.toString())
                 })
-
             requestQueue.add(stringRequest)
         }
     }
@@ -461,6 +468,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun getPlaceTypePreference(): ArrayList<String> {
+        Log.d(TAG, "Getting type preferences")
         val placeTypes = arrayListOf<String>()
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val userChoiceFood = prefs.getString("food_selection", "")
@@ -521,11 +529,11 @@ class HomeFragment : Fragment() {
             placeTypes.addAll(natureCategories)
             placeTypes.addAll(nightLifeCategories)
         }
-
         return placeTypes
     }
 
     private fun recyclerViewItemClickSetup(){
+        Log.d(TAG, "recyclerViewItemClickSetup called")
         val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
         binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
             // Handle item click here
@@ -554,6 +562,16 @@ class HomeFragment : Fragment() {
 
             detailedPlaceDialog.show()
         }
+    }
+
+    private fun showProgressIndicator() {
+        Log.d(TAG, "progress indicator shown")
+        binding.nearbyPlaceLoadingProgressIndicator.visibility = VISIBLE
+    }
+
+    private fun hideProgressIndicator() {
+        Log.d(TAG, "progress indicator hid")
+        binding.nearbyPlaceLoadingProgressIndicator.visibility = GONE
     }
 
     override fun onDestroyView() {

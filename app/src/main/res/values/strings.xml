@@ -143,4 +143,17 @@
     <string name="fill_blank_toast">Please fill in all the blanks</string>
     <string name="authen_succeed">Authentication succeed.</string>
     <string name="authen_fail">Authentication failed</string>
+    <string name="login_success">You\'ve been logged in.</string>
+    <string name="logout_success">You have been logged out</string>
+    <string name="walk_list">WALKING</string>
+    <string name="transit_list">TRANSIT</string>
+    <string name="driving_list">DRIVING</string>
+    <string name="bicycling_list">BICYCLING</string>
+    <string name="choice">You have chosen</string>
+    <string name="saved">Save Preference Successful!</string>
+    <string name="cannot_get_current_location">Cannot get current location.</string>
+    <string name="turn_on_location">Please turn on location</string>
+    <string name="distance_more">Distance between start point and destination is more than 20km!</string>
+    <string name="no_directions_found">No directions found!</string>
+    <string name="add_places_to_itinerary">Please add some places of interest to Itinerary!</string>
 </resources>

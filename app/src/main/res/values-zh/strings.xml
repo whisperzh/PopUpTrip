@@ -144,5 +144,12 @@
     <string name="fill_blank_toast">请填好所有的空格</string>
     <string name="authen_succeed">认证成功</string>
     <string name="authen_fail">认证失败</string>
-
+    <string name="login_success">成功登录</string>
+    <string name="logout_success">成功登出</string>
+    <string name="walk_list">步行</string>
+    <string name="transit_list">公共交通</string>
+    <string name="driving_list">开车</string>
+    <string name="bicycling_list">骑车</string>
+    <string name="choice">你选择了</string>
+    <string name="saved">成功保存</string>
 </resources>
