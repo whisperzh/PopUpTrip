@@ -51,13 +51,12 @@
             <!-- </intent-filter> -->
         </activity>
 
-        <activity
-            android:name="androidx.fragment.app.testing.FragmentScenario$EmptyFragmentActivity"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Testing"
-            android:launchMode="standard" />
-
+<!--        <activity-->
+<!--            android:name="androidx.fragment.app.testing.FragmentScenario$EmptyFragmentActivity"-->
+<!--            android:exported="true"-->
+<!--            android:icon="@mipmap/ic_launcher"-->
+<!--            android:label="Testing"-->
+<!--            android:launchMode="standard" />-->
 
         <provider
             android:name="androidx.core.content.FileProvider"
