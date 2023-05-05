@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import com.bignerdranch.android.popuptrip.databinding.ActivityLoginBinding
@@ -28,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
     // See: https://developer.android.com/training/basics/intents/result
     private lateinit var auth: FirebaseAuth
     private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
+    private val languageSettingList = listOf(Locale.ENGLISH,Locale.FRANCE,Locale.GERMAN,Locale.forLanguageTag("es"),Locale.SIMPLIFIED_CHINESE)
+    private val languageTag= listOf("en","fr","de","es","zh")
     override fun onStart() {
         super.onStart()
 
@@ -45,17 +48,18 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun changeLanguageSetting(token:String){
-        val locale = Locale(token)
-        Locale.setDefault(locale)
-        val config = Configuration()
-        config.setLocale(Locale.SIMPLIFIED_CHINESE)
-        val resources = this.resources
-        val displayMetrics = resources.displayMetrics
-        resources.updateConfiguration(config, displayMetrics)
-        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-        this.runOnUiThread {
-            AppCompatDelegate.setApplicationLocales(appLocale)
-        }
+//        val locale = Locale(token)
+//        Locale.setDefault(locale)
+//        val config = Configuration()
+//        config.setLocale(Locale.SIMPLIFIED_CHINESE)
+//        val resources = this.resources
+//        val displayMetrics = resources.displayMetrics
+//        resources.updateConfiguration(config, displayMetrics)
+//        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+//        setApplicationLocales(appLocale)
+//        this.runOnUiThread {
+//            AppCompatDelegate.setApplicationLocales(appLocale)
+//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,19 +67,16 @@ class LoginActivity : AppCompatActivity() {
         binding= ActivityLoginBinding.inflate(layoutInflater)
         val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val selectedItem=prefs.getString("Language","")
-
         when(selectedItem)
         {
-            dataList.get(0)->changeLanguageSetting("en")
-            dataList.get(1)->changeLanguageSetting("fr")
-            dataList.get(2)->changeLanguageSetting("de")
-            dataList.get(3)->changeLanguageSetting("es")
-            dataList.get(4)->changeLanguageSetting("zh")
-            else-> {
-                changeLanguageSetting("en")
-            }
-
+            "English"->changeLanguageSetting(0)
+            "Français"->changeLanguageSetting(1)
+            "Deutsch"->changeLanguageSetting(2)
+            "Español"->changeLanguageSetting(3)
+            "简体中文"->changeLanguageSetting(4)
         }
+
+
 
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode
@@ -158,6 +159,17 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+    }
+    private fun changeLanguageSetting(token:Int){
+        val locale = Locale(languageTag.get(token))
+        Locale.setDefault(locale)
+        val config = Configuration()
+        config.setLocale(languageSettingList.get(token))
+        val resources = this.resources
+        val displayMetrics = resources.displayMetrics
+        resources.updateConfiguration(config, displayMetrics)
+        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
+        setApplicationLocales(appLocale)
     }
 
 
