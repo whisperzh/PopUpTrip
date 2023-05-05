@@ -55,6 +55,10 @@
         android:id="@+id/navigation_preference"
         android:name="com.bignerdranch.android.popuptrip.ui.Profile.PreferenceFragment"
         android:label="@string/title_pref"
-        tools:layout="@layout/fragment_preference"/>
+        tools:layout="@layout/fragment_preference">
+        <action
+            android:id="@+id/preference_to_profile_action"
+            app:destination="@id/navigation_profile" />
+    </fragment>
 
 </navigation>
