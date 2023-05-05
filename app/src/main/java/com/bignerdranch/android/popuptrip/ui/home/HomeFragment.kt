@@ -80,7 +80,6 @@ class HomeFragment : Fragment() {
     private lateinit var placeTypesTextView: TextView
     private lateinit var placeImageView: ImageView
     private lateinit var placeIdToSend: String
-    private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     // destination autocomplete setup
     private lateinit var autoCompleteAdapter: PlacesAutoCompleteAdapter
 
@@ -115,77 +114,7 @@ class HomeFragment : Fragment() {
     ): View {
         Log.i(TAG, "onCreateView called")
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val selectedItem = prefs.getString("Language","")
-        if (selectedItem.equals(dataList.get(4))) {
-            val locale = Locale("zh")
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(Locale.SIMPLIFIED_CHINESE)
-            val resources = requireContext().resources
-            val oldConfig = resources.configuration
-            val displayMetrics = resources.displayMetrics
-            resources.updateConfiguration(config, displayMetrics)
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-            activity?.runOnUiThread {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
-        if (selectedItem.equals(dataList.get(3))) {
-            val locale = Locale("es")
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(Locale.forLanguageTag("es"))
-            val resources = requireContext().resources
-            val oldConfig = resources.configuration
-            val displayMetrics = resources.displayMetrics
-            resources.updateConfiguration(config, displayMetrics)
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-            activity?.runOnUiThread {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
-        if (selectedItem.equals(dataList.get(2))) {
-            val locale = Locale("de")
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(Locale.GERMAN)
-            val resources = requireContext().resources
-            val oldConfig = resources.configuration
-            val displayMetrics = resources.displayMetrics
-            resources.updateConfiguration(config, displayMetrics)
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-            activity?.runOnUiThread {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
-        if (selectedItem.equals(dataList.get(1))) {
-            val locale = Locale("fr")
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(Locale.FRENCH)
-            val resources = requireContext().resources
-            val oldConfig = resources.configuration
-            val displayMetrics = resources.displayMetrics
-            resources.updateConfiguration(config, displayMetrics)
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-            activity?.runOnUiThread {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
-        if (selectedItem.equals(dataList.get(0))) {
-            val locale = Locale("en")
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.setLocale(Locale.ENGLISH)
-            val resources = requireContext().resources
-            val oldConfig = resources.configuration
-            val displayMetrics = resources.displayMetrics
-            resources.updateConfiguration(config, displayMetrics)
-            val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-            activity?.runOnUiThread {
-                AppCompatDelegate.setApplicationLocales(appLocale)
-            }
-        }
+
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
         Log.d(TAG, "OnCreateView called! Destination Place Name received in home: $receivedName")
@@ -410,73 +339,73 @@ class HomeFragment : Fragment() {
                             // to store placeId of added places
                             val placesReturned = arrayListOf<String>()
                             fetchNearbyPlaces(
-                            requireContext(),
-                            currentLocationLatLng.latitude,
-                            currentLocationLatLng.longitude,
-                            radius,
-                            MAPS_API_KEY,
-                            onSuccess = { response ->
-                                Log.d(TAG, "Succeed to fetch nearby places")
-                                val jsonResponse = JSONObject(response)
-                                val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
+                                requireContext(),
+                                currentLocationLatLng.latitude,
+                                currentLocationLatLng.longitude,
+                                radius,
+                                MAPS_API_KEY,
+                                onSuccess = { response ->
+                                    Log.d(TAG, "Succeed to fetch nearby places")
+                                    val jsonResponse = JSONObject(response)
+                                    val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
 
-                                for (i in 0 until resultsArray.length()) {
-                                    val resultObject = resultsArray.getJSONObject(i)
-                                    Log.d(TAG, "result $i: $resultObject")
+                                    for (i in 0 until resultsArray.length()) {
+                                        val resultObject = resultsArray.getJSONObject(i)
+                                        Log.d(TAG, "result $i: $resultObject")
 
-                                    val placeId = resultObject.getString("place_id")
-                                    // check if this place already exist in the recommended list
-                                    if (!placesReturned.contains(placeId)){
-                                        placesReturned.add(placeId)
+                                        val placeId = resultObject.getString("place_id")
+                                        // check if this place already exist in the recommended list
+                                        if (!placesReturned.contains(placeId)){
+                                            placesReturned.add(placeId)
 
-                                        val geometry = resultObject.getJSONObject("geometry")
-                                        val location = geometry.getJSONObject("location")
-                                        val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
-                                        val placeName = resultObject.getString("name")
-                                        val rating = resultObject.optString("rating", null)
-                                        val placeRating = rating?.toFloat()
+                                            val geometry = resultObject.getJSONObject("geometry")
+                                            val location = geometry.getJSONObject("location")
+                                            val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                                            val placeName = resultObject.getString("name")
+                                            val rating = resultObject.optString("rating", null)
+                                            val placeRating = rating?.toFloat()
 
-                                        val placeOpeningHours = resultObject.optJSONObject("opening_hours")
-                                        val placeOpenNow: Boolean? =
-                                            placeOpeningHours?.optString("open_now")?.toBoolean()
+                                            val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                                            val placeOpenNow: Boolean? =
+                                                placeOpeningHours?.optString("open_now")?.toBoolean()
 
-                                        val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
+                                            val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
 
-                                        // remove "point of interest", "establishment"
-                                        val placeTypes = placeTypesTemp.dropLast(2)
+                                            // remove "point of interest", "establishment"
+                                            val placeTypes = placeTypesTemp.dropLast(2)
 
 //                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
-                                        val placeAddress = resultObject.getString("vicinity")
+                                            val placeAddress = resultObject.getString("vicinity")
 
-                                        val photo = resultObject.optJSONArray("photos")
-                                        val photoReference: String? = if (photo != null && photo.length() > 0) {
-                                            val photoObject = photo.getJSONObject(0)
-                                            photoObject.optString("photo_reference", null)
+                                            val photo = resultObject.optJSONArray("photos")
+                                            val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                                val photoObject = photo.getJSONObject(0)
+                                                photoObject.optString("photo_reference", null)
+                                            } else {
+                                                null
+                                            }
+
+                                            val placeToAdd = DetailedPlace(placeId,
+                                                placeLatLng,
+                                                placeName,
+                                                placeRating,
+                                                placeAddress,
+                                                photoReference,
+                                                placeTypes = placeTypes.joinToString().replace("_", " "),
+                                                placeOpenNow = placeOpenNow)
+
+                                            nearbyPlaceListViewModel.updatePlaces(placeToAdd)
                                         } else {
-                                            null
+                                            Log.d(TAG, "DUPLICATE PLACE")
                                         }
-
-                                        val placeToAdd = DetailedPlace(placeId,
-                                            placeLatLng,
-                                            placeName,
-                                            placeRating,
-                                            placeAddress,
-                                            photoReference,
-                                            placeTypes = placeTypes.joinToString().replace("_", " "),
-                                            placeOpenNow = placeOpenNow)
-
-                                        nearbyPlaceListViewModel.updatePlaces(placeToAdd)
-                                    } else {
-                                        Log.d(TAG, "DUPLICATE PLACE")
                                     }
+                                    recyclerViewItemClickSetup()
+                                },
+                                onError = { error ->
+                                    Log.i(TAG, "Failed to fetch nearby places $error")
                                 }
-                                recyclerViewItemClickSetup()
-                            },
-                            onError = { error ->
-                                Log.i(TAG, "Failed to fetch nearby places $error")
-                            }
-                        )
+                            )
 
                         }
                     }
@@ -607,7 +536,7 @@ class HomeFragment : Fragment() {
                 placeRatingBar.visibility = GONE
             } else {
                 placeRatingBar.visibility = VISIBLE
-                placeRatingBar.rating = clickedPlace.placeRating
+                placeRatingBar.rating = clickedPlace.placeRating!!
             }
             placeVicinityTextView.text = clickedPlace.placeVicinity
 
