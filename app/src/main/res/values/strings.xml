@@ -153,7 +153,7 @@
     <string name="saved">Save Preference Successful!</string>
     <string name="cannot_get_current_location">Cannot get current location.</string>
     <string name="turn_on_location">Please turn on location</string>
-    <string name="distance_more">"Distance between start point and destination is more than 20km!"</string>
+    <string name="distance_more">Distance between start point and destination is more than 20km!</string>
     <string name="no_directions_found">No directions found!</string>
     <string name="add_places_to_itinerary">Please add some places of interest to Itinerary!</string>
 </resources>
