@@ -1,11 +1,9 @@
 package com.bignerdranch.android.popuptrip.ui.home
 
-import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.FragmentScenario.Companion.launch
+import androidx.core.os.bundleOf
 import com.bignerdranch.android.popuptrip.R
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.bignerdranch.android.popuptrip.MainActivity
 import org.junit.Assert.*
 
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -22,17 +20,18 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class HomeFragmentTest {
 
-    private lateinit var scenario: FragmentScenario<HomeFragment>
-
     @Before
     fun setUp() {
-        scenario = launchFragmentInContainer()
+        launchFragmentInContainer<HomeFragment>(
+            fragmentArgs = bundleOf("destinationPlaceName" to DetailedPlace().placeName),
+            themeResId = R.style.Theme_PopUpTrip,
+            initialState = Lifecycle.State.RESUMED,
+            factory = null
+        )
     }
 
     @Test
     fun checkViewsVisibility() {
-        launchFragmentInContainer<HomeFragment>()
-
         // Check if the home_search_box is visible
         onView(withId(R.id.home_search_box))
             .check(matches(isDisplayed()))
@@ -53,6 +52,5 @@ class HomeFragmentTest {
 
     @After
     fun tearDown() {
-        scenario.moveToState(Lifecycle.State.DESTROYED)
     }
 }

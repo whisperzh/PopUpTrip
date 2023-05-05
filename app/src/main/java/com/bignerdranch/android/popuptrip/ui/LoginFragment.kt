@@ -56,60 +56,60 @@ class LoginFragment : Fragment() {
         return binding.root
     }
     private fun bindComponents() {
-        binding.createAccountButton.setOnClickListener {
+            binding.createAccountButton.setOnClickListener {
 //                val intent = Intent(this, RegisterActivity::class.java)
 //                startActivity(intent)
-            val nextFrag = RegisterFragment.newInstance("1","2")
-            activity?.supportFragmentManager!!.beginTransaction()
-                .replace(com.bignerdranch.android.popuptrip.R.id.fragment_container, nextFrag, "findThisFragment")
-                .addToBackStack(null)
-                .commit()
-        }
-        binding.LoginButton.setOnClickListener {
-            auth = Firebase.auth
-            login()
-        }
-        binding.resetPasswordButton.setOnClickListener {
-            val nextFrag = ResetPasswordFragment.newInstance("1","2")
-            activity?.supportFragmentManager!!.beginTransaction()
-                .replace(com.bignerdranch.android.popuptrip.R.id.fragment_container, nextFrag, "findThisFragment")
-                .addToBackStack(null)
-                .commit()
-        }
+                val nextFrag = RegisterFragment.newInstance("1","2")
+                activity?.supportFragmentManager!!.beginTransaction()
+                    .replace(com.bignerdranch.android.popuptrip.R.id.fragment_container, nextFrag, "findThisFragment")
+                    .addToBackStack(null)
+                    .commit()
+            }
+            binding.LoginButton.setOnClickListener {
+                auth = Firebase.auth
+                login()
+            }
+            binding.resetPasswordButton.setOnClickListener {
+                val nextFrag = ResetPasswordFragment.newInstance("1","2")
+                activity?.supportFragmentManager!!.beginTransaction()
+                    .replace(com.bignerdranch.android.popuptrip.R.id.fragment_container, nextFrag, "findThisFragment")
+                    .addToBackStack(null)
+                    .commit()
+            }
     }
 
     private fun login() {
 
-        var email = binding.username.editText?.text.toString()
-        var password = binding.password.editText?.text.toString()
-        if(email.equals("")||password.equals(""))
-        {
-            Toast.makeText(context,popR.string.fill_blank_toast,Toast.LENGTH_SHORT).show()
-        }else {
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(activity as Activity) { task ->
-                    if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "signInWithEmail:success")
-                        val user = auth.currentUser
-                        Toast.makeText(
-                            context,
-                            popR.string.authen_succeed,
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                        val intent = Intent(context, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        // If sign in fails, display a message to the user.
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            context,
-                            popR.string.authen_fail,
-                            Toast.LENGTH_SHORT,
-                        ).show()
+            var email = binding.username.editText?.text.toString()
+            var password = binding.password.editText?.text.toString()
+            if(email.equals("")||password.equals(""))
+            {
+                Toast.makeText(context,popR.string.fill_blank_toast,Toast.LENGTH_SHORT).show()
+            }else {
+                auth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(activity as Activity) { task ->
+                        if (task.isSuccessful) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithEmail:success")
+                            val user = auth.currentUser
+                            Toast.makeText(
+                                context,
+                                popR.string.authen_succeed,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                            val intent = Intent(context, MainActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithEmail:failure", task.exception)
+                            Toast.makeText(
+                                context,
+                                popR.string.authen_fail,
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
                     }
-                }
-        }
+            }
     }
 
 
