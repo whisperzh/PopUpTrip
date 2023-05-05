@@ -151,4 +151,9 @@
     <string name="bicycling_list">Vélo</string>
     <string name="choice">Vous avez choisi</string>
     <string name="saved">Save Preference Successful!</string>
+    <string name="cannot_get_current_location">Impossible d\'obtenir la position actuelle.</string>
+    <string name="turn_on_location">Veuillez activer la localisation</string>
+    <string name="distance_more">La distance entre le point de départ et la destination est supérieure à 20km!</string>
+    <string name="no_directions_found">Aucun itinéraire trouvé!</string>
+    <string name="add_places_to_itinerary">Veuillez ajouter des lieux d\'intérêt à votre itinéraire!</string>
 </resources>

@@ -149,4 +149,9 @@
     <string name="bicycling_list">Fahrradfahren</string>
     <string name="choice">Sie haben gewählt</string>
     <string name="saved">Einstellung speichern erfolgreich!</string>
+    <string name="cannot_get_current_location">Kann den aktuellen Standort nicht ermitteln.</string>
+    <string name="turn_on_location">Bitte schalten Sie den Standort ein</string>
+    <string name="distance_more">Die Entfernung zwischen Start und Ziel beträgt mehr als 20km!</string>
+    <string name="no_directions_found">Keine Wegbeschreibung gefunden!</string>
+    <string name="add_places_to_itinerary">Bitte fügen Sie der Reiseroute einige interessante Orte hinzu!</string>
 </resources>
