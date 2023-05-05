@@ -42,7 +42,6 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
-        val starButton = binding.starButton
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val switchState = prefs.getBoolean("switchState", false)
         lastSelectedItem=prefs.getString("Language",null)

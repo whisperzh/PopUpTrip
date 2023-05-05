@@ -152,4 +152,9 @@
     <string name="bicycling_list">Bicicleta</string>
     <string name="choice">Has elegido</string>
     <string name="saved">¡Guardar preferencias con éxito!</string>
+    <string name="cannot_get_current_location">No se puede obtener la ubicación actual.</string>
+    <string name="turn_on_location">Por favor, active la ubicación</string>
+    <string name="distance_more">¡La distancia entre el punto de partida y el de destino es superior a 20 km!</string>
+    <string name="no_directions_found">¡No se han encontrado indicaciones!</string>
+    <string name="add_places_to_itinerary">¡Por favor, añada algunos lugares de interés al itinerario!</string>
 </resources>
