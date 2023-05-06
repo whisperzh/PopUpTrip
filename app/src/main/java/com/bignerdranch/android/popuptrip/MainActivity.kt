@@ -50,40 +50,30 @@ class MainActivity : AppCompatActivity() {
             )
         )
 //        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-//        navView.setOnItemSelectedListener {
-//            when (it.itemId) {
-//                R.id.navigation_settings -> {
-//                    navController
-//                        .navigate(R.id.navigation_settings)
-//                }
-//                R.id.navigation_profile -> {
-//                    navController
-//                        .navigate(R.id.navigation_profile)
-//                }
-//                R.id.navigation_home -> {
-//                    Log.d(TAG, "Navigate home")
-//                    Log.d(TAG, "Exploration ID: ${R.id.navigation_exploration}")
-//                    val navController = findNavController(R.id.nav_host_fragment_activity_main)
-//                    val navBackStackEntry = navController.getBackStackEntry(R.id.navigation_home)
-//                    val bundle = Bundle()
-//                    Log.d(TAG, "navBackStackEntry dest id: ${navBackStackEntry.destination.id}")
-//                    Log.d(TAG, "navBackStackEntry dest display name: ${navBackStackEntry.destination.displayName}")
-//                    if (navBackStackEntry.destination.id == R.id.navigation_exploration) {
-//                        bundle.putString("isExploration", "true")
-//                    } else {
-//                        bundle.putString("isExploration", "false")
-//                    }
-//
-//                    navController.navigate(R.id.navigation_home, bundle)
-//                }
-//                R.id.navigation_dashboard -> {
-//                    navController
-//                        .navigate(R.id.navigation_dashboard)
-//                }
-//            }
-//            true
-//        }
+//        navView.setupWithNavController(navController)
+        navView.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.navigation_settings -> {
+                    navController
+                        .navigate(R.id.navigation_settings)
+                }
+                R.id.navigation_profile -> {
+                    navController
+                        .navigate(R.id.navigation_profile)
+                }
+                R.id.navigation_home -> {
+                    Log.d(TAG, "Navigate home")
+                    Log.d(TAG, "Exploration ID: ${R.id.navigation_exploration}")
+
+                    navController.navigate(R.id.navigation_home)
+                }
+                R.id.navigation_dashboard -> {
+                    navController
+                        .navigate(R.id.navigation_dashboard)
+                }
+            }
+            true
+        }
     }
 
     override fun onStop() {

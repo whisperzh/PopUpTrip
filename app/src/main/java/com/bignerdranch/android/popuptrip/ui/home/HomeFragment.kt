@@ -65,7 +65,8 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val args: HomeFragmentArgs by navArgs()
-
+    private val explorationId = 2131231124
+    private val homeId = 2131231126
     // Recycler list & dialog implementation
     private val nearbyPlaceListViewModel: NearbyPlaceListViewModel by viewModels()
     private lateinit var detailedPlaceDialog: AlertDialog
@@ -110,6 +111,14 @@ class HomeFragment : Fragment() {
         Log.i(TAG, "onCreateView called")
         userPreferenceList = nearbyPlaceListViewModel.userPreferenceList
 
+        Log.d(TAG, "Last ID onCreateView: ${nearbyPlaceListViewModel.lastId}")
+        if (nearbyPlaceListViewModel.lastId == explorationId) {
+            jumpToExploration()
+        } else {
+            val currentDestId = findNavController().currentDestination?.id
+            nearbyPlaceListViewModel.lastId = homeId
+            Log.d(TAG, "Current Dest ID: $currentDestId")
+        }
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
         Log.d(TAG, "OnCreateView called! Destination Place Name received in home: $receivedName")
@@ -136,6 +145,8 @@ class HomeFragment : Fragment() {
                 // Launch navigation to exploration page
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        nearbyPlaceListViewModel.lastId = explorationId
+                        Log.d(TAG, "detailed Place Dialog Last ID: ${nearbyPlaceListViewModel.lastId}")
                         findNavController().navigate(
                             HomeFragmentDirections.homeToExplorationAction(placeIdToSend)
                         )
@@ -254,6 +265,8 @@ class HomeFragment : Fragment() {
                 // Launch navigation to exploration page
                 viewLifecycleOwner.lifecycleScope.launch {
                     viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        nearbyPlaceListViewModel.lastId = explorationId
+                        Log.d(TAG, "selected prediction Last ID: ${nearbyPlaceListViewModel.lastId}")
                         findNavController().navigate(
                             HomeFragmentDirections.homeToExplorationAction(placeId)
                         )
@@ -583,13 +596,8 @@ class HomeFragment : Fragment() {
 
 //    override fun onResume() {
 //        super.onResume()
-//        Log.d(TAG, "Exploration id: ${R.id.navigation_exploration}")
-//        val bundle = arguments
-//        Log.d(TAG, "Bundle: $bundle")
-//        val isExploration = bundle?.getString("isExploration")
-//        Log.d(TAG, "isExploration: $isExploration")
-//
-//        if (isExploration == "true") {
+//        Log.d(TAG, "Last ID: ${nearbyPlaceListViewModel.lastId}")
+//        if (nearbyPlaceListViewModel.lastId == explorationId) {
 //            Log.d(TAG, "Last was exploration fragment")
 //            // Manually set the selected item in the bottom navigation view
 //            val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
@@ -599,30 +607,19 @@ class HomeFragment : Fragment() {
 //                .replace(R.id.nav_host_fragment_activity_main, ExplorationFragment())
 //                .commit()
 //        }
-//
-////        val navBackStackEntry = findNavController().getBackStackEntry(R.id.navigation_home)
-////        Log.d(TAG, "Nav BackStack ID: ${navBackStackEntry.destination.id}")
-////        Log.d(TAG, "Nav BackStack Name: ${navBackStackEntry.destination.displayName}")
-////        Log.d(TAG, "Exploration id: ${R.id.navigation_exploration}")
-////        if (findNavController().currentDestination?.id == R.id.navigation_home) {
-////            Log.d(TAG, "Home onResume")
-////            val navBackStackEntry = findNavController().getBackStackEntry(R.id.navigation_home)
-////            Log.d(TAG, "Nav BackStack: ${navBackStackEntry.destination.id}")
-////            Log.d(TAG, "Exploration id: ${R.id.navigation_exploration}")
-////                Log.d(TAG, "Previous BackStack: ${navBackStackEntry.destination.id}")
-////                if (navBackStackEntry.destination.id == R.id.navigation_exploration) {
-////                    Log.d(TAG, "Last was exploration fragment")
-////                    // Manually set the selected item in the bottom navigation view
-////                    val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
-////                    bottomNavigationView?.selectedItemId = R.id.navigation_home
-////                    // Show the ExplorationFragment without navigating
-////                    childFragmentManager.beginTransaction()
-////                        .replace(R.id.nav_host_fragment_activity_main, ExplorationFragment())
-////                        .commit()
-////                }
-//////            if (navBackStackEntry.destination.id == R.id.navigation_exploration) {
-//////                findNavController().navigate(R.id.navigation_exploration)
-//////            }
-////        }
 //    }
+
+    private fun jumpToExploration() {
+        Log.d(TAG, "Last ID: ${nearbyPlaceListViewModel.lastId}")
+        if (nearbyPlaceListViewModel.lastId == explorationId) {
+            Log.d(TAG, "Last was exploration fragment")
+            // Manually set the selected item in the bottom navigation view
+            val bottomNavigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+            bottomNavigationView?.selectedItemId = R.id.navigation_home
+            // Show the ExplorationFragment without navigating
+            childFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment_activity_main, ExplorationFragment())
+                .commit()
+        }
+    }
 }

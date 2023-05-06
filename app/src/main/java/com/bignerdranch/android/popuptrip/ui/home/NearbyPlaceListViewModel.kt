@@ -8,13 +8,18 @@ import java.util.*
 
 private const val TAG = "NearbyPlaceListViewModel"
 const val USER_PREFERENCE = "USER_PREFERENCE"
+const val LAST_ID = "LAST_ID"
 class NearbyPlaceListViewModel(private val savedStateHandle: SavedStateHandle): ViewModel() {
-
+    private val homeDestId = 2131231126
     var nearbyPlaces = mutableListOf<DetailedPlace>()
 
     var userPreferenceList: ArrayList<String>
         get() = savedStateHandle.get<ArrayList<String>>(USER_PREFERENCE) ?: ArrayList()
         set(value) = savedStateHandle.set(USER_PREFERENCE, value)
+
+    var lastId: Int
+        get() = savedStateHandle.get<Int>(LAST_ID) ?: homeDestId
+        set(value) = savedStateHandle.set(LAST_ID, value)
 
     init {
         nearbyPlaces.clear()
