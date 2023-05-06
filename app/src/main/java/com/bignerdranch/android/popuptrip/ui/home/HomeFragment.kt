@@ -27,6 +27,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
@@ -68,7 +69,8 @@ class HomeFragment : Fragment() {
     private val explorationId = 2131231124
     private val homeId = 2131231126
     // Recycler list & dialog implementation
-    private val nearbyPlaceListViewModel: NearbyPlaceListViewModel by viewModels()
+//    private val nearbyPlaceListViewModel: NearbyPlaceListViewModel by viewModels()
+    private lateinit var nearbyPlaceListViewModel: NearbyPlaceListViewModel
     private lateinit var detailedPlaceDialog: AlertDialog
     private lateinit var placeRatingBar: RatingBar
     private lateinit var placeVicinityTextView: TextView
@@ -109,7 +111,11 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Log.i(TAG, "onCreateView called")
+        nearbyPlaceListViewModel =
+            ViewModelProvider(this).get(NearbyPlaceListViewModel::class.java)
+
         userPreferenceList = nearbyPlaceListViewModel.userPreferenceList
+        Log.d(TAG, "User Pref List: $userPreferenceList")
 
         Log.d(TAG, "Last ID onCreateView: ${nearbyPlaceListViewModel.lastId}")
         if (nearbyPlaceListViewModel.lastId == explorationId) {
