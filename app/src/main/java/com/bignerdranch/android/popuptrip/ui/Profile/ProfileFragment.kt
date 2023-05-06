@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.bignerdranch.android.popuptrip.R
-import com.bignerdranch.android.popuptrip.databinding.DialogChangeEmailBinding
 import com.bignerdranch.android.popuptrip.databinding.FragmentProfileBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
@@ -67,22 +66,12 @@ class ProfileFragment : Fragment() {
         passwordButton.setOnClickListener {
             showChangePasswordDialog()
         }
-
-        val EmailButton=binding.changeEmailButton
-        EmailButton.setOnClickListener{
-            showChangeEmailDialog()
-        }
         val imageButton=binding.imageButton
         imageButton.setOnClickListener{
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(intent, PICK_IMAGE_REQUEST_CODE)
         }
 
-        val saveButton=binding.save
-        text = binding.profileName.text.toString()
-        saveButton.setOnClickListener{
-            save=true
-        }
         val backButton = binding.GoPrefButton
         backButton.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.navigation_preference,null))
         val profileViewmodel =
@@ -164,6 +153,7 @@ class ProfileFragment : Fragment() {
                 resetPassword(email.text.toString())
             }.setNegativeButton(popR.string.cancel,null)
             .create()
+        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
     private fun resetPassword(email:String){
@@ -189,70 +179,6 @@ class ProfileFragment : Fragment() {
             Toast.makeText(requireContext(),R.string.invalidEmail,Toast.LENGTH_SHORT).show()
         }
     }
-    @SuppressLint("MissingInflateParams")
-    private fun showChangeEmailDialog() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
-        val binding = DialogChangeEmailBinding.inflate(layoutInflater)
-
-        var code = ""
-
-        binding.emailButton.setOnClickListener {
-            val oldEmail = prefs.getString("emailAddress", "bu123@bu.edu").toString() // need to same to previous, but not have data base yet
-            if (oldEmail == binding.oldEmailEditText.text.toString()) {
-                // send code to old email address
-                code = "1234" // example code
-                Toast.makeText(
-                    requireContext(),
-                    "Code sent to $oldEmail",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Wrong old email address",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(binding.root)
-            .setTitle("Change Email Address")
-            .setPositiveButton("OK") { _, _ ->
-                // Handle email change
-                val newEmail = binding.newEmailEditText.text.toString()
-                val newRepeatEmail = binding.repeatNewEmailEditText.text.toString()
-                val inputCode = binding.captchaEditText.text.toString()
-                val pattern =
-                    "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$".toRegex() // set the logic(one number&Uppercase)
-                if (newEmail == newRepeatEmail && newEmail.matches(pattern)) { // check for new address
-                    if (inputCode == code) { // fit the captcha, so can change the email
-                        prefs.edit().putString("emailAddress", newEmail).apply() // save to sharePref(need to implement encryption)
-                        Toast.makeText(
-                            requireContext(),
-                            "Email Address updated",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "Wrong Verification Code",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "Wrong New Address format",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
-
     override fun onDestroyView() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         if(save) {

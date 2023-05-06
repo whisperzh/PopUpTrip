@@ -1,0 +1,160 @@
+<resources>
+    <string name="app_name">Viaje emergente</string>
+    <string name="title_home">Hogar</string>
+    <string name="title_exploration">Exploración</string>
+    <string name="title_nearby_places">Destinos Cercanos</string>
+    <string name="title_dashboard">Panel</string>
+    <string name="title_setting">Ajustes</string>
+    <string name="title_switch">Modo oscuro</string>
+    <string name="title_language">Idioma</string>
+    <string name="title_mode">Tema</string>
+    <string name="title_profile">Perfil personal</string>
+    <string name="title_logout">Cerrar sesión</string>
+    <string name="description_profile">Ir a la página de perfil</string>
+    <string name="change_name">Nombre de usuario:</string>
+    <string name="title_password">Opción de seguridad:</string>
+    <string name="change_password">Seguridad</string>
+    <string name="title_photo">Foto:</string>
+    <string name="description_photo">Haga clic aquí para cambiar la foto</string>
+    <string name="title_save">Ahorrar</string>
+    <string name="title_quit">Abandonar</string>
+    <string name="title_food">Alimento:</string>
+    <string name="title_pref">Preferencia</string>
+    <string name="title_place">Tus lugares preferidos:</string>
+    <string name="title_star">Lugares estrella:</string>
+    <string name="star_button">Estrella</string>
+    <string name="title_method">Método de viaje:</string>
+    <string name="title_notifications">Notificaciones</string>
+    <string name="searchbar_hint">Introduce el destino</string>
+    <string name="home_search_box_content">Barra de búsqueda Introducir destino</string>
+    <string name="enter_starting_point">Introducir punto de partida</string>
+    <string name="enter_destination">Introducir destino</string>
+    <string name="use_current_location">Usar ubicación actual</string>
+    <string name="search">Buscar</string>
+    <string name="clear_search">Borrar búsqueda</string>
+    <string name="email_username">Dirección de correo electrónico</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">primer fragmento</string>
+    <string name="second_fragment_label">Segundo Fragmento</string>
+    <string name="next">Próximo</string>
+    <string name="previous">Anterior</string>
+
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="password">Introducir la contraseña</string>
+    <string name="login_txt">Acceso</string>
+    <string name="createAccountTxt">Crea una cuenta</string>
+    <string name="resetPasswordTxt">Restablecer la contraseña</string>
+    <string name="signInTxt">Iniciar sesión</string>
+    <string name="web_client_id">133762393554-t9c6ohoifh8lvkp0ietkk4e5gv1f7eg4.apps.googleusercontent.com</string>
+    <string name="title_exploration_page">Página de exploración</string>
+    <string name="Restaurant">Restaurante</string>
+    <string name="Cafe">Cafetería</string>
+    <string name="Bakery">Panadería</string>
+    <string name="title_NightLife">La vida nocturna:</string>
+    <string name="Bar">Bar</string>
+    <string name="Night_club">Club nocturno</string>
+    <string name="title_Nature">Naturaleza:</string>
+    <string name="Aquarium">Acuario</string>
+    <string name="Zoo">zoo</string>
+    <string name="Park">Parque</string>
+    <string name="Campground">Terreno de camping</string>
+    <string name="title_Culture">Cultura:</string>
+    <string name="Library">Biblioteca</string>
+    <string name="Museum">Museo</string>
+    <string name="Art_Gallery">Galería de arte</string>
+    <string name="BookStore">Librería</string>
+    <string name="description_pref_back">Volver_a_la_página_de_perfil</string>
+    <string name="go_preference">Preferencia:</string>
+    <string name="title_Entertainment">ENT:</string>
+    <string name="AmusementPark">Parque de atracciones</string>
+    <string name="MovieTheater">Cine</string>
+    <string name="current_location_title">Tu ubicación</string>
+    <string name="adjust_map_bound_title">Ajustar los límites de la vista</string>
+    <string name="next_button">PRÓXIMO</string>
+    <string name="back_button">ATRÁS</string>
+    <string name="signUp_txt">Inscribirse</string>
+    <string name="enter_your_username">Introduzca su nombre de usuario</string>
+    <string name="confirm_password">confirmar Contraseña</string>
+    <string name="enter_your_Email">Ingrese correo electrónico</string>
+    <string name="pleaseFillAllTheBlanks">Por favor llene todos los espacios en blanco</string>
+    <string name="pleaseDoubleCheckYourPassword">Verifique dos veces su contraseña</string>
+    <string name="detailed_place_dialog_select_button">Seleccionar como Destino</string>
+    <string name="detailed_place_dialog_add_button">Agregar al plan</string>
+    <string name="detailed_place_dialog_remove_button">Quitar del plan</string>
+    <string name="category_title_food">ALIMENTO</string>
+    <string name="category_title_nightlife">LA VIDA NOCTURNA</string>
+    <string name="category_title_nature">NATURALEZA</string>
+    <string name="category_title_culture">CULTURA</string>
+    <string name="category_title_entertainment">ENTRETENIMIENTO</string>
+    <string name="yourPasswordIsTooShort">¡Su contraseña es demasiado corta!</string>
+    <string name="emailIsRequired">correo electronico es requerido</string>
+    <string name="invalidEmail">¡Email inválido!</string>
+    <string name="somethingWentWrong">Algo salió mal</string>
+    <string name="pleaseCheckYourEmailToResetPassword">Por favor revise su correo electrónico para restablecer la contraseña</string>
+    <string name="changeEmail">Cambiar e-mail:</string>
+    <string name="emailButton">Cambiar e-mail</string>
+    <string name="changepassword">Cambiar la contraseña:</string>
+    <string name="passwordButton">cambiar la contraseña</string>
+    <string name="sendEmail">enviar correo electrónico</string>
+    <string name="cancel">Cancelar</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hola fragmento en blanco</string>
+    <string name="submit">Entregar</string>
+    <string name="resetYourPassword">Restablecer su contraseña</string>
+    <!-- -->
+    <string name="restart_question">¿Quieres reiniciar ahora para aplicar el modo\? O espera a que vuelva a abrir la aplicación.</string>
+    <string name="title_restart">¿Reiniciar o no\?</string>
+    <string name="restart">Reanudar</string>
+    <string name="fill_blank_toast">Por favor, rellena todos los espacios en blanco</string>
+    <string name="authen_succeed">Autenticación correcta.</string>
+    <string name="authen_fail">Falló la autenticación</string>
+    <string name="login_success">Has iniciado sesión.</string>
+    <string name="logout_success">Se ha cerrado la sesión</string>
+    <string name="walk_list">Caminar</string>
+    <string name="transit_list">Transporte</string>
+    <string name="driving_list">Conducción</string>
+    <string name="bicycling_list">Bicicleta</string>
+    <string name="choice">Has elegido</string>
+    <string name="saved">¡Guardar preferencias con éxito!</string>
+    <string name="cannot_get_current_location">No se puede obtener la ubicación actual.</string>
+    <string name="turn_on_location">Por favor, active la ubicación</string>
+    <string name="distance_more">¡La distancia entre el punto de partida y el de destino es superior a 20 km!</string>
+    <string name="no_directions_found">¡No se han encontrado indicaciones!</string>
+    <string name="add_places_to_itinerary">¡Por favor, añada algunos lugares de interés al itinerario!</string>
+</resources>
