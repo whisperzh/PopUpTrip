@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +14,7 @@ import com.google.android.libraries.places.api.Places
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
+const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -60,8 +62,20 @@ class MainActivity : AppCompatActivity() {
 //                        .navigate(R.id.navigation_profile)
 //                }
 //                R.id.navigation_home -> {
-//                    navController
-//                        .navigate(R.id.navigation_home)
+//                    Log.d(TAG, "Navigate home")
+//                    Log.d(TAG, "Exploration ID: ${R.id.navigation_exploration}")
+//                    val navController = findNavController(R.id.nav_host_fragment_activity_main)
+//                    val navBackStackEntry = navController.getBackStackEntry(R.id.navigation_home)
+//                    val bundle = Bundle()
+//                    Log.d(TAG, "navBackStackEntry dest id: ${navBackStackEntry.destination.id}")
+//                    Log.d(TAG, "navBackStackEntry dest display name: ${navBackStackEntry.destination.displayName}")
+//                    if (navBackStackEntry.destination.id == R.id.navigation_exploration) {
+//                        bundle.putString("isExploration", "true")
+//                    } else {
+//                        bundle.putString("isExploration", "false")
+//                    }
+//
+//                    navController.navigate(R.id.navigation_home, bundle)
 //                }
 //                R.id.navigation_dashboard -> {
 //                    navController
