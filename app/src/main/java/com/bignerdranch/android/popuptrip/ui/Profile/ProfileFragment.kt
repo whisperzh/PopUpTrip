@@ -3,12 +3,15 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import com.bignerdranch.android.popuptrip.R as popR
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.preference.PreferenceManager
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +21,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentProfileBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -38,6 +42,7 @@ class ProfileFragment : Fragment() {
     private var dbReference:DatabaseReference=FirebaseDatabase.getInstance().getReferenceFromUrl("https://popup-trip-default-rtdb.firebaseio.com/")
     private lateinit var auth: FirebaseAuth
     private val dataList =  listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
+    private lateinit var prefs:SharedPreferences
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -48,7 +53,7 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         auth=Firebase.auth
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val saved=prefs.getString("EditedName","")
         binding.profileName.setText(saved)
@@ -62,6 +67,23 @@ class ProfileFragment : Fragment() {
                 binding.imageButton.setImageBitmap(bitmap)
             }
         }
+        binding.profileName.setText((activity as MainActivity).user.userName)
+        binding.profileName.addTextChangedListener(object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable) {
+                dbReference.child("User_Table").child(auth.currentUser!!.uid).child("username").setValue(s.toString())
+                (activity as MainActivity).user.userName=s.toString()
+                prefs.edit().putString("USER_NAME",s.toString()).commit()
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int,
+                                           count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+            }
+        })
         val passwordButton = binding.changePasswordButton
         passwordButton.setOnClickListener {
             showChangePasswordDialog()

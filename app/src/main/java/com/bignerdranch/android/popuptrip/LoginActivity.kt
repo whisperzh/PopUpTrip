@@ -31,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
     private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private val languageSettingList = listOf(Locale.ENGLISH,Locale.FRANCE,Locale.GERMAN,Locale.forLanguageTag("es"),Locale.SIMPLIFIED_CHINESE)
     private val languageTag= listOf("en","fr","de","es","zh")
+
     override fun onStart() {
         super.onStart()
 
@@ -45,21 +46,6 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-    }
-
-    private fun changeLanguageSetting(token:String){
-//        val locale = Locale(token)
-//        Locale.setDefault(locale)
-//        val config = Configuration()
-//        config.setLocale(Locale.SIMPLIFIED_CHINESE)
-//        val resources = this.resources
-//        val displayMetrics = resources.displayMetrics
-//        resources.updateConfiguration(config, displayMetrics)
-//        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
-//        setApplicationLocales(appLocale)
-//        this.runOnUiThread {
-//            AppCompatDelegate.setApplicationLocales(appLocale)
-//        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
