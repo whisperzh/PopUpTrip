@@ -254,13 +254,84 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                s?.let { newText ->
+//                    Log.d(TAG, "New Text: $newText")
+//                    if (oldText == null) {
+//                        oldText = newText.toString()
+//                    }
+//                    Log.d(TAG, "starting point onTextChanged is triggered")
+//                    if (newText.toString() != startingPlace.placeName && newText.toString() != getString(R.string.current_location_title)) {
+//                        if (newText.toString() != "") {
+//                            mMap?.clear()
+//                        }
+//                        // Create a request for place predictions
+//                        Log.d(TAG, "Create request for place predictions")
+//                        val request = FindAutocompletePredictionsRequest.builder()
+//                            .setTypeFilter(TypeFilter.ADDRESS)
+//                            .setSessionToken(token)
+//                            .setQuery(newText.toString())
+//                            .build()
+//
+//                        context?.let { context ->
+//                            Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
+//                                val predictions = response.autocompletePredictions
+//                                autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
+//                                startingPointListView.adapter = autoCompleteAdapter
+//                                Log.i(TAG, "Visibility of listView is set to VISIBLE")
+//                                startingPointListView.visibility = View.VISIBLE
+//                            }.addOnFailureListener { _ ->
+//                                Log.i(TAG, "onTextChangedListener error")
+//                            }
+//                        }
+//                        oldText = newText.toString()
+//                    } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName != "" && startingPlace.placeName != newText.toString()) {
+//                        Log.d(TAG, "Start point changed to current location")
+////                        polyline.remove()
+//                        mMap?.clear()
+//                        startingPlace = DetailedPlace()
+//                        startingPlace.placeName = getString(R.string.current_location_title)
+//                        startingPlace.placeLatLng = currentLocationLatLng
+//                        explorationViewModel.updateStartingPlace(startingPlace)
+//
+//                        getLocation()
+//                        getDirections()
+//                        markDestination()
+//                        markStartingLocation(getString(R.string.current_location_title))
+//                        oldText = newText.toString()
+//                    } else if (newText.toString() != oldText) {
+//                        Log.d(TAG, "New Text not the same as Old Text")
+//
+//                    } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName == "") {
+//                        Log.d(TAG, "Start point set to current location")
+////                        mMap.clear()
+//                        startingPlace = DetailedPlace()
+//                        startingPlace.placeName = getString(R.string.current_location_title)
+//                        startingPlace.placeLatLng = currentLocationLatLng
+//                        explorationViewModel.updateStartingPlace(startingPlace)
+//
+//                        getLocation()
+//                        getDirections()
+//                        markDestination()
+//                        markStartingLocation(getString(R.string.current_location_title))
+//                        oldText = newText.toString()
+//                    } else {
+//                        Log.d(TAG, "New start is same as current")
+//                    }
+//                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "After starting point text changed")
                 s?.let { newText ->
                     Log.d(TAG, "New Text: $newText")
                     if (oldText == null) {
                         oldText = newText.toString()
                     }
-                    Log.d(TAG, "starting point onTextChanged is triggered")
-                    if (newText.toString() != startingPlace.placeName && newText.toString() != getString(R.string.current_location_title)) {
+                    Log.d(TAG, "starting point After Text Changed is triggered")
+                    if (newText.toString() != startingPlace.placeName && newText.toString() != getString(
+                            R.string.current_location_title
+                        )
+                    ) {
                         if (newText.toString() != "") {
                             mMap?.clear()
                         }
@@ -273,13 +344,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             .build()
 
                         context?.let { context ->
-                            Places.createClient(context).findAutocompletePredictions(request).addOnSuccessListener { response ->
-                                val predictions = response.autocompletePredictions
-                                autoCompleteAdapter = PlacesAutoCompleteAdapter(context, predictions)
-                                startingPointListView.adapter = autoCompleteAdapter
-                                Log.i(TAG, "Visibility of listView is set to VISIBLE")
-                                startingPointListView.visibility = View.VISIBLE
-                            }.addOnFailureListener { _ ->
+                            Places.createClient(context).findAutocompletePredictions(request)
+                                .addOnSuccessListener { response ->
+                                    val predictions = response.autocompletePredictions
+                                    autoCompleteAdapter =
+                                        PlacesAutoCompleteAdapter(context, predictions)
+                                    startingPointListView.adapter = autoCompleteAdapter
+                                    Log.i(TAG, "Visibility of listView is set to VISIBLE")
+                                    startingPointListView.visibility = View.VISIBLE
+                                }.addOnFailureListener { _ ->
                                 Log.i(TAG, "onTextChangedListener error")
                             }
                         }
@@ -318,10 +391,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         Log.d(TAG, "New start is same as current")
                     }
                 }
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "After starting point text changed")
             }
         })
 
