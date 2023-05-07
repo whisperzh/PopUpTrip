@@ -788,6 +788,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
+//        val mugarLat = 42.350843
+//        val mugarLon = -71.108126
+//        currentLocationLatLng = LatLng(mugarLat, mugarLon)
+//        binding.startingTextInputTextfield.setText(getString(R.string.current_location_title))
+//        Log.d(TAG, "Starting Point at Current Location: $currentLocationLatLng")
         Log.d(TAG, "getLocation() is called")
         if (checkPermissions()) {
             Log.d(TAG, "Check Permission success")
@@ -853,6 +858,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         Log.d(TAG, "Travel Mode: $travelMode")
         val path: MutableList<List<LatLng>> = ArrayList()
         val distance = haversineDistance(currentLocationLatLng, destinationPlace.placeLatLng)
+        Log.d(TAG, "Current location lat lng: $currentLocationLatLng")
+        Log.d(TAG, "Dest lat lng: ${destinationPlace.placeLatLng}")
         Log.d(TAG, "Distance is: $distance")
         if (distance > maxDistanceAllowed) {
             Toast.makeText(
