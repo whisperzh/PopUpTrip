@@ -8,7 +8,8 @@ With the help of this app, users can easily create itineraries and explore the a
 * Customize your experiences based on your preferences under personal profile.
 * Travel history and user preferences are stored in a cloud database associated with the user account.
 * Discover nearby attractions and points of interest using the integrated Google Maps API.
-* Create and manage your travel itineraries with an easy-to-use interface.
+* Create your travel itineraries with an easy-to-use interface.
+* Optimize itineraries' travelling time to allow users to travel the places they want to in the shortest time. 
 * Get detailed information about places, such as ratings, photos, and descriptions.
 * Search for specific locations using the autocomplete search feature.
 * Receive real-time updates on nearby attractions as you move around.
