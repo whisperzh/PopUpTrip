@@ -1,8 +1,10 @@
 package com.bignerdranch.android.popuptrip
 
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -15,6 +17,8 @@ import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
 import com.google.android.libraries.places.api.Places
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
 
@@ -25,6 +29,10 @@ class MainActivity : AppCompatActivity() {
     var doNotLogout:Boolean=false
     private val languageSettingList = listOf(Locale.ENGLISH,Locale.FRANCE,Locale.GERMAN,Locale.forLanguageTag("es"),Locale.SIMPLIFIED_CHINESE)
     private val languageTag= listOf("en","fr","de","es","zh")
+    private lateinit var prefs:SharedPreferences
+    var user:UserEntity= UserEntity()
+    private lateinit var database: DatabaseReference
+
     override fun onStart() {
         super.onStart()
         Toast.makeText(
@@ -35,8 +43,17 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val selectedItem=prefs.getString("Language","")
+        user.uid= prefs.getString("USER_ID","")!!
+
+        database = Firebase.database.reference
+        database.child("User_Table").child(user.uid).child("username").get().addOnSuccessListener {
+            user.userName= it.value as String
+            prefs.edit().putString("USER_NAME",user!!.userName).commit()
+        }.addOnFailureListener{
+            Log.e("firebase", "Error getting data", it)
+        }
         when(selectedItem)
         {
             "English"->changeLanguageSetting(0)
