@@ -23,6 +23,10 @@ App is not desployed to Google Play Store, to install the app:
 - targetSdk 33
 - compileSdk 33
 
+Make sure to include the required API keys for Google Maps and Places SDK.\
+In `local.properties`:\
+MAPS_API_KEY = xxxxxxxxxxxxxx
+
 ## Dependencies
 
 PopUpTrip uses the following dependencies:
@@ -31,8 +35,4 @@ PopUpTrip uses the following dependencies:
 * [Google Material 3](https://m3.material.io/)
 * [Firebase](https://firebase.google.com/)
 * [Android Architecture Components](https://developer.android.com/topic/libraries/architecture)
-
-Make sure to include the required API keys for Google Maps and Places SDK.\
-In `local.properties`:\
-MAPS_API_KEY = xxxxxxxxxxxxxx
 
