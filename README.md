@@ -5,6 +5,7 @@ With the help of this app, users can easily create itineraries and explore the a
 
 ## Features
 * User authentication with sign-in and sign-up functionality.
+* User authentication with reset password and profile data migration functionality.
 * Customize your experiences based on your preferences under personal profile.
 * Travel history and user preferences are stored in a cloud database associated with the user account.
 * Discover nearby attractions and points of interest using the integrated Google Maps API.
@@ -13,6 +14,7 @@ With the help of this app, users can easily create itineraries and explore the a
 * Get detailed information about places, such as ratings, photos, and descriptions.
 * Search for specific locations using the autocomplete search feature.
 * Receive real-time updates on nearby attractions as you move around.
+
 
 ## Installation
 App is not deployed to Google Play Store, to install the app:
