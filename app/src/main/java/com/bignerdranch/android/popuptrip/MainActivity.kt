@@ -6,12 +6,14 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
 import com.google.android.libraries.places.api.Places
@@ -23,6 +25,7 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 
 
+const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

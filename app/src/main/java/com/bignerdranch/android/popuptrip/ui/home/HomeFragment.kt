@@ -52,6 +52,7 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.json.JSONArray
@@ -579,5 +580,4 @@ class HomeFragment : Fragment() {
         Log.i(TAG, "onDestroyView called")
         _binding = null
     }
-
 }
