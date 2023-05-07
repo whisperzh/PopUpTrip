@@ -30,7 +30,7 @@ PopUpTrip uses the following dependencies:
 * [Places SDK for Android](https://developers.google.com/maps/documentation/places/android-sdk/start)
 * [Android Architecture Components](https://developer.android.com/topic/libraries/architecture)
 
-Make sure to include the required API keys for Google Maps and Places SDK.
+Make sure to include the required API keys for Google Maps and Places SDK.\
 In `local.properties`:
 MAPS_API_KEY = xxxxxxxxxxxxxx
 
