@@ -17,7 +17,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
 import com.google.android.libraries.places.api.Places
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -120,11 +119,7 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
-    public fun updateSettingUI() {
+    fun updateSettingUI() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navController
             .navigate(R.id.navigation_settings)
