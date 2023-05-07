@@ -110,13 +110,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if(doNotLogout)
-        {
+        if(doNotLogout) {
             doNotLogout=false
             return
         }
         Firebase.auth.signOut()
-        Toast.makeText(this,"You have been logged out", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this,getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
     }
 
     fun updateSettingUI() {
