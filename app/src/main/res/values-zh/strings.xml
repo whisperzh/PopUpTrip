@@ -157,4 +157,7 @@
     <string name="distance_more">起点和终点之间的距离超过20千米！</string>
     <string name="no_directions_found">未能找到路线!</string>
     <string name="add_places_to_itinerary">请往行程中加入更多地点!</string>
+    <string name="logged_out">成功登出</string>
+    <string name="itinerary_success">I成功创建行程！</string>
+    <string name="itinerary_error">哦！在创建行程的过程中出现了一些错误！</string>
 </resources>

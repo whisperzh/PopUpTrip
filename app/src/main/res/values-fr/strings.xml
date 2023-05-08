@@ -156,4 +156,7 @@
     <string name="distance_more">La distance entre le point de départ et la destination est supérieure à 20km!</string>
     <string name="no_directions_found">Aucun itinéraire trouvé!</string>
     <string name="add_places_to_itinerary">Veuillez ajouter des lieux d\'intérêt à votre itinéraire!</string>
+    <string name="logged_out">Vous avez été déconnecté</string>
+    <string name="itinerary_success">Itinéraire créé avec succès!</string>
+    <string name="itinerary_error">Oups ! Un problème est survenu lors de la création de l\'itinéraire.</string>
 </resources>

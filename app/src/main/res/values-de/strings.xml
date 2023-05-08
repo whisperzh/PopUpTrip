@@ -154,4 +154,7 @@
     <string name="distance_more">Die Entfernung zwischen Start und Ziel beträgt mehr als 20km!</string>
     <string name="no_directions_found">Keine Wegbeschreibung gefunden!</string>
     <string name="add_places_to_itinerary">Bitte fügen Sie der Reiseroute einige interessante Orte hinzu!</string>
+    <string name="logged_out">Sie wurden abgemeldet</string>
+    <string name="itinerary_success">Reiseroute erfolgreich erstellt!</string>
+    <string name="itinerary_error">Oops! Bei der Erstellung der Reiseroute ist etwas schief gelaufen.</string>
 </resources>
