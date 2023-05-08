@@ -41,7 +41,6 @@ class ProfileFragment : Fragment() {
     var text=""
     private var dbReference:DatabaseReference=FirebaseDatabase.getInstance().getReferenceFromUrl("https://popup-trip-default-rtdb.firebaseio.com/")
     private lateinit var auth: FirebaseAuth
-    private val dataList =  listOf("WALKING","TRANSIT","DRIVING","BICYCLING")
     private lateinit var prefs:SharedPreferences
     // This property is only valid between onCreateView and
     // onDestroyView.
