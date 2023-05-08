@@ -1,29 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp">
+    <TextView
+        android:id="@+id/itinerary_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="itinerary Title"/>
 
     <TextView
-        android:id="@+id/tv_destination_name"
-        android:layout_width="wrap_content"
+        android:id="@+id/itinerary_create_time"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Destination Name"
-        android:textAppearance="?attr/textAppearanceHeadline6"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Destination" />
-
-    <TextView
-        android:id="@+id/tv_time_to_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="{timeToNext}"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_destination_name"
-        tools:text="15 mins" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:text="itinerary create time" />
+</LinearLayout>

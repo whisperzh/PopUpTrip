@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bignerdranch.android.popuptrip.R
-import com.bignerdranch.android.popuptrip.ui.destinationshown.DestinationItem
 
 
 data class ItineraryItem(val destination: String, val timeToNext: String)
@@ -21,7 +20,7 @@ class ItineraryAdapter(private val destinations: List<ItineraryItem>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.itinerary_item, parent, false)
+            .inflate(R.layout.destination_item, parent, false)
         return ViewHolder(itemView)
     }
 

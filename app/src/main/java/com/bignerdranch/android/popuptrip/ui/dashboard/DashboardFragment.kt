@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.bignerdranch.android.popuptrip.R
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bignerdranch.android.popuptrip.databinding.FragmentDashboardBinding
-import com.bignerdranch.android.popuptrip.ui.destinationshown.LocationListFragment
+import kotlinx.coroutines.launch
 
 class DashboardFragment : Fragment() {
 
@@ -19,24 +22,41 @@ class DashboardFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
+    private val dashboardViewModel: DashboardViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
+//        val dashboardViewModel =
+//            ViewModelProvider(this).get(DashboardViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        // add LocationListFragment to FrameLayout
-        childFragmentManager.beginTransaction()
-            .replace(R.id.location_list_container, LocationListFragment())
-            .commit()
-
-        return root
+        binding.iternaryRecycleView.layoutManager = LinearLayoutManager(context)
+        return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                dashboardViewModel.itineraries.collect { itineraries ->
+                    binding.iternaryRecycleView.adapter =
+                        ItineraryListAdaptor(itineraries!!) { itineraryId ->
+                            findNavController().navigate(
+                                DashboardFragmentDirections.actionNavigationDashboardToItineraryFragment(
+                                    itineraryId.toString()
+                                )
+                            )
+                        }
+                }
+            }
+        }
+    }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()
