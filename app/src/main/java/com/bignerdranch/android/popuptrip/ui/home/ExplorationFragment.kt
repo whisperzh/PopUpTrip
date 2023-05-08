@@ -105,6 +105,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private var placesToAddArray: ArrayList<Any> = ArrayList()
     private var polylineArray: ArrayList<String> = ArrayList()
     private var placeTypesFromPreference: ArrayList<String> = ArrayList()
+    private var placesReturned: ArrayList<LatLng> = ArrayList()
 
     // information fields we want to fetch from Google Map API
     private val placeFields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG)
@@ -174,6 +175,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         placesToAddArray = explorationViewModel.placesToAddPoints
         polylineArray = explorationViewModel.polyline
         placeTypesFromPreference = explorationViewModel.placeTypes
+        placesReturned = explorationViewModel.placesReturned
 
         // input arguments from navigation
         if (args != null && explorationViewModel.needToFetch == true) {
@@ -949,6 +951,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun getRecommendations(coordinates: ArrayList<LatLng>) {
         val placeTypes = getPlaceTypes()
         explorationViewModel.placeTypes = placeTypes
+        placesReturned.clear()
         markersAdded.clear()
 
         for (i in 0 until coordinates.size) {
@@ -1361,7 +1364,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             val recommendationsRequest =
                 object : StringRequest(Method.GET, urlRecommendation, Response.Listener { response ->
                     val jsonResponse = JSONObject(response)
-                    val placesReturned = arrayListOf<LatLng>()
                     val status = jsonResponse.getString("status")
                     if (status == "ZERO_RESULTS") {
                         Log.d(TAG, "No recommendations for " + placeTypes[j] + " found at " + coordinates)

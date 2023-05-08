@@ -20,6 +20,7 @@ const val DESTINATION_POINT = "DESTINATION_POINT"
 const val PLACES_TO_ADD_POINTS = "PLACES_TO_ADD_POINTS"
 const val NEED_TO_FETCH = "NEED_TO_FETCH"
 const val PLACE_TYPES = "PLACE_TYPES"
+const val PLACES_RETURNED = "PLACES_RETURNED"
 
 class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : ViewModel() {
     // include entire world
@@ -84,6 +85,10 @@ class ExplorationViewModel(private val savedStateHandle: SavedStateHandle) : Vie
     var placeTypes: ArrayList<String>
         get() = savedStateHandle.get<ArrayList<String>>(PLACE_TYPES) ?: ArrayList()
         set(value) = savedStateHandle.set(PLACE_TYPES, value)
+
+    var placesReturned: ArrayList<LatLng>
+        get() = savedStateHandle.get<ArrayList<LatLng>>(PLACES_RETURNED) ?: ArrayList()
+        set(values) = savedStateHandle.set(PLACES_RETURNED, values)
 
     fun updateDestinationPlace(place: DetailedPlace){
         _destinationPlace = place
