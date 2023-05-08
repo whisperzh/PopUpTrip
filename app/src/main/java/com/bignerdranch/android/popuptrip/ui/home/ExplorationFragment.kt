@@ -447,9 +447,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             destinationPlace.placeLatLng = tempPlace.latLng
 
                             destinationPoint.clear()
-                            destinationPoint.add(destinationPlace.placeName)
-                            destinationPoint.add(destinationPlace.placeLatLng.latitude)
-                            destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                            destinationPoint.add("\'" + destinationPlace.placeName + "\'")
+                            destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
+                            destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
                             explorationViewModel.destinationPoint = destinationPoint
 
                             Log.d(TAG, "Destination Point selected: $destinationPoint")
@@ -900,15 +900,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         explorationViewModel.placesToAddPoints = placesToAddArray
 
                         startingPoint.clear()
-                        startingPoint.add(startingPlace.placeName)
-                        startingPoint.add(startingPlace.placeLatLng.latitude)
-                        startingPoint.add(startingPlace.placeLatLng.longitude)
+                        startingPoint.add("\'" + startingPlace.placeName + "\'")
+                        startingPoint.add("\'" + startingPlace.placeLatLng.latitude + "\'")
+                        startingPoint.add("\'" + startingPlace.placeLatLng.longitude + "\'")
                         explorationViewModel.startingPoint = startingPoint
 
                         destinationPoint.clear()
-                        destinationPoint.add(destinationPlace.placeName)
-                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
-                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                        destinationPoint.add("\'" + destinationPlace.placeName + "\'")
+                        destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
+                        destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
                         explorationViewModel.destinationPoint = destinationPoint
 
                         val routes = jsonResponse.getJSONArray("routes")
@@ -1127,11 +1127,14 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         if (placesToAdd.size > 0) {
             for (i in 0 until placesToAdd.size) {
-                if (placesToAdd[i].placeLatLng.latitude !in placesToAddArray &&
-                    placesToAdd[i].placeLatLng.longitude !in placesToAddArray) {
-                    placesToAddArray.add(placesToAdd[i].placeName)
-                    placesToAddArray.add(placesToAdd[i].placeLatLng.latitude)
-                    placesToAddArray.add(placesToAdd[i].placeLatLng.longitude)
+                val lat = "\'" + placesToAdd[i].placeLatLng.latitude + "\'"
+                val lon = "\'" + placesToAdd[i].placeLatLng.longitude + "\'"
+
+                if (lat !in placesToAddArray &&
+                    lon !in placesToAddArray) {
+                    placesToAddArray.add("\'" + placesToAdd[i].placeName + "\'")
+                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.latitude + "\'")
+                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.longitude + "\'")
                 }
             }
             explorationViewModel.placesToAddPoints = placesToAddArray
@@ -1141,14 +1144,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             Log.d(TAG, "PlacesToAddArray To Send: $placesToAddArray")
 
             val jsonObject = JSONObject()
-            jsonObject.put("user_email", "new_user@bu.edu")
-            jsonObject.put("starting_location", startingPoint.toString())
+            // TODO Get user's actual email
+            jsonObject.put("user_email", "sarah@bu.edu")
+            jsonObject.put("starting_point", startingPoint.toString())
             jsonObject.put("destination", destinationPoint.toString())
             jsonObject.put("places", placesToAddArray.toString())
 
             Log.d(TAG, "JSON Object to send to Itinerary: $jsonObject")
 
-            val url = "http://54.147.60.104:80/add-itinerary/"
+            val url = "http://54.147.60.104:80/itinerary/add-itinerary/"
 
             val jsonObjectRequest = JsonObjectRequest(
                 Request.Method.POST,
@@ -1157,10 +1161,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 { response ->
                     // Handle response
                     Log.d(TAG, "Response from Itinerary: $response")
+                    Toast.makeText(activity, getString(R.string.itinerary_success), Toast.LENGTH_LONG).show()
                 },
                 { error ->
                     // Handle error
                     Log.d(TAG, "Error from Itinerary: $error")
+                    Toast.makeText(activity, getString(R.string.itinerary_error), Toast.LENGTH_LONG).show()
                 }
             )
 
