@@ -18,13 +18,9 @@ class DashboardViewModel : ViewModel() {
     )
     var itineraries: StateFlow<MutableList<Itinerary>?> = _itineraries.asStateFlow()
 
-
-    init {
-        viewModelScope.launch {
-            var cach:MutableList<Itinerary> = mutableListOf()
-            for(i in 1..10)
-                cach.add(Itinerary(i.toString(),"it$i",LocalDate.now().toString()))
-            _itineraries.value=cach
-        }
+    public fun setFlow(lis:MutableList<Itinerary>)
+    {
+        _itineraries.value=lis
     }
+
 }
