@@ -905,23 +905,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         startingPoint.add("\'" + startingPlace.placeLatLng.longitude + "\'")
                         explorationViewModel.startingPoint = startingPoint
 
-//                        startingPoint.clear()
-//                        startingPoint.add(startingPlace.placeName)
-//                        startingPoint.add(startingPlace.placeLatLng.latitude)
-//                        startingPoint.add(startingPlace.placeLatLng.longitude)
-//                        explorationViewModel.startingPoint = startingPoint
-
                         destinationPoint.clear()
                         destinationPoint.add("\'" + destinationPlace.placeName + "\'")
                         destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
                         destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
                         explorationViewModel.destinationPoint = destinationPoint
-
-//                        destinationPoint.clear()
-//                        destinationPoint.add(destinationPlace.placeName)
-//                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
-//                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
-//                        explorationViewModel.destinationPoint = destinationPoint
 
                         val routes = jsonResponse.getJSONArray("routes")
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
@@ -1139,8 +1127,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         if (placesToAdd.size > 0) {
             for (i in 0 until placesToAdd.size) {
-                if (placesToAdd[i].placeLatLng.latitude !in placesToAddArray &&
-                    placesToAdd[i].placeLatLng.longitude !in placesToAddArray) {
+                val lat = "\'" + placesToAdd[i].placeLatLng.latitude + "\'"
+                val lon = "\'" + placesToAdd[i].placeLatLng.longitude + "\'"
+
+                if (lat !in placesToAddArray &&
+                    lon !in placesToAddArray) {
                     placesToAddArray.add("\'" + placesToAdd[i].placeName + "\'")
                     placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.latitude + "\'")
                     placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.longitude + "\'")
@@ -1170,10 +1161,12 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                 { response ->
                     // Handle response
                     Log.d(TAG, "Response from Itinerary: $response")
+                    Toast.makeText(activity, getString(R.string.itinerary_success), Toast.LENGTH_LONG).show()
                 },
                 { error ->
                     // Handle error
                     Log.d(TAG, "Error from Itinerary: $error")
+                    Toast.makeText(activity, getString(R.string.itinerary_error), Toast.LENGTH_LONG).show()
                 }
             )
 

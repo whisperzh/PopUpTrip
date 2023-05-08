@@ -39,6 +39,8 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="logged_out">You have been logged out</string>
+    <string name="itinerary_success">Itinerary successfully created!</string>
+    <string name="itinerary_error">Oops! Something went wrong with itinerary creation.</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
