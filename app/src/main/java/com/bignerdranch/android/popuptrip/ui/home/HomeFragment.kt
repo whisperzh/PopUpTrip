@@ -14,6 +14,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -24,6 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -54,6 +56,7 @@ import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
 import com.bignerdranch.android.popuptrip.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.navigation.NavigationView
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import org.json.JSONArray
 import org.json.JSONObject
@@ -174,11 +177,12 @@ class HomeFragment : Fragment() {
                 if (userPreferenceList.isEmpty()){
                     // list of nearby places in viewModel is updated with fetch response
                     Log.d(TAG, "need to fetch nearby places")
+                    disableMenu()
                     showProgressIndicator()
                     getCurrentLocationAndFetchPlaces{
                         hideProgressIndicator()
+                        enableMenu()
                     }
-
                 } else {
                     Log.d(TAG, "Current user preferences are: $userPreferenceList")
                     val tempUserPreferenceList = getPlaceTypePreference()
@@ -192,9 +196,11 @@ class HomeFragment : Fragment() {
                     } else {
                         Log.d(TAG, "Change of preference, need to fetch nearby places")
                         binding.nearbyPlacesRecyclerView.layoutManager?.scrollToPosition(0)
+                        disableMenu()
                         showProgressIndicator()
                         getCurrentLocationAndFetchPlaces{
                             hideProgressIndicator()
+                            enableMenu()
                         }
                     }
                 }
@@ -579,5 +585,25 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         Log.i(TAG, "onDestroyView called")
         _binding = null
+    }
+
+    private fun disableMenu() {
+        val navigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+        navigationView?.menu?.apply {
+            findItem(R.id.navigation_home)?.isEnabled = false
+            findItem(R.id.navigation_dashboard)?.isEnabled = false
+            findItem(R.id.navigation_profile)?.isEnabled = false
+            findItem(R.id.navigation_settings)?.isEnabled = false
+        }
+    }
+
+    private fun enableMenu() {
+        val navigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
+        navigationView?.menu?.apply {
+            findItem(R.id.navigation_home)?.isEnabled = true
+            findItem(R.id.navigation_dashboard)?.isEnabled = true
+            findItem(R.id.navigation_profile)?.isEnabled = true
+            findItem(R.id.navigation_settings)?.isEnabled = true
+        }
     }
 }
