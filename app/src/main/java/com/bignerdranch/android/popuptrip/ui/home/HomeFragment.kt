@@ -587,6 +587,9 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    // The following 2 functions are adapted from
+    // https://stackoverflow.com/questions/59700294/how-to-disable-menu-item-of-bottom-navigation-view
+    // https://www.appsloveworld.com/kotlin/100/14/how-to-disable-menu-item-of-bottom-navigation-view
     private fun disableMenu() {
         val navigationView = activity?.findViewById<BottomNavigationView>(R.id.nav_view)
         navigationView?.menu?.apply {
@@ -594,6 +597,11 @@ class HomeFragment : Fragment() {
             findItem(R.id.navigation_dashboard)?.isEnabled = false
             findItem(R.id.navigation_profile)?.isEnabled = false
             findItem(R.id.navigation_settings)?.isEnabled = false
+
+            findItem(R.id.navigation_home)?.isCheckable = false
+            findItem(R.id.navigation_dashboard)?.isCheckable = false
+            findItem(R.id.navigation_profile)?.isCheckable = false
+            findItem(R.id.navigation_settings)?.isCheckable = false
         }
     }
 
@@ -604,6 +612,11 @@ class HomeFragment : Fragment() {
             findItem(R.id.navigation_dashboard)?.isEnabled = true
             findItem(R.id.navigation_profile)?.isEnabled = true
             findItem(R.id.navigation_settings)?.isEnabled = true
+
+            findItem(R.id.navigation_home)?.isCheckable = true
+            findItem(R.id.navigation_dashboard)?.isCheckable = true
+            findItem(R.id.navigation_profile)?.isCheckable = true
+            findItem(R.id.navigation_settings)?.isCheckable = true
         }
     }
 }
