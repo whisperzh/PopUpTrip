@@ -57,11 +57,28 @@ class MainActivity : AppCompatActivity() {
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
         }
-        database.child("User_Table").child(user.uid).child("travelMethod").get().addOnSuccessListener {
-            user.travelMethod=it.value as String
-            prefs.edit().putString("TRAVEL_METHOD",user!!.travelMethod).commit()
+            database.child("User_Table").child(user.uid).child("travelMethod").get()
+                .addOnSuccessListener {
+                    if (it.value!=null) {
+                        user.travelMethod = it.value as String
+                        prefs.edit().putString("TRAVEL_METHOD", user!!.travelMethod).commit()
+                    }else{
+                        Log.e("firebase","Error: travel Method data is null")
+                    }
+                }.addOnFailureListener {
+                Log.e("firebase", "Error getting travelMethod data", it)
+            }
+
+
+        database.child("User_Table").child(user.uid).child("preferencePlace").get().addOnSuccessListener {
+            if (it.value != null) {
+                user.preference = it.value as String
+                prefs.edit().putString("Preference", user!!.preference).commit()
+            }else{
+                Log.e("firebase","Error: preference data is null")
+            }
         }.addOnFailureListener {
-            Log.e("firebase","Error getting travelMethod data", it)
+            Log.e("firebase","Error getting preference data", it)
         }
         when(selectedItem)
         {
