@@ -18,18 +18,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="From ... "
-        android:textSize="16sp" />
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/itinerary_end_point"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="To..." />
+        android:text="To..."
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/itinerary_create_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="itinerary create time"
-        android:textSize="16sp" />
+        android:textSize="12sp" />
 </LinearLayout>
