@@ -62,6 +62,8 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.maps.android.PolyUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -1144,8 +1146,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             Log.d(TAG, "PlacesToAddArray To Send: $placesToAddArray")
 
             val jsonObject = JSONObject()
-            // TODO Get user's actual email
-            jsonObject.put("user_email", "sarah@bu.edu")
+            jsonObject.put("user_email", Firebase.auth.currentUser?.email.toString())
             jsonObject.put("starting_point", startingPoint.toString())
             jsonObject.put("destination", destinationPoint.toString())
             jsonObject.put("places", placesToAddArray.toString())
@@ -1162,6 +1163,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                     // Handle response
                     Log.d(TAG, "Response from Itinerary: $response")
                     Toast.makeText(activity, getString(R.string.itinerary_success), Toast.LENGTH_LONG).show()
+                    val itineraryId = response.getString("itinerary_id")
+                    Log.d(TAG, "Itinerary ID from response: $itineraryId")
+                    // Launch navigation to itinerary page
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                            findNavController().navigate(
+                                ExplorationFragmentDirections.actionNavigationExplorationToItineraryFragment(itineraryId)
+                            )
+                        }
+                    }
                 },
                 { error ->
                     // Handle error
