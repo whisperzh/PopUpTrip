@@ -447,9 +447,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             destinationPlace.placeLatLng = tempPlace.latLng
 
                             destinationPoint.clear()
-                            destinationPoint.add(destinationPlace.placeName)
-                            destinationPoint.add(destinationPlace.placeLatLng.latitude)
-                            destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                            destinationPoint.add("\'" + destinationPlace.placeName + "\'")
+                            destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
+                            destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
                             explorationViewModel.destinationPoint = destinationPoint
 
                             Log.d(TAG, "Destination Point selected: $destinationPoint")
@@ -900,16 +900,28 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         explorationViewModel.placesToAddPoints = placesToAddArray
 
                         startingPoint.clear()
-                        startingPoint.add(startingPlace.placeName)
-                        startingPoint.add(startingPlace.placeLatLng.latitude)
-                        startingPoint.add(startingPlace.placeLatLng.longitude)
+                        startingPoint.add("\'" + startingPlace.placeName + "\'")
+                        startingPoint.add("\'" + startingPlace.placeLatLng.latitude + "\'")
+                        startingPoint.add("\'" + startingPlace.placeLatLng.longitude + "\'")
                         explorationViewModel.startingPoint = startingPoint
 
+//                        startingPoint.clear()
+//                        startingPoint.add(startingPlace.placeName)
+//                        startingPoint.add(startingPlace.placeLatLng.latitude)
+//                        startingPoint.add(startingPlace.placeLatLng.longitude)
+//                        explorationViewModel.startingPoint = startingPoint
+
                         destinationPoint.clear()
-                        destinationPoint.add(destinationPlace.placeName)
-                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
-                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
+                        destinationPoint.add("\'" + destinationPlace.placeName + "\'")
+                        destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
+                        destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
                         explorationViewModel.destinationPoint = destinationPoint
+
+//                        destinationPoint.clear()
+//                        destinationPoint.add(destinationPlace.placeName)
+//                        destinationPoint.add(destinationPlace.placeLatLng.latitude)
+//                        destinationPoint.add(destinationPlace.placeLatLng.longitude)
+//                        explorationViewModel.destinationPoint = destinationPoint
 
                         val routes = jsonResponse.getJSONArray("routes")
                         val legs = routes.getJSONObject(0).getJSONArray("legs")
@@ -1129,9 +1141,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             for (i in 0 until placesToAdd.size) {
                 if (placesToAdd[i].placeLatLng.latitude !in placesToAddArray &&
                     placesToAdd[i].placeLatLng.longitude !in placesToAddArray) {
-                    placesToAddArray.add(placesToAdd[i].placeName)
-                    placesToAddArray.add(placesToAdd[i].placeLatLng.latitude)
-                    placesToAddArray.add(placesToAdd[i].placeLatLng.longitude)
+                    placesToAddArray.add("\'" + placesToAdd[i].placeName + "\'")
+                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.latitude + "\'")
+                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.longitude + "\'")
                 }
             }
             explorationViewModel.placesToAddPoints = placesToAddArray
