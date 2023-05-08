@@ -1,5 +1,6 @@
 package com.bignerdranch.android.popuptrip.ui.dashboard
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +22,8 @@ import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentDashboardBinding
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -68,8 +71,8 @@ class DashboardFragment : Fragment() {
             }
         }
 
-        var userEmail:String = (activity as MainActivity).user.userEmail
-        var wholeUrl:String=baseUrlPrefix+"new_user@bu.edu" //+userEmail
+        var userEmail:String = Firebase.auth.currentUser!!.email!!
+        var wholeUrl:String=baseUrlPrefix+userEmail
         getVolley(wholeUrl)
 
     }
@@ -93,8 +96,13 @@ class DashboardFragment : Fragment() {
                             singleItJsonObj.get("itinerary name").toString())
                     listOfItinerarys.add(singleItinerary)
                 }
-                dashboardViewModel.setFlow(listOfItinerarys)
-
+                if(k.length()!=0) {
+                    dashboardViewModel.setFlow(listOfItinerarys)
+                }
+                else
+                {
+                    binding.DashBoardLog.visibility=View.VISIBLE
+                }
                 Log.d("Uni-Api",k.toString())
             },
             Response.ErrorListener {Log.d("API", "that didn't work") })
