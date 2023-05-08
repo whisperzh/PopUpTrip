@@ -17,13 +17,24 @@
         tools:text="Destination" />
 
     <TextView
+        android:id="@+id/tv_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="↓"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_destination_name" />
+
+
+    <TextView
         android:id="@+id/tv_time_to_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="{timeToNext}"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="15dp"
+        app:layout_constraintStart_toEndOf="@+id/tv_arrow"
         app:layout_constraintTop_toBottomOf="@+id/tv_destination_name"
         tools:text="15 mins" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

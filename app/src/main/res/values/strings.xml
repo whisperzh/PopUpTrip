@@ -41,6 +41,8 @@
     <string name="logged_out">You have been logged out</string>
     <string name="itinerary_success">Itinerary successfully created!</string>
     <string name="itinerary_error">Oops! Something went wrong with itinerary creation.</string>
+    <string name="time_to_next_format">↓%1$s</string>
+
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
@@ -159,4 +161,6 @@
     <string name="distance_more">Distance between start point and destination is more than 20km!</string>
     <string name="no_directions_found">No directions found!</string>
     <string name="add_places_to_itinerary">Please add some places of interest to Itinerary!</string>
+    <string name="noItineriesYet">No Itineraries created yet</string>
+
 </resources>

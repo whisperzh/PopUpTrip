@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         ).show()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "MainActivity onCreate")
         super.onCreate(savedInstanceState)
         prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val selectedItem=prefs.getString("Language","")
@@ -89,29 +90,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_profile, R.id.navigation_settings
             )
         )
-//        setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-//        navView.setOnItemSelectedListener {
-//            when (it.itemId) {
-//                R.id.navigation_settings -> {
-//                    navController
-//                        .navigate(R.id.navigation_settings)
-//                }
-//                R.id.navigation_profile -> {
-//                    navController
-//                        .navigate(R.id.navigation_profile)
-//                }
-//                R.id.navigation_home -> {
-//                    navController
-//                        .navigate(R.id.navigation_home)
-//                }
-//                R.id.navigation_dashboard -> {
-//                    navController
-//                        .navigate(R.id.navigation_dashboard)
-//                }
-//            }
-//            true
-//        }
+        updateBottomNavigationMenu()
     }
 
     override fun onDestroy() {
@@ -140,5 +120,15 @@ class MainActivity : AppCompatActivity() {
         resources.updateConfiguration(config, displayMetrics)
         val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
         AppCompatDelegate.setApplicationLocales(appLocale)
+    }
+
+    private fun updateBottomNavigationMenu() {
+        val menu = findViewById<BottomNavigationView>(R.id.nav_view).menu
+        menu.apply {
+            findItem(R.id.navigation_home).setTitle(R.string.title_home)
+            findItem(R.id.navigation_dashboard).setTitle(R.string.title_dashboard)
+            findItem(R.id.navigation_profile).setTitle(R.string.title_profile)
+            findItem(R.id.navigation_settings).setTitle(R.string.title_setting)
+        }
     }
 }
