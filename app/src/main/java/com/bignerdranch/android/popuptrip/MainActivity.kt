@@ -56,6 +56,12 @@ class MainActivity : AppCompatActivity() {
         }.addOnFailureListener{
             Log.e("firebase", "Error getting data", it)
         }
+        database.child("User_Table").child(user.uid).child("travelMethod").get().addOnSuccessListener {
+            user.travelMethod=it.value as String
+            prefs.edit().putString("TRAVEL_METHOD",user!!.travelMethod).commit()
+        }.addOnFailureListener {
+            Log.e("firebase","Error getting travelMethod data", it)
+        }
         when(selectedItem)
         {
             "English"->changeLanguageSetting(0)
