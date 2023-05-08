@@ -1141,14 +1141,15 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             Log.d(TAG, "PlacesToAddArray To Send: $placesToAddArray")
 
             val jsonObject = JSONObject()
-            jsonObject.put("user_email", "new_user@bu.edu")
-            jsonObject.put("starting_location", startingPoint.toString())
+            // TODO Get user's actual email
+            jsonObject.put("user_email", "sarah@bu.edu")
+            jsonObject.put("starting_point", startingPoint.toString())
             jsonObject.put("destination", destinationPoint.toString())
             jsonObject.put("places", placesToAddArray.toString())
 
             Log.d(TAG, "JSON Object to send to Itinerary: $jsonObject")
 
-            val url = "http://54.147.60.104:80/add-itinerary/"
+            val url = "http://54.147.60.104:80/itinerary/add-itinerary/"
 
             val jsonObjectRequest = JsonObjectRequest(
                 Request.Method.POST,

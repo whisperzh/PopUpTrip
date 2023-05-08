@@ -17,7 +17,7 @@ With the help of this app, users can easily create itineraries and explore the a
 
 
 ## Installation
-App is not deployed to Google Play Store, to install the app:
+App is not deployed to Google Play Store, so to install the app:
 
 1. Clone the repository: https://github.com/whisperzh/PopUpTrip
 2. Open the project in Android Studio.
