@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.databinding.FragmentSettingBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -97,7 +98,6 @@ class SettingFragment : Fragment() {
                     }
                     (activity as MainActivity).updateSettingUI()
 
-
 //                }
 //
                 lastSelectedItem = selectedItem
@@ -154,8 +154,7 @@ class SettingFragment : Fragment() {
         resources.updateConfiguration(config, displayMetrics)
         val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags("xx-YY")
         setApplicationLocales(appLocale)
-
-
+        updateBottomNavigationMenu()
     }
 
     private fun showRestartDialog() {
@@ -180,4 +179,13 @@ class SettingFragment : Fragment() {
         _binding = null
     }
 
+    private fun updateBottomNavigationMenu() {
+        val menu = activity?.findViewById<BottomNavigationView>(com.bignerdranch.android.popuptrip.R.id.nav_view)?.menu
+        menu?.apply {
+            findItem(com.bignerdranch.android.popuptrip.R.id.navigation_home).setTitle(com.bignerdranch.android.popuptrip.R.string.title_home)
+            findItem(com.bignerdranch.android.popuptrip.R.id.navigation_dashboard).setTitle(com.bignerdranch.android.popuptrip.R.string.title_dashboard)
+            findItem(com.bignerdranch.android.popuptrip.R.id.navigation_profile).setTitle(com.bignerdranch.android.popuptrip.R.string.title_profile)
+            findItem(com.bignerdranch.android.popuptrip.R.id.navigation_settings).setTitle(com.bignerdranch.android.popuptrip.R.string.title_setting)
+        }
+    }
 }
