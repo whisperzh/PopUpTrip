@@ -95,25 +95,29 @@ class LoginFragment : Fragment() {
                             Log.d(TAG, "signInWithEmail:success")
                             val user = auth.currentUser
                             prefs.edit().putString("USER_ID",user!!.uid).commit()
-                            Toast.makeText(
-                                context,
-                                popR.string.authen_succeed,
-                                Toast.LENGTH_SHORT,
-                            ).show()
+//                            Toast.makeText(
+//                                context,
+//                                popR.string.authen_succeed,
+//                                Toast.LENGTH_SHORT,
+//                            ).show()
+                            binding.username.editText!!.setText("")
+                            binding.password.editText!!.setText("")
                             val intent = Intent(context, MainActivity::class.java)
                             startActivity(intent)
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            Toast.makeText(
-                                context,
-                                popR.string.authen_fail,
-                                Toast.LENGTH_SHORT,
-                            ).show()
+//                            Toast.makeText(
+//                                context,
+//                                popR.string.authen_fail,
+//                                Toast.LENGTH_SHORT,
+//                            ).show()
                         }
                     }
             }
     }
+
+
 
 
     companion object {

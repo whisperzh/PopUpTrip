@@ -94,6 +94,8 @@ class RegisterFragment : Fragment() {
                             Toast.LENGTH_SHORT,
                         ).show()
                         dbReference.child("User_Table").child(user.uid).child("username").setValue(userName)
+                        dbReference.child("User_Table").child(user.uid).child("preferredPlace").setValue(userName)
+                        dbReference.child("User_Table").child(user.uid).child("travelMethod").setValue("WALKING")
 //                        finish()
                         (activity as FragmentActivity).supportFragmentManager.popBackStack()
                     } else {

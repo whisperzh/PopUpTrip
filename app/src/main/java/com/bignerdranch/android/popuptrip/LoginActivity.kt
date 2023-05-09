@@ -3,6 +3,7 @@ package com.bignerdranch.android.popuptrip
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
@@ -17,6 +18,8 @@ import androidx.appcompat.app.AppCompatDelegate.setApplicationLocales
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import com.bignerdranch.android.popuptrip.databinding.ActivityLoginBinding
+import com.bignerdranch.android.popuptrip.ui.LoginFragment
+import com.bignerdranch.android.popuptrip.ui.ResetPasswordFragment
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -25,17 +28,14 @@ import java.util.*
 
 
 class LoginActivity : AppCompatActivity() {
+    private lateinit var prefs: SharedPreferences
     private lateinit var binding: ActivityLoginBinding
     // See: https://developer.android.com/training/basics/intents/result
     private lateinit var auth: FirebaseAuth
     private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private val languageSettingList = listOf(Locale.ENGLISH,Locale.FRANCE,Locale.GERMAN,Locale.forLanguageTag("es"),Locale.SIMPLIFIED_CHINESE)
     private val languageTag= listOf("en","fr","de","es","zh")
-
-    override fun onStart() {
-        super.onStart()
-
-    }
+    private var prevLanguageIndex=0
 
     override fun onResume() {
         super.onResume()
@@ -46,23 +46,45 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+        var newIndex=0
+        val selectedItem=prefs.getString("Language","")
+        when(selectedItem)
+        {
+            "English"->{changeLanguageSetting(0)
+                        newIndex=0}
+            "Français"-> {
+                changeLanguageSetting(1)
+                newIndex=1
+            }
+            "Deutsch"-> {
+                changeLanguageSetting(2)
+                newIndex=2
+            }
+            "Español"-> {
+                changeLanguageSetting(3)
+                newIndex=3
+            }
+            "简体中文"-> {
+                changeLanguageSetting(4)
+                newIndex=4
+            }
+        }
+
+        val nextFrag = LoginFragment.newInstance("1","2")
+        if(prevLanguageIndex!=newIndex){
+            prevLanguageIndex=newIndex
+            supportFragmentManager!!.beginTransaction()
+                .replace(com.bignerdranch.android.popuptrip.R.id.fragment_container,nextFrag, "lFragment")
+                .addToBackStack(null)
+                .commit()
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityLoginBinding.inflate(layoutInflater)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val selectedItem=prefs.getString("Language","")
-        when(selectedItem)
-        {
-            "English"->changeLanguageSetting(0)
-            "Français"->changeLanguageSetting(1)
-            "Deutsch"->changeLanguageSetting(2)
-            "Español"->changeLanguageSetting(3)
-            "简体中文"->changeLanguageSetting(4)
-        }
-
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         AppCompatDelegate.setDefaultNightMode(mode) //read the previous setting for dark mode

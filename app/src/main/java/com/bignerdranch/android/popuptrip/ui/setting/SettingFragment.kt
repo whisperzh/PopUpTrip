@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip.ui.setting
 
 import android.R
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -31,8 +32,8 @@ class SettingFragment : Fragment() {
     private val dataList =  listOf("English","Français","Deutsch","Español","简体中文")
     private val languageSettingList = listOf(Locale.ENGLISH,Locale.FRANCE,Locale.GERMAN,Locale.forLanguageTag("es"),Locale.SIMPLIFIED_CHINESE)
     private val languageTag= listOf("en","fr","de","es","zh")
-    private lateinit var overlayout: FrameLayout
     private var restart=false;
+    private lateinit var prefs:SharedPreferences
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -43,16 +44,18 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val switchState = prefs.getBoolean("switchState", false)
         lastSelectedItem=prefs.getString("Language",null)
         binding.themeSwitch.isChecked = switchState
+
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = adapter//bind the adapter
         var applyChangeOnLanguage=false
         var position=0
+
         when(lastSelectedItem)
         {
             "English"->position=0
@@ -61,6 +64,7 @@ class SettingFragment : Fragment() {
             "Español"->position=3
             "简体中文"->position=4
         }
+
         binding.spinner.setSelection(position)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -108,26 +112,19 @@ class SettingFragment : Fragment() {
                 // Do nothing
             }
         }
+
         val switch = binding.themeSwitch
         restart=false
         switch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).commit()//save the switch status
             if (isChecked) {
-                prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
-                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).apply()
-                showRestartDialog()
+                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).commit()
             } else {
-                prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).apply()//save the switch status
-                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).apply()
-                showRestartDialog()
+                prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_NO).commit()
             }
+            showRestartDialog()
         }
-//        val logoutButton=binding.logoutButton
-    //    logoutButton.setOnClickListener(
-      //      findNavController()
-       // )
-        //starButton.setOnClickListener(Navigation.createNavigateOnClickListener(
-          //  popR.id.navigation_star,null
-        //))   //wait for adapter&list
+
         binding.logoutButton.setOnClickListener {
             Firebase.auth.signOut()
             Toast.makeText(context,"You have been logged out",Toast.LENGTH_SHORT).show()
@@ -136,11 +133,6 @@ class SettingFragment : Fragment() {
         val settingViewModel =
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
-
-//        val textView: TextView = binding.textSetting
-//        settingViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
         return binding.root
     }
 
@@ -158,7 +150,6 @@ class SettingFragment : Fragment() {
     }
 
     private fun showRestartDialog() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         val mode = prefs.getInt("mode", AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         val dialogView =
             LayoutInflater.from(requireContext()).inflate(com.bignerdranch.android.popuptrip.R.layout.dialog_restart, null)
@@ -173,8 +164,7 @@ class SettingFragment : Fragment() {
         dialog.show()
     }
     override fun onDestroyView() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        prefs.edit().putInt("SpinnerPosition", binding.spinner.selectedItemPosition).apply()//save spinner position
+        prefs.edit().putInt("SpinnerPosition", binding.spinner.selectedItemPosition).commit()//save spinner position
         super.onDestroyView()
         _binding = null
     }

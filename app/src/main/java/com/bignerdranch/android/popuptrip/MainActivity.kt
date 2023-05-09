@@ -11,9 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
 import com.google.android.libraries.places.api.Places
@@ -34,14 +32,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs:SharedPreferences
     var user:UserEntity= UserEntity()
     private lateinit var database: DatabaseReference
+    private lateinit var loginToast:Toast
 
     override fun onStart() {
         super.onStart()
-        Toast.makeText(
+        loginToast = Toast.makeText(
             this,
             R.string.login_success,
             Toast.LENGTH_SHORT,
-        ).show()
+        )
+        loginToast.show()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "MainActivity onCreate")
@@ -95,7 +95,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
         Firebase.auth.signOut()
-        Toast.makeText(this,getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
+        loginToast.cancel()
+//        Toast.makeText(this,getString(R.string.logged_out), Toast.LENGTH_SHORT).show()
     }
 
     fun updateSettingUI() {
