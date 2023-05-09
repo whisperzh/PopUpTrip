@@ -160,4 +160,7 @@
     <string name="logged_out">Se ha cerrado la sesión</string>
     <string name="itinerary_success">¡Itinerario creado con éxito!</string>
     <string name="itinerary_error">¡Ups! Algo ha ido mal en la creación del itinerario.</string>
+    <string name="noItinerariesYet">Aún no hay itinerarios creados</string>
+    <string name="title_itinerary_history">Historia del itinerario</string>
+    <string name="title_itinerary_detail">Detalle del itinerario</string>
 </resources>

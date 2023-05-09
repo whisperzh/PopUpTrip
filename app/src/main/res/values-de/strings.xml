@@ -157,4 +157,7 @@
     <string name="logged_out">Sie wurden abgemeldet</string>
     <string name="itinerary_success">Reiseroute erfolgreich erstellt!</string>
     <string name="itinerary_error">Oops! Bei der Erstellung der Reiseroute ist etwas schief gelaufen.</string>
+    <string name="noItinerariesYet">Noch keine Reiserouten erstellt</string>
+    <string name="title_itinerary_history">Reiseroute Geschichte</string>
+    <string name="title_itinerary_detail">Reiseroute Detail</string>
 </resources>

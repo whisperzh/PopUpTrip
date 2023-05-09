@@ -159,4 +159,7 @@
     <string name="logged_out">You have been logged out</string>
     <string name="itinerary_success">Itinerary successfully created!</string>
     <string name="itinerary_error">Oops! Something went wrong with itinerary creation.</string>
+    <string name="noItinerariesYet">No Itineraries created yet</string>
+    <string name="title_itinerary_history">Itinerary History</string>
+    <string name="title_itinerary_detail">Itinerary Detail</string>
 </resources>

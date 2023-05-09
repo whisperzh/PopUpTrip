@@ -159,4 +159,7 @@
     <string name="logged_out">Vous avez été déconnecté</string>
     <string name="itinerary_success">Itinéraire créé avec succès!</string>
     <string name="itinerary_error">Oups ! Un problème est survenu lors de la création de l\'itinéraire.</string>
+    <string name="noItinerariesYet">Aucun itinéraire n\'a encore été créé</string>
+    <string name="title_itinerary_history">Histoire de l\'itinéraire</string>
+    <string name="title_itinerary_detail">Détail de l\'itinéraire</string>
 </resources>

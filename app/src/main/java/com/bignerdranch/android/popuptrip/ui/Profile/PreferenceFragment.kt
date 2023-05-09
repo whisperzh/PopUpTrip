@@ -314,6 +314,7 @@ class PreferenceFragment : Fragment() {
             }.addOnFailureListener {
                 Log.e("Preference", "Travel method failed to store in firebase")
             }
+            Log.d("Preference Place",store)
             dbReference.child("User_Table").child(auth.currentUser!!.uid).child("preferencePlace").setValue(
                 store.toString()
             ).addOnSuccessListener {
