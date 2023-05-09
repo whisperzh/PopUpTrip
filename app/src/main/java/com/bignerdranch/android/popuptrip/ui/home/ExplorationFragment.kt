@@ -132,6 +132,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
+    // Unable to get the default or English strings, so created these variables to get the
+    // place categories in English
     private val entertainment = "ENTERTAINMENT"
     private val culture = "CULTURE"
     private val food = "FOOD"
