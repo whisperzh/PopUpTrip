@@ -41,5 +41,6 @@ PopUpTrip uses the following dependencies:
 * [Android Architecture Components](https://developer.android.com/topic/libraries/architecture)
 
 ## Backend code repository
-The github repo for the backend code: https://github.com/lianghuanjia/501Backend
+The github repo for the backend code: https://github.com/lianghuanjia/501Backend\
+The code in this repository does not need to be manually run.
 
