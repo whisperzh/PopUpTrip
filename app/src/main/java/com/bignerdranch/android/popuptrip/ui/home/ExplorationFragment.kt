@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Context.*
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -40,6 +42,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
+import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentExplorationBinding
 import com.google.android.gms.common.api.ApiException
@@ -76,6 +79,8 @@ import java.lang.Double.max
 import java.lang.Double.min
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -127,6 +132,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val natureCategories = arrayListOf<String>("campground", "park")
     private val nightLifeCategories = arrayListOf<String>("bar", "night_club")
     private val entertainmentCategory = arrayListOf<String>("amusement_park", "aquarium", "movie_theater", "zoo")
+    private val entertainment = "ENTERTAINMENT"
+    private val culture = "CULTURE"
+    private val food = "FOOD"
+    private val nature = "NATURE"
+    private val nightlife = "NIGHTLIFE"
 
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
@@ -792,11 +802,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getLocation() {
-//        val mugarLat = 42.350843
-//        val mugarLon = -71.108126
-//        currentLocationLatLng = LatLng(mugarLat, mugarLon)
-//        binding.startingTextInputTextfield.setText(getString(R.string.current_location_title))
-//        Log.d(TAG, "Starting Point at Current Location: $currentLocationLatLng")
         Log.d(TAG, "getLocation() is called")
         if (checkPermissions()) {
             Log.d(TAG, "Check Permission success")
@@ -853,10 +858,11 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             getLocation()
         }
         Log.d(TAG, "getDirections() is called")
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
-        val travelModeInt = prefs.getInt("SpinnerPosition", 2)
-        val travelMode = travelModes[travelModeInt]
+//        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+//        val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
+//        val travelModeInt = prefs.getInt("SpinnerPosition", 2)
+//        val travelMode = travelModes[travelModeInt]
+        val travelMode = (activity as MainActivity).user.travelMethod
 
         var coordinates = arrayListOf<LatLng>()
         Log.d(TAG, "Travel Mode: $travelMode")
@@ -1221,16 +1227,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private fun getMarkerColour(category: String?): Float {
         Log.d(TAG, "Category of place: $category")
         return when (category) {
-            getString(R.string.category_title_entertainment) -> {
+            entertainment -> {
                 BitmapDescriptorFactory.HUE_ROSE
             }
-            getString(R.string.category_title_culture) -> {
+            culture -> {
                 BitmapDescriptorFactory.HUE_BLUE
             }
-            getString(R.string.category_title_food) -> {
+            food -> {
                 BitmapDescriptorFactory.HUE_ORANGE
             }
-            getString(R.string.category_title_nature) -> {
+            nature -> {
                 BitmapDescriptorFactory.HUE_GREEN
             }
             else -> { // Nightlife
@@ -1410,16 +1416,16 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                                 maxNEBounds = getNEBound(maxNEBounds, placeLatLng)
                                 placesReturned.add(placeLatLng)
 
-                                if (placeCategory == getString(R.string.category_title_entertainment)) {
+                                if (placeCategory == entertainment) {
                                     markerColor = BitmapDescriptorFactory.HUE_ROSE
                                     placeToMark.placeCategory = placeCategory
-                                } else if (placeCategory == getString(R.string.category_title_culture)) {
+                                } else if (placeCategory == culture) {
                                     markerColor = BitmapDescriptorFactory.HUE_BLUE
                                     placeToMark.placeCategory = placeCategory
-                                } else if (placeCategory == getString(R.string.category_title_food)) {
+                                } else if (placeCategory == food) {
                                     markerColor = BitmapDescriptorFactory.HUE_ORANGE
                                     placeToMark.placeCategory = placeCategory
-                                } else if (placeCategory == getString(R.string.category_title_nature)) {
+                                } else if (placeCategory == nature) {
                                     markerColor = BitmapDescriptorFactory.HUE_GREEN
                                     placeToMark.placeCategory = placeCategory
                                 } else { // Nightlife
@@ -1453,16 +1459,17 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     }
 
     private fun getPlaceCategory(placeType: String): String {
+        Log.d(TAG, "Place Type: $placeType")
         return if (placeType in entertainmentCategory) {
-            getString(R.string.category_title_entertainment)
+            entertainment
         } else if (placeType in foodCategories) {
-            getString(R.string.category_title_food)
+            food
         } else if (placeType in cultureCategories) {
-            getString(R.string.category_title_culture)
+            culture
         } else if (placeType in natureCategories) {
-            getString(R.string.category_title_nature)
+            nature
         } else {
-            getString(R.string.category_title_nightlife)
+            nightlife
         }
     }
 
