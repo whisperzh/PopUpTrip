@@ -18,4 +18,5 @@
     <color name="half_transparent_black">#80000000</color>
     <color name="transparent">#00E5DABE</color>
     <color name="bottom_nav_text_color">#8A8A8A</color>
+    <color name="dark_grey">#5A5A5A</color>
 </resources>
