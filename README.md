@@ -21,7 +21,8 @@ App is not deployed to Google Play Store, so to install the app:
 
 1. Clone the repository: https://github.com/whisperzh/PopUpTrip
 2. Open the project in Android Studio.
-3. Build and run the app on an Android device or emulator.
+3. Ensure that the branch is set to main.
+4. Build and run the app on an Android device or emulator.
 - minSdk 30
 - targetSdk 33
 - compileSdk 33
