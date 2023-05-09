@@ -197,7 +197,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
             explorationViewModel.updateDestinationPlace(destinationPlace)
             Log.d(TAG, "OnCreateView called! Destination ID received in exploration: ${destinationPlace.placeId}")
-//            destinationId = args.destinationPlaceId
         } else {
             destinationPlace = explorationViewModel.destinationPlace
             Log.d(TAG, "Given information from viewModel, place name: ${destinationPlace.placeName}")
@@ -303,7 +302,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         oldText = newText.toString()
                     } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName != "" && startingPlace.placeName != newText.toString()) {
                         Log.d(TAG, "Start point changed to current location")
-//                        polyline.remove()
                         mMap?.clear()
                         startingPlace = DetailedPlace()
                         startingPlace.placeName = getString(R.string.current_location_title)
@@ -320,7 +318,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
                     } else if (newText.toString() == getString(R.string.current_location_title) && startingPlace.placeName == "") {
                         Log.d(TAG, "Start point set to current location")
-//                        mMap.clear()
                         startingPlace = DetailedPlace()
                         startingPlace.placeName = getString(R.string.current_location_title)
                         startingPlace.placeLatLng = currentLocationLatLng
@@ -518,7 +515,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         binding.explorationNextButton.setOnClickListener {
             Log.d(TAG, "Sending data to Itinerary")
             createPOSTRequestItinerary()
-            // Re-direct to Itinerary page
         }
 
         binding.adjustMapBoundButton.setOnClickListener{
@@ -552,7 +548,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             } else {
                 positiveButton.setText(R.string.detailed_place_dialog_remove_button)
                 positiveButton.setOnClickListener {
-                    // Add the place to list of places to visit
+                    // Remove the place from list of places to visit
                     userSelectedPlace.addedToPlan = false
                     removePlaceFromRoute(userSelectedPlace)
                     detailedPlaceDialog.dismiss()
@@ -861,10 +857,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             getLocation()
         }
         Log.d(TAG, "getDirections() is called")
-//        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-//        val travelModes = listOf("WALKING", "TRANSIT", "DRIVING", "BICYCLING")
-//        val travelModeInt = prefs.getInt("SpinnerPosition", 2)
-//        val travelMode = travelModes[travelModeInt]
         val travelMode = (activity as MainActivity).user.travelMethod
 
         var coordinates = arrayListOf<LatLng>()
@@ -912,6 +904,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         explorationViewModel.placesToAddToRoute = placesToAdd
                         explorationViewModel.placesToAddPoints = placesToAddArray
 
+                        // Remove ' in place names as this causes issues in the POST request
+                        // when sending data to itinerary
                         startingPoint.clear()
                         var startName = startingPlace.placeName
                         if (startName.contains("'")) {
@@ -938,7 +932,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         for (i in 0 until steps.length()) {
                             val points =
                                 steps.getJSONObject(i).getJSONObject("polyline").getString("points")
-                            //                Log.d(TAG, PolyUtil.decode(points).toString())
                             polylineArray.add(points)
                             path.add(PolyUtil.decode(points))
                         }
@@ -1002,7 +995,6 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
             .title(name)
             .icon(vectorToBitmapDescriptor(requireContext(), R.drawable.ic_map_starting_point))
         )
-
     }
 
     private fun resizeMapView(){
@@ -1032,7 +1024,8 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
     // convert degree to radian
     private fun rad(x: Double): Double {
-        return x * Math.PI / 180 // 180 degrees in radians is PI
+        val piRadians = 180 // 180 degrees in radians is PI
+        return x * Math.PI / piRadians
     }
 
     private fun setupMarkerClickListener() {
@@ -1260,6 +1253,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
+    // Handle re-plotting of marker
     private fun updateMarker(i: Int, detailedPlace: DetailedPlace, transparency: Float) {
         val updatedMarker = mMap!!.addMarker(MarkerOptions()
             .position(detailedPlace.placeLatLng)
@@ -1274,6 +1268,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         }
     }
 
+    // Plot the route
     private fun plotPolyline(path: MutableList<List<LatLng>>): ArrayList<LatLng> {
         var point = path[0][0]
         var coordinates = arrayListOf<LatLng>()
@@ -1367,6 +1362,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
         return placeTypes
     }
 
+    // Get recommended places around a particular coordinate for the place types selected by user
     private fun getRecommendedPlaces(coordinates: LatLng, placeTypes: ArrayList<String>) {
         for (j in 0 until placeTypes.size) {
             var inputText = placeTypes[j]
