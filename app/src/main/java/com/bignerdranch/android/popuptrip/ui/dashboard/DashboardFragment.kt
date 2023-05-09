@@ -84,26 +84,27 @@ class DashboardFragment : Fragment() {
         val stringReq = JsonObjectRequest(
             Request.Method.GET, url,
             null,{ response ->
-                var k=response.getJSONArray("all itineraries")
-                var listOfItinerarys:MutableList<Itinerary> = mutableListOf()
-                for(i in 0 until k.length())
+                if(response.get("status code").toString().equals("200"))
                 {
-                    var singleItJsonObj=k.getJSONObject(i)
-                    var singleItinerary=
-                        Itinerary(singleItJsonObj.get("id").toString(),
-                            "Itinerary"+singleItJsonObj.get("id").toString(),
-                            singleItJsonObj.get("created time").toString(),
-                            singleItJsonObj.get("itinerary name").toString())
-                    listOfItinerarys.add(singleItinerary)
-                }
-                if(k.length()!=0) {
+                    var k=response.getJSONArray("all itineraries")
+                    var listOfItinerarys:MutableList<Itinerary> = mutableListOf()
+                    for(i in 0 until k.length())
+                    {
+                        var singleItJsonObj=k.getJSONObject(i)
+                        var singleItinerary=
+                            Itinerary(singleItJsonObj.get("id").toString(),
+                                "Itinerary"+singleItJsonObj.get("id").toString(),
+                                singleItJsonObj.get("created time").toString(),
+                                singleItJsonObj.get("itinerary name").toString())
+                        listOfItinerarys.add(singleItinerary)
+                    }
                     dashboardViewModel.setFlow(listOfItinerarys)
                 }
                 else
                 {
                     binding.DashBoardLog.visibility=View.VISIBLE
                 }
-                Log.d("Uni-Api",k.toString())
+                Log.d("Uni-Api","Sam succeeded in providing data")
             },
             Response.ErrorListener {Log.d("API", "that didn't work") })
         queue.add(stringReq)

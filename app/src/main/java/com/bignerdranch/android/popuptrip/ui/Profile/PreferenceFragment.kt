@@ -22,6 +22,11 @@ import androidx.navigation.fragment.findNavController
 import com.bignerdranch.android.popuptrip.databinding.FragmentPreferenceBinding
 import com.bignerdranch.android.popuptrip.ui.home.ExplorationFragmentDirections
 import com.bignerdranch.android.popuptrip.ui.setting.SettingViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import com.bignerdranch.android.popuptrip.R as popR
 
@@ -41,12 +46,15 @@ class PreferenceFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private var dbReference: DatabaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://popup-trip-default-rtdb.firebaseio.com/")
+    private lateinit var auth: FirebaseAuth
     @SuppressLint("ResourceAsColor")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        auth= Firebase.auth
         _binding = FragmentPreferenceBinding.inflate(inflater,container,false)
         val dataList =  listOf(resources.getString(popR.string.walk_list), resources.getString(popR.string.transit_list), resources.getString(popR.string.driving_list),
             resources.getString(popR.string.bicycling_list))
