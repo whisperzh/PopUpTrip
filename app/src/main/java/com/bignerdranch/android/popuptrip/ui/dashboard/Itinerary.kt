@@ -1,6 +1,6 @@
 package com.bignerdranch.android.popuptrip.ui.dashboard
 
-class Itinerary(id:String,it_name:String,create_time:String,content:String){
+class Itinerary(id:String,it_name:String,content:String){
     var itineraryName:String=""
     var createTime:String=""
     var itineraryId: String=""
@@ -9,7 +9,6 @@ class Itinerary(id:String,it_name:String,create_time:String,content:String){
     init {
         this.itineraryId=id
         this.itineraryName=it_name
-        this.createTime=create_time
         this.itineraryContent=content
     }
 }

@@ -94,7 +94,6 @@ class DashboardFragment : Fragment() {
                         var singleItinerary=
                             Itinerary(singleItJsonObj.get("id").toString(),
                                 "Itinerary"+singleItJsonObj.get("id").toString(),
-                                singleItJsonObj.get("created time").toString(),
                                 singleItJsonObj.get("itinerary name").toString())
                         listOfItinerarys.add(singleItinerary)
                     }

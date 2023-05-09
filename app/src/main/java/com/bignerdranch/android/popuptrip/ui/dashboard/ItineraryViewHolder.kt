@@ -7,7 +7,6 @@ import java.util.*
 class ItineraryViewHolder(val binding:ItineraryItemBinding):RecyclerView.ViewHolder(binding.root) {
     fun bind(itinerary: Itinerary, onItineraryClicked: (itineraryId:String) -> Unit) {
         binding.itineraryTitle.text = itinerary.itineraryName
-        binding.itineraryCreateTime.text = itinerary.createTime
         var startPoint=itinerary.itineraryContent.split(" TO ")[0]
         var endPoint="TO "+itinerary.itineraryContent.split(" TO ")[1]
 

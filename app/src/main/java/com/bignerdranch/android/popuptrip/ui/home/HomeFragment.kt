@@ -101,10 +101,6 @@ class HomeFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate called")
-    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -324,6 +320,7 @@ class HomeFragment : Fragment() {
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getCurrentLocationAndFetchPlaces(onComplete: (() -> Unit)? = null) {
         Log.d(TAG, "getLocation() is called")
+        requestPermissions()
         if (checkPermissions()) {
             Log.d(TAG, "Check Permission success")
             if (isLocationEnabled()) {
