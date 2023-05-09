@@ -34,6 +34,7 @@ class SettingFragment : Fragment() {
     private val languageTag= listOf("en","fr","de","es","zh")
     private var restart=false;
     private lateinit var prefs:SharedPreferences
+    private var programmaticallyChangeMode:Boolean = false
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -45,9 +46,10 @@ class SettingFragment : Fragment() {
     ): View? {
         _binding = FragmentSettingBinding.inflate(inflater, container, false)
         prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val switchState = prefs.getBoolean("switchState", false)
+
+
         lastSelectedItem=prefs.getString("Language",null)
-        binding.themeSwitch.isChecked = switchState
+
 
         val adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, dataList)//set adapter
@@ -116,6 +118,11 @@ class SettingFragment : Fragment() {
         val switch = binding.themeSwitch
         restart=false
         switch.setOnCheckedChangeListener { _, isChecked ->
+            if(programmaticallyChangeMode)
+            {
+                programmaticallyChangeMode=false
+                return@setOnCheckedChangeListener
+            }
             prefs.edit().putBoolean("switchState", binding.themeSwitch.isChecked).commit()//save the switch status
             if (isChecked) {
                 prefs.edit().putInt("mode", AppCompatDelegate.MODE_NIGHT_YES).commit()
@@ -134,6 +141,16 @@ class SettingFragment : Fragment() {
             ViewModelProvider(this).get(SettingViewModel::class.java)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val switchState = prefs.getBoolean("switchState", false)
+        if(binding.themeSwitch.isChecked != switchState) {
+            programmaticallyChangeMode = true
+            binding.themeSwitch.isChecked = switchState
+        }
+
     }
 
     private fun changeLanguageSetting(token:Int){
