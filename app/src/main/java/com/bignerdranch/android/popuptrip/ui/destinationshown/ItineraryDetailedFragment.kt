@@ -26,8 +26,9 @@ import com.google.firebase.ktx.Firebase
 import org.json.JSONArray
 
 
+private const val TAG = "ItineraryDetailedFragment"
 class ItineraryDetailedFragment : Fragment() {
-    private val TAG = "class ItineraryFragment : Fragment()"
+//    private val TAG = "class ItineraryFragment : Fragment()"
     private lateinit var itineraryAdapter: ItineraryAdapter
     private val args: ItineraryDetailedFragmentArgs by navArgs()
     private var dbReference: DatabaseReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://popup-trip-default-rtdb.firebaseio.com/")
@@ -93,6 +94,7 @@ class ItineraryDetailedFragment : Fragment() {
     }
 
     private fun getVolley(url:String){
+        showProgressIndicator()
         // Instantiate the RequestQueue.
         val queue = Volley.newRequestQueue(context)
         // Request a string response from the provided URL.
@@ -124,9 +126,6 @@ class ItineraryDetailedFragment : Fragment() {
 
                         addDestination(singlePosition.get(0).toString(),singlePosition.get(1).toString(),content )
                     }
-
-
-
 //                    dashboardViewModel.setFlow(listOfItinerarys)
                 }
                 else
@@ -134,9 +133,23 @@ class ItineraryDetailedFragment : Fragment() {
                     Toast.makeText(activity, getString(R.string.itinerary_error), Toast.LENGTH_LONG).show()
                 }
                 Log.d("Uni-Api","Sam succeeded in providing data")
+                hideProgressIndicator()
             },
-            Response.ErrorListener {Log.d("API", "that didn't work") })
+            Response.ErrorListener {
+                Log.d("API", "that didn't work")
+                hideProgressIndicator()
+            })
         queue.add(stringReq)
+    }
+
+    private fun showProgressIndicator() {
+        Log.d(TAG, "progress indicator shown")
+        binding.itineraryDetailLoadingProgressIndicator.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressIndicator() {
+        Log.d(TAG, "progress indicator hid")
+        binding.itineraryDetailLoadingProgressIndicator.visibility = View.GONE
     }
 
     private fun createStepsDialog(listOfSteps:MutableList<String>){
