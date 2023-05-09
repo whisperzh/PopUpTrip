@@ -139,6 +139,7 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
     private val food = "FOOD"
     private val nature = "NATURE"
     private val nightlife = "NIGHTLIFE"
+    private val quotes = "\'"
 
     private val distanceRadius = 2000 // 2000m or 2km
     private val locationBias = 1000 // 1000m or 1km
@@ -463,9 +464,9 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                             destinationPlace.placeLatLng = tempPlace.latLng
 
                             destinationPoint.clear()
-                            destinationPoint.add("\'" + destinationPlace.placeName + "\'")
-                            destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
-                            destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
+                            destinationPoint.add(quotes + destinationPlace.placeName + quotes)
+                            destinationPoint.add(quotes + destinationPlace.placeLatLng.latitude + quotes)
+                            destinationPoint.add(quotes + destinationPlace.placeLatLng.longitude+ quotes)
                             explorationViewModel.destinationPoint = destinationPoint
 
                             Log.d(TAG, "Destination Point selected: $destinationPoint")
@@ -912,15 +913,23 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
                         explorationViewModel.placesToAddPoints = placesToAddArray
 
                         startingPoint.clear()
-                        startingPoint.add("\'" + startingPlace.placeName + "\'")
-                        startingPoint.add("\'" + startingPlace.placeLatLng.latitude + "\'")
-                        startingPoint.add("\'" + startingPlace.placeLatLng.longitude + "\'")
+                        var startName = startingPlace.placeName
+                        if (startName.contains("'")) {
+                            startName = startName.replace("'", "")
+                        }
+                        startingPoint.add(quotes + startName + quotes)
+                        startingPoint.add(quotes + startingPlace.placeLatLng.latitude + quotes)
+                        startingPoint.add(quotes + startingPlace.placeLatLng.longitude + quotes)
                         explorationViewModel.startingPoint = startingPoint
 
                         destinationPoint.clear()
-                        destinationPoint.add("\'" + destinationPlace.placeName + "\'")
-                        destinationPoint.add("\'" + destinationPlace.placeLatLng.latitude + "\'")
-                        destinationPoint.add("\'" + destinationPlace.placeLatLng.longitude+ "\'")
+                        var destName = destinationPlace.placeName
+                        if (destName.contains("'")) {
+                            destName = destName.replace("'", "")
+                        }
+                        destinationPoint.add(quotes + destName + quotes)
+                        destinationPoint.add(quotes + destinationPlace.placeLatLng.latitude + quotes)
+                        destinationPoint.add(quotes + destinationPlace.placeLatLng.longitude+ quotes)
                         explorationViewModel.destinationPoint = destinationPoint
 
                         val routes = jsonResponse.getJSONArray("routes")
@@ -1140,14 +1149,18 @@ class ExplorationFragment: Fragment(), OnMapReadyCallback {
 
         if (placesToAdd.size > 0) {
             for (i in 0 until placesToAdd.size) {
-                val lat = "\'" + placesToAdd[i].placeLatLng.latitude + "\'"
-                val lon = "\'" + placesToAdd[i].placeLatLng.longitude + "\'"
+                val lat = quotes + placesToAdd[i].placeLatLng.latitude + quotes
+                val lon = quotes + placesToAdd[i].placeLatLng.longitude + quotes
 
                 if (lat !in placesToAddArray &&
                     lon !in placesToAddArray) {
-                    placesToAddArray.add("\'" + placesToAdd[i].placeName + "\'")
-                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.latitude + "\'")
-                    placesToAddArray.add("\'" + placesToAdd[i].placeLatLng.longitude + "\'")
+                    var placeName = placesToAdd[i].placeName
+                    if (placeName.contains("'")) {
+                        placeName = placeName.replace("'", "")
+                    }
+                    placesToAddArray.add(quotes + placeName + quotes)
+                    placesToAddArray.add(lat)
+                    placesToAddArray.add(lon)
                 }
             }
             explorationViewModel.placesToAddPoints = placesToAddArray
