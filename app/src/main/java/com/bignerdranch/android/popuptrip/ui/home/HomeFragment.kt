@@ -112,6 +112,8 @@ class HomeFragment : Fragment() {
     ): View {
         Log.i(TAG, "onCreateView called")
         userPreferenceList = nearbyPlaceListViewModel.userPreferenceList
+        Log.d(TAG, "LINE 115 userPreferenceList: $userPreferenceList")
+        Log.d(TAG, "Nearby place list from view model: ${nearbyPlaceListViewModel.nearbyPlaces}")
 
         // receive arguments from navigation
         val receivedName = args.destinationPlaceName
@@ -441,6 +443,7 @@ class HomeFragment : Fragment() {
     ) {
         Log.d(TAG, "fetchNearbyPlaces() is called")
         userPreferenceList = getPlaceTypePreference()
+        Log.d(TAG, "Updated user preference list $userPreferenceList")
         nearbyPlaceListViewModel.userPreferenceList = userPreferenceList
 
         Log.d(TAG, "Place Types: $userPreferenceList")
@@ -489,6 +492,7 @@ class HomeFragment : Fragment() {
 
             for (element in array) {
                 val value = element.lowercase().replace(" ", "_")
+                Log.d(TAG, "Added type: $value")
                 placeTypes.add(value)
             }
         }
@@ -498,6 +502,7 @@ class HomeFragment : Fragment() {
 
             for (element in array) {
                 val value = element.lowercase().replace(" ", "_")
+                Log.d(TAG, "Added type: $value")
                 placeTypes.add(value)
             }
         }
@@ -507,6 +512,7 @@ class HomeFragment : Fragment() {
 
             for (element in array) {
                 val value = element.lowercase().replace(" ", "_")
+                Log.d(TAG, "Added type: $value")
                 placeTypes.add(value)
             }
         }
@@ -516,6 +522,7 @@ class HomeFragment : Fragment() {
 
             for (element in array) {
                 val value = element.lowercase().replace(" ", "_")
+                Log.d(TAG, "Added type: $value")
                 placeTypes.add(value)
             }
         }
@@ -525,6 +532,7 @@ class HomeFragment : Fragment() {
 
             for (element in array) {
                 val value = element.lowercase().replace(" ", "_")
+                Log.d(TAG, "Added type: $value")
                 placeTypes.add(value)
             }
         }

@@ -48,7 +48,7 @@ class DashboardFragment : Fragment() {
 //            ViewModelProvider(this).get(DashboardViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-        binding.iternaryRecycleView.layoutManager = LinearLayoutManager(context)
+        binding.itineraryRecycleView.layoutManager = LinearLayoutManager(context)
 
         return binding.root
     }
@@ -59,7 +59,7 @@ class DashboardFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 dashboardViewModel.itineraries.collect { itineraries ->
-                    binding.iternaryRecycleView.adapter =
+                    binding.itineraryRecycleView.adapter =
                         ItineraryListAdaptor(itineraries!!) { itineraryId ->
                             findNavController().navigate(
                                 DashboardFragmentDirections.actionNavigationDashboardToItineraryFragment(

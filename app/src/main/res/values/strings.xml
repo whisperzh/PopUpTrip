@@ -162,5 +162,7 @@
     <string name="no_directions_found">No directions found!</string>
     <string name="add_places_to_itinerary">Please add some places of interest to Itinerary!</string>
     <string name="noItineriesYet">No Itineraries created yet</string>
+    <string name="title_itinerary_history">Itinerary History</string>
+    <string name="title_itinerary_detail">Itinerary Detail</string>
 
 </resources>
