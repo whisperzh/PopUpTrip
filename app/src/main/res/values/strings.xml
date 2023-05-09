@@ -164,5 +164,6 @@
     <string name="noItinerariesYet">No Itineraries created yet</string>
     <string name="title_itinerary_history">Itinerary History</string>
     <string name="title_itinerary_detail">Itinerary Detail</string>
+    <string name="instructionsForTraveling">Instructions for traveling</string>
 
 </resources>

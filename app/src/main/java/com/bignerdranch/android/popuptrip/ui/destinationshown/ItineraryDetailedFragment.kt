@@ -1,20 +1,16 @@
 package com.bignerdranch.android.popuptrip.ui.itinerary
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -22,12 +18,11 @@ import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R
 import com.bignerdranch.android.popuptrip.databinding.FragmentItineraryBinding
-import com.bignerdranch.android.popuptrip.ui.home.HomeFragmentDirections
+import com.bignerdranch.android.popuptrip.ui.destinationshown.DestinationItem
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 
@@ -56,7 +51,7 @@ class ItineraryDetailedFragment : Fragment() {
 //                    )
 //                }
 //            }
-            activity!!.onBackPressed()
+            requireActivity().onBackPressed()
         }
 
         // Initialize a list of ItineraryItems with some example data
@@ -90,9 +85,9 @@ class ItineraryDetailedFragment : Fragment() {
     }
 
     // Define a function to add a new destination to the list and update the adapter
-        private fun addDestination(destinationName: String, timeToNext: String) {
+    private fun addDestination(destinationName: String, timeToNext: String, steps: String) {
         // Create a new ItineraryItem with the given destinationName and timeToNext
-        val newDestination = DestinationItem(destinationName, timeToNext)
+        val newDestination = DestinationItem(destinationName, timeToNext, steps)
         // Add the new ItineraryItem to the adapter's list
         itineraryAdapter.addDestination(newDestination)
     }
@@ -107,13 +102,31 @@ class ItineraryDetailedFragment : Fragment() {
                 if(response.get("status code").toString().equals("200"))
                 {
                     var k=response.getJSONArray("route")
+                    var direction=response.getJSONArray("directions")
 
-//                    var listOfItinerarys:MutableList<Itinerary> = mutableListOf()
+
+
                     for(i in 0 until k.length())
                     {
+                        var content=""
                         var singlePosition=k.get(i) as JSONArray
-                        addDestination(singlePosition.get(0).toString(),singlePosition.get(1).toString())
+                        if(i<direction.length())
+                        {
+                            var steps=direction.get(i) as JSONArray
+
+                            for(j in 0 until steps.length())
+                            {
+                                content+=steps.get(j).toString()+"\n"
+                            }
+                        }
+
+
+
+                        addDestination(singlePosition.get(0).toString(),singlePosition.get(1).toString(),content )
                     }
+
+
+
 //                    dashboardViewModel.setFlow(listOfItinerarys)
                 }
                 else
@@ -124,6 +137,22 @@ class ItineraryDetailedFragment : Fragment() {
             },
             Response.ErrorListener {Log.d("API", "that didn't work") })
         queue.add(stringReq)
+    }
+
+    private fun createStepsDialog(listOfSteps:MutableList<String>){
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(R.string.instructionsForTraveling)
+
+
+        builder.setItems(listOfSteps.toTypedArray(),
+            DialogInterface.OnClickListener { dialog, which ->
+//                when (which) {
+//                    0, 1, 2, 3, 4 -> {}
+//                }
+            })
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
     }
 
 }
