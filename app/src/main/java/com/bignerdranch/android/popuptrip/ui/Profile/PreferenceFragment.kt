@@ -100,8 +100,10 @@ class PreferenceFragment : Fragment() {
                         foodarray.addAll(List.copyOfRange(1, List.size))
                     } else if (pri == "nl") {
                         nlarray.addAll(List.copyOfRange(1, List.size))
-                    } else {
+                    } else if (pri =="nature"){
                         naturearray.addAll(List.copyOfRange(1, List.size))
+                    }else{
+                        culturearray.addAll(List.copyOfRange(1, List.size))
                     }
                 }
             }
