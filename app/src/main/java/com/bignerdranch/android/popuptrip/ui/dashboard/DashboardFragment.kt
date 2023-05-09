@@ -91,9 +91,10 @@ class DashboardFragment : Fragment() {
                     for(i in 0 until k.length())
                     {
                         var singleItJsonObj=k.getJSONObject(i)
+
                         var singleItinerary=
                             Itinerary(singleItJsonObj.get("id").toString(),
-                                "Itinerary"+singleItJsonObj.get("id").toString(),
+                                "Itinerary"+(i+1).toString(),
                                 singleItJsonObj.get("itinerary name").toString())
                         listOfItinerarys.add(singleItinerary)
                     }
