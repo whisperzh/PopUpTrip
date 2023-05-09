@@ -110,12 +110,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_profile, R.id.navigation_settings
             )
         )
-        for (i in 0 until navView.menu.size()) {
-            val menuItem = navView.menu.getItem(i)
-            val spannableString = SpannableString(menuItem.title)
-            spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, spannableString.length, 0)
-            menuItem.title = spannableString
-        }
 
         navView.setupWithNavController(navController)
 
