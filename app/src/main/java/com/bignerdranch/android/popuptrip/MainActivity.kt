@@ -2,8 +2,11 @@ package com.bignerdranch.android.popuptrip
 
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.graphics.Typeface
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.util.Log
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -107,7 +110,15 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_profile, R.id.navigation_settings
             )
         )
+        for (i in 0 until navView.menu.size()) {
+            val menuItem = navView.menu.getItem(i)
+            val spannableString = SpannableString(menuItem.title)
+            spannableString.setSpan(StyleSpan(Typeface.BOLD), 0, spannableString.length, 0)
+            menuItem.title = spannableString
+        }
+
         navView.setupWithNavController(navController)
+
         updateBottomNavigationMenu()
     }
 

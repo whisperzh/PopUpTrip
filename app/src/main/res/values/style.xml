@@ -12,4 +12,12 @@
         <item name="android:textStyle">normal</item>
         <item name="android:fontWeight">400</item>
     </style>
+
+    <style name="BottomNavigationView.Active" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BottomNavigationView.Inactive" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

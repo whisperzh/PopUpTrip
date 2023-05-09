@@ -48,12 +48,12 @@
         android:id="@+id/DashBoardLog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/noItinerariesYet"
         android:textSize="30sp"
         android:visibility="invisible"
-        android:text="@string/noItineriesYet"
         app:layout_constraintBottom_toBottomOf="@+id/itinerary_recycleView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/title_itinerary_history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
