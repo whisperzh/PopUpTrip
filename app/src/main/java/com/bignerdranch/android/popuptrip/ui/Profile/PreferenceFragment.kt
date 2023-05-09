@@ -19,9 +19,15 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.databinding.FragmentPreferenceBinding
 import com.bignerdranch.android.popuptrip.ui.home.ExplorationFragmentDirections
 import com.bignerdranch.android.popuptrip.ui.setting.SettingViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import com.bignerdranch.android.popuptrip.R as popR
 
@@ -94,8 +100,10 @@ class PreferenceFragment : Fragment() {
                         foodarray.addAll(List.copyOfRange(1, List.size))
                     } else if (pri == "nl") {
                         nlarray.addAll(List.copyOfRange(1, List.size))
-                    } else {
+                    } else if (pri =="nature"){
                         naturearray.addAll(List.copyOfRange(1, List.size))
+                    }else{
+                        culturearray.addAll(List.copyOfRange(1, List.size))
                     }
                 }
             }
