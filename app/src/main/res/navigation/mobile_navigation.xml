@@ -33,7 +33,7 @@
             app:destination="@id/navigation_home" />
         <action
             android:id="@+id/action_navigation_exploration_to_itineraryFragment"
-            app:destination="@id/itineraryFragment" />
+            app:destination="@id/itineraryDetailedFragment" />
     </fragment>
 
     <fragment
@@ -49,7 +49,7 @@
 <!--            app:destination="@id/navigation_home" />-->
         <action
             android:id="@+id/action_navigation_dashboard_to_itineraryFragment"
-            app:destination="@id/itineraryFragment">
+            app:destination="@id/itineraryDetailedFragment">
             <argument
                 android:name="itineraryId" />
         </action>
@@ -91,8 +91,8 @@
             app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
-        android:id="@+id/itineraryFragment"
-        android:name="com.bignerdranch.android.popuptrip.ui.itinerary.ItineraryFragment"
+        android:id="@+id/itineraryDetailedFragment"
+        android:name="com.bignerdranch.android.popuptrip.ui.itinerary.ItineraryDetailedFragment"
         android:label="fragment_itinerary"
         tools:layout="@layout/fragment_itinerary" >
         <action

@@ -4,22 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.itinerary.ItineraryFragment">
+    tools:context=".ui.itinerary.ItineraryDetailedFragment">
 
     <TextView
         android:id="@+id/title_itinerary_detail"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginStart="0dp"
         android:layout_marginTop="16dp"
-        android:textStyle="bold"
-        android:textAlignment="center"
         android:text="@string/title_itinerary_detail"
+        android:textAlignment="center"
         android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </TextView>
+        app:layout_constraintStart_toStartOf="@+id/itDetailBackButton"
+        app:layout_constraintTop_toTopOf="parent"></TextView>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -44,5 +42,16 @@
         app:layout_constraintTop_toBottomOf="@+id/divider"
         tools:itemCount="5"
         tools:listitem="@layout/destination_item" />
+
+    <ImageButton
+        android:id="@+id/itDetailBackButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/title_itinerary_detail"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/title_itinerary_detail" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
