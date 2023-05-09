@@ -17,7 +17,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/itDetailBackButton"
-        app:layout_constraintTop_toTopOf="parent"></TextView>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/divider"
@@ -52,7 +52,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/title_itinerary_detail" />
+        app:layout_constraintTop_toTopOf="@+id/title_itinerary_detail"
+        app:backgroundTint="@color/brown_theme"
+        app:tint="@color/brown_theme_dark" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/itinerary_detail_loading_progress_indicator"
