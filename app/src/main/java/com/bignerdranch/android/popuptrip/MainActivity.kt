@@ -1,6 +1,7 @@
 package com.bignerdranch.android.popuptrip
 
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Typeface
 import android.os.Bundle
@@ -12,11 +13,13 @@ import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.app.ActivityCompat
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.bignerdranch.android.popuptrip.databinding.ActivityMainBinding
+import com.bignerdranch.android.popuptrip.ui.home.HomeFragment
 import com.google.android.libraries.places.api.Places
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -26,7 +29,7 @@ import java.util.*
 
 
 const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),  ActivityCompat.OnRequestPermissionsResultCallback {
 
     private lateinit var binding: ActivityMainBinding
     var doNotLogout:Boolean=false
@@ -133,6 +136,11 @@ class MainActivity : AppCompatActivity() {
             .navigate(R.id.navigation_settings)
     }
 
+    fun reloadHomeFrag() {
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        navController
+            .navigate(R.id.navigation_home)
+    }
     private fun changeLanguageSetting(token:Int){
         val locale = Locale(languageTag.get(token))
         Locale.setDefault(locale)
@@ -152,6 +160,20 @@ class MainActivity : AppCompatActivity() {
             findItem(R.id.navigation_dashboard).setTitle(R.string.title_dashboard)
             findItem(R.id.navigation_profile).setTitle(R.string.title_profile)
             findItem(R.id.navigation_settings).setTitle(R.string.title_setting)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == 2) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                reloadHomeFrag()
+            }
         }
     }
 }

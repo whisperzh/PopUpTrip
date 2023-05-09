@@ -31,6 +31,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,6 +54,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bignerdranch.android.popuptrip.BuildConfig.MAPS_API_KEY
+import com.bignerdranch.android.popuptrip.MainActivity
 import com.bignerdranch.android.popuptrip.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -172,36 +174,43 @@ class HomeFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                if (userPreferenceList.isEmpty()){
-                    // list of nearby places in viewModel is updated with fetch response
-                    Log.d(TAG, "need to fetch nearby places")
-                    disableMenu()
-                    showProgressIndicator()
-                    getCurrentLocationAndFetchPlaces{
-                        hideProgressIndicator()
-                        enableMenu()
-                    }
-                } else {
-                    Log.d(TAG, "Current user preferences are: $userPreferenceList")
-                    val tempUserPreferenceList = getPlaceTypePreference()
-                    Log.d(TAG, "TEMP user preferences are: $tempUserPreferenceList")
-                    val sortedUserPreferenceList = userPreferenceList!!.sorted()
-                    val sortedTempList = tempUserPreferenceList.sorted()
-                    // no change in user preference, therefore no need to fetch
-                    if(sortedUserPreferenceList==sortedTempList){
-                        Log.d(TAG, "No change in preference, display viewModel contents for nearby places")
-                        recyclerViewItemClickSetup()
-                    } else {
-                        Log.d(TAG, "Change of preference, need to fetch nearby places")
-                        binding.nearbyPlacesRecyclerView.layoutManager?.scrollToPosition(0)
+                if (checkPermissions()) {
+
+                    if (userPreferenceList.isEmpty()){
+                        // list of nearby places in viewModel is updated with fetch response
+                        Log.d(TAG, "need to fetch nearby places")
                         disableMenu()
                         showProgressIndicator()
                         getCurrentLocationAndFetchPlaces{
                             hideProgressIndicator()
                             enableMenu()
                         }
+                    } else {
+                        Log.d(TAG, "Current user preferences are: $userPreferenceList")
+                        val tempUserPreferenceList = getPlaceTypePreference()
+                        Log.d(TAG, "TEMP user preferences are: $tempUserPreferenceList")
+                        val sortedUserPreferenceList = userPreferenceList!!.sorted()
+                        val sortedTempList = tempUserPreferenceList.sorted()
+                        // no change in user preference, therefore no need to fetch
+                        if(sortedUserPreferenceList==sortedTempList){
+                            Log.d(TAG, "No change in preference, display viewModel contents for nearby places")
+                            recyclerViewItemClickSetup()
+                        } else {
+                            Log.d(TAG, "Change of preference, need to fetch nearby places")
+                            binding.nearbyPlacesRecyclerView.layoutManager?.scrollToPosition(0)
+                            disableMenu()
+                            showProgressIndicator()
+                            getCurrentLocationAndFetchPlaces{
+                                hideProgressIndicator()
+                                enableMenu()
+                            }
+                        }
                     }
+                }else
+                {
+                    requestPermissions()
                 }
+
             }
         }
 
@@ -292,7 +301,7 @@ class HomeFragment : Fragment() {
         }
         return false
     }
-    private fun requestPermissions() {
+    fun requestPermissions() {
         activity?.let {
             ActivityCompat.requestPermissions(
                 it,
@@ -304,127 +313,110 @@ class HomeFragment : Fragment() {
             )
         }
     }
-    @SuppressLint("MissingSuperCall")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == permissionId) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                getCurrentLocationAndFetchPlaces()
-            }
-        }
-    }
+
 
     @SuppressLint("MissingPermission", "SetTextI18n")
     private fun getCurrentLocationAndFetchPlaces(onComplete: (() -> Unit)? = null) {
         Log.d(TAG, "getLocation() is called")
-        requestPermissions()
-        if (checkPermissions()) {
-            Log.d(TAG, "Check Permission success")
-            if (isLocationEnabled()) {
-                Log.d(TAG, "Location is enabled")
-                activity?.let {
-                    Log.d(TAG, "Getting Current Location")
-                    val fusedLocationClientIsNull = (fusedLocationClient == null)
-                    Log.d(TAG, "Fused Location Client null?: $fusedLocationClientIsNull")
-                    fusedLocationClient?.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, object : CancellationToken() {
-                        override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
+        if (isLocationEnabled()) {
+            Log.d(TAG, "Location is enabled")
+            activity?.let {
+                Log.d(TAG, "Getting Current Location")
+                val fusedLocationClientIsNull = (fusedLocationClient == null)
+                Log.d(TAG, "Fused Location Client null?: $fusedLocationClientIsNull")
+                fusedLocationClient?.getCurrentLocation(Priority.PRIORITY_BALANCED_POWER_ACCURACY, object : CancellationToken() {
+                    override fun onCanceledRequested(p0: OnTokenCanceledListener) = CancellationTokenSource().token
 
-                        override fun isCancellationRequested() = false
-                    })?.addOnSuccessListener { currentLocation: Location? ->
-                        if (currentLocation == null)
-                            Toast.makeText(activity, "Cannot get current location.", Toast.LENGTH_LONG).show()
-                        else {
-                            Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
-                            Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
-                            currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
+                    override fun isCancellationRequested() = false
+                })?.addOnSuccessListener { currentLocation: Location? ->
+                    if (currentLocation == null)
+                        Toast.makeText(activity, "Cannot get current location.", Toast.LENGTH_LONG).show()
+                    else {
+                        Log.d(TAG, "Current Latitude: " + (currentLocation).latitude)
+                        Log.d(TAG, "Current Longitude: " + (currentLocation).longitude)
+                        currentLocationLatLng = LatLng((currentLocation).latitude, (currentLocation).longitude)
 
-                            nearbyPlaceListViewModel.clearPlaceList()
+                        nearbyPlaceListViewModel.clearPlaceList()
 
-                            // to store placeId of added places
-                            val placesReturned = arrayListOf<String>()
-                            fetchNearbyPlaces( onComplete,
-                            requireContext(),
-                            currentLocationLatLng.latitude,
-                            currentLocationLatLng.longitude,
-                            radius,
-                            MAPS_API_KEY,
-                            onSuccess = { response ->
-                                Log.d(TAG, "Succeed to fetch nearby places")
-                                val jsonResponse = JSONObject(response)
-                                val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
+                        // to store placeId of added places
+                        val placesReturned = arrayListOf<String>()
+                        fetchNearbyPlaces( onComplete,
+                        requireContext(),
+                        currentLocationLatLng.latitude,
+                        currentLocationLatLng.longitude,
+                        radius,
+                        MAPS_API_KEY,
+                        onSuccess = { response ->
+                            Log.d(TAG, "Succeed to fetch nearby places")
+                            val jsonResponse = JSONObject(response)
+                            val resultsArray: JSONArray = jsonResponse.getJSONArray("results")
 
-                                for (i in 0 until resultsArray.length()) {
-                                    val resultObject = resultsArray.getJSONObject(i)
-                                    Log.d(TAG, "result $i: $resultObject")
+                            for (i in 0 until resultsArray.length()) {
+                                val resultObject = resultsArray.getJSONObject(i)
+                                Log.d(TAG, "result $i: $resultObject")
 
-                                    val placeId = resultObject.getString("place_id")
-                                    // check if this place already exist in the recommended list
-                                    if (!placesReturned.contains(placeId)){
-                                        placesReturned.add(placeId)
+                                val placeId = resultObject.getString("place_id")
+                                // check if this place already exist in the recommended list
+                                if (!placesReturned.contains(placeId)){
+                                    placesReturned.add(placeId)
 
-                                        val geometry = resultObject.getJSONObject("geometry")
-                                        val location = geometry.getJSONObject("location")
-                                        val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
-                                        val placeName = resultObject.getString("name")
-                                        val rating = resultObject.optString("rating", null)
-                                        val placeRating = rating?.toFloat()
+                                    val geometry = resultObject.getJSONObject("geometry")
+                                    val location = geometry.getJSONObject("location")
+                                    val placeLatLng = LatLng(location.getDouble("lat"), location.getDouble("lng"))
+                                    val placeName = resultObject.getString("name")
+                                    val rating = resultObject.optString("rating", null)
+                                    val placeRating = rating?.toFloat()
 
-                                        val placeOpeningHours = resultObject.optJSONObject("opening_hours")
-                                        val placeOpenNow: Boolean? =
-                                            placeOpeningHours?.optString("open_now")?.toBoolean()
+                                    val placeOpeningHours = resultObject.optJSONObject("opening_hours")
+                                    val placeOpenNow: Boolean? =
+                                        placeOpeningHours?.optString("open_now")?.toBoolean()
 
-                                        val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
+                                    val placeTypesTemp = jsonArrayToStringList(resultObject.optJSONArray("types"))
 
-                                        // remove "point of interest", "establishment"
-                                        val placeTypes = placeTypesTemp.dropLast(2)
+                                    // remove "point of interest", "establishment"
+                                    val placeTypes = placeTypesTemp.dropLast(2)
 
 //                                    Log.d(TAG, "place types: ${placeTypes.joinToString()}")
 
-                                        val placeAddress = resultObject.getString("vicinity")
+                                    val placeAddress = resultObject.getString("vicinity")
 
-                                        val photo = resultObject.optJSONArray("photos")
-                                        val photoReference: String? = if (photo != null && photo.length() > 0) {
-                                            val photoObject = photo.getJSONObject(0)
-                                            photoObject.optString("photo_reference", null)
-                                        } else {
-                                            null
-                                        }
-
-                                        val placeToAdd = DetailedPlace(placeId,
-                                            placeLatLng,
-                                            placeName,
-                                            "",
-                                            placeRating,
-                                            placeAddress,
-                                            photoReference,
-                                            placeTypes = placeTypes.joinToString().replace("_", " "),
-                                            placeOpenNow = placeOpenNow)
-
-                                        nearbyPlaceListViewModel.updatePlaces(placeToAdd)
+                                    val photo = resultObject.optJSONArray("photos")
+                                    val photoReference: String? = if (photo != null && photo.length() > 0) {
+                                        val photoObject = photo.getJSONObject(0)
+                                        photoObject.optString("photo_reference", null)
                                     } else {
-                                        Log.d(TAG, "DUPLICATE PLACE")
+                                        null
                                     }
-                                }
-//                                recyclerViewItemClickSetup()
-                            },
-                            onError = { error ->
-                                Log.i(TAG, "Failed to fetch nearby places $error")
-                            }
-                        )
 
+                                    val placeToAdd = DetailedPlace(placeId,
+                                        placeLatLng,
+                                        placeName,
+                                        "",
+                                        placeRating,
+                                        placeAddress,
+                                        photoReference,
+                                        placeTypes = placeTypes.joinToString().replace("_", " "),
+                                        placeOpenNow = placeOpenNow)
+
+                                    nearbyPlaceListViewModel.updatePlaces(placeToAdd)
+                                } else {
+                                    Log.d(TAG, "DUPLICATE PLACE")
+                                }
+                            }
+//                                recyclerViewItemClickSetup()
+                        },
+                        onError = { error ->
+                            Log.i(TAG, "Failed to fetch nearby places $error")
                         }
+                    )
+
                     }
                 }
-            } else {
-                Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
             }
         } else {
-            requestPermissions()
+            Toast.makeText(activity, "Please turn on location", Toast.LENGTH_LONG).show()
+            val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivity(intent)
         }
     }
 
@@ -547,7 +539,7 @@ class HomeFragment : Fragment() {
     private fun recyclerViewItemClickSetup(){
         Log.d(TAG, "recyclerViewItemClickSetup called")
         val nearbyPlaces = nearbyPlaceListViewModel.nearbyPlaces
-        binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaces) {position ->
+        binding.nearbyPlacesRecyclerView.adapter = NearbyPlaceListAdapter(nearbyPlaceListViewModel.nearbyPlaces) {position ->
             // Handle item click here
             val clickedPlace = nearbyPlaces[position]
             placeIdToSend = clickedPlace.placeId

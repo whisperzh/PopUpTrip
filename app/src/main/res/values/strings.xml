@@ -165,5 +165,6 @@
     <string name="title_itinerary_history">Itinerary History</string>
     <string name="title_itinerary_detail">Itinerary Detail</string>
     <string name="instructionsForTraveling">Instructions for traveling</string>
+    <string name="PleaseGrantPermissionToUseThisApp">Please Grant Permission to Use this App</string>
 
 </resources>
